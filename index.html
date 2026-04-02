@@ -13,6 +13,7 @@
             --accent-color: #e67e22;
             --btn-inactive: #3a3a3a;
             --btn-active: #3498db;
+            --link-color: #2ecc71;
         }
 
         body { 
@@ -25,19 +26,26 @@
             align-items: center;
         }
 
+        /* 按鈕區改為兩排，讓外部連結單獨一排或並列 */
         .source-selector {
             width: 100%;
             max-width: 450px;
             display: grid;
             grid-template-columns: repeat(4, 1fr); 
             gap: 6px;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             position: sticky;
             top: 10px;
             z-index: 100;
         }
 
-        .source-btn {
+        .extra-controls {
+            width: 100%;
+            max-width: 450px;
+            margin-bottom: 15px;
+        }
+
+        .source-btn, .nav-btn {
             padding: 10px 2px;
             border-radius: 10px;
             border: none;
@@ -49,12 +57,18 @@
             transition: all 0.2s;
             white-space: nowrap;
             text-align: center;
+            width: 100%;
+        }
+
+        .nav-btn {
+            background: #444;
+            color: #eee;
+            padding: 8px;
         }
 
         .source-btn.active {
             background: var(--btn-active);
             color: white;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
 
         .card { 
@@ -72,11 +86,7 @@
             border: 1px solid rgba(255,255,255,0.06);
         }
 
-        .content-area {
-            flex: 1; 
-            text-align: left; 
-            padding-right: 8px;
-        }
+        .content-area { flex: 1; text-align: left; padding-right: 8px; }
 
         .thai { 
             font-size: 2.05rem; 
@@ -84,30 +94,51 @@
             margin-bottom: 6px; 
             font-weight: 700; 
             color: var(--text-color);
-            word-wrap: break-word;
         }
 
-        .chinese { 
-            font-size: 1.15rem; 
-            color: var(--sub-text); 
-        }
+        .chinese { font-size: 1.15rem; color: var(--sub-text); }
 
         button.btn-speak { 
-            border: none;
-            background: transparent;
-            color: var(--accent-color); 
-            font-size: 1.9rem; 
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 55px;
-            transition: transform 0.1s;
+            border: none; background: transparent; color: var(--accent-color); 
+            font-size: 1.9rem; cursor: pointer; min-width: 55px;
         }
 
-        button.btn-speak:active { 
-            opacity: 0.4; 
-            transform: scale(1.2); 
+        /* 外部連結頁面 (Overlay) */
+        #link-page {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            z-index: 200;
+            display: none; /* 預設隱藏 */
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .link-item {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 15px;
+            text-decoration: none;
+            color: var(--link-color);
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .close-btn {
+            margin-top: 30px;
+            background: #e74c3c;
+            color: white;
+            padding: 12px 40px;
+            border-radius: 10px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         #loading { margin-top: 100px; font-size: 1.1rem; color: var(--sub-text); }
@@ -122,59 +153,59 @@
         <button id="btn-ben" class="source-btn" onclick="switchSource('ben')">Ben</button>
     </div>
 
+    <div class="extra-controls">
+        <button class="nav-btn" onclick="toggleLinkPage(true)">🔗 外部連結</button>
+    </div>
+
     <div id="loading">載入練習中...</div>
     <div id="app"></div>
 
-    <script>
-        // 同一個試算表的主連結（金鑰）
-        const spreadsheetId = "1RuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu";
-        const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
+    <div id="link-page">
+        <h2 style="margin-bottom: 30px;">外部工具資源</h2>
+        
+        <a href="https://thai-alphabet.com/" target="_blank" class="link-item">🇹🇭 thai-alphabet</a>
+        <button class="close-btn" onclick="toggleLinkPage(false)">返回練習</button>
+    </div>
 
-        // 不同的分頁 ID (gid)
+    <script>
+        const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
         const gids = {
             custom: "538865502",
             thai2: "2060107803",
-            time: "558463577",
-            ben: "541518024"
+            time: "1355116620",
+            ben: "296346577"
         };
 
         let currentSourceKey = 'custom';
         let sentences = [];
 
+        function toggleLinkPage(show) {
+            document.getElementById('link-page').style.display = show ? 'flex' : 'none';
+        }
+
         async function switchSource(key) {
             currentSourceKey = key;
-            
             document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtnId = {
-                custom: 'btn-custom',
-                thai2: 'btn-thai2',
-                time: 'btn-time',
-                ben: 'btn-ben'
-            }[key];
-            document.getElementById(activeBtnId).classList.add('active');
-            
+            const btnMap = { custom: 'btn-custom', thai2: 'btn-thai2', time: 'btn-time', ben: 'btn-ben' };
+            document.getElementById(btnMap[key]).classList.add('active');
             document.getElementById('app').innerHTML = '';
             document.getElementById('loading').style.display = 'block';
-            
             await fetchData();
         }
 
         async function fetchData() {
             try {
-                // 拼接對應分頁的網址
-                const targetUrl = `${base_url}&gid=${gids[currentSourceKey]}`;
-                const response = await fetch(targetUrl);
+                const response = await fetch(`${base_url}&gid=${gids[currentSourceKey]}`);
                 const data = await response.text();
                 const rows = data.split('\n').slice(1);
                 sentences = rows.map(row => {
                     const columns = row.split(',');
                     return { thai: columns[0], chinese: columns[1] };
                 }).filter(s => s.thai && s.thai.trim() !== "");
-                
                 displayRandom();
                 document.getElementById('loading').style.display = 'none';
             } catch (e) {
-                document.getElementById('loading').innerText = '載入失敗，請確認網路連線';
+                document.getElementById('loading').innerText = '載入失敗';
             }
         }
 
@@ -182,13 +213,9 @@
             window.scrollTo(0, 0);
             const container = document.getElementById('app');
             container.innerHTML = '';
-            
             if (sentences.length === 0) return;
-
             const shuffled = [...sentences].sort(() => 0.5 - Math.random());
-            const selected = shuffled.slice(0, 10);
-
-            selected.forEach(item => {
+            shuffled.slice(0, 10).forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.innerHTML = `
