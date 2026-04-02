@@ -31,7 +31,6 @@
             min-height: 100vh;
         }
 
-        /* 頂部選單容器 */
         .source-selector {
             width: 100%;
             max-width: 480px;
@@ -58,7 +57,6 @@
             cursor: pointer;
         }
 
-        /* 網格調整為 3x3 以容納「我的收藏」 */
         .grid-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -78,37 +76,21 @@
 
         .active { background: var(--btn-active) !important; color: white !important; }
 
-        /* 語速與搜尋控制區 */
-        .controls-panel {
+        /* 搜尋框區塊：現在變得很乾淨 */
+        .search-container {
             width: 100%;
             max-width: 480px;
-            background: #252525;
-            padding: 15px;
-            border-radius: 15px;
             margin-bottom: 15px;
-            box-sizing: border-box;
-            border: 1px solid #444;
         }
-
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 12px;
-        }
-
-        .speed-control label { font-size: 0.9rem; color: var(--sub-text); min-width: 70px; }
-
-        input[type=range] { flex: 1; accent-color: var(--btn-active); }
 
         #search-input {
             width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #555;
+            padding: 16px;
+            border-radius: 14px;
+            border: 2px solid #444;
             background: var(--search-bg);
             color: white;
-            font-size: 1rem;
+            font-size: 1.1rem;
             box-sizing: border-box;
             outline: none;
         }
@@ -158,17 +140,17 @@
             margin-bottom: 8px; 
             font-weight: 700; 
             word-wrap: break-word;
-            padding-right: 20px;
+            padding-right: 25px;
         }
 
         .chinese { font-size: 1.2rem; color: var(--sub-text); }
 
         .btn-speak { 
             border: none; background: transparent; color: var(--accent-color); 
-            font-size: 2rem; cursor: pointer;
+            font-size: 2.2rem; cursor: pointer; padding-left: 10px;
         }
 
-        /* 外部連結資源 */
+        /* 外部連結/設定按鈕 */
         .nav-btn {
             padding: 12px;
             border-radius: 12px;
@@ -182,12 +164,12 @@
             cursor: pointer;
         }
 
-        /* 彈窗 Overlay */
-        #link-page {
+        /* 設定彈窗面板 */
+        #settings-page {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(26, 26, 26, 0.95);
-            backdrop-filter: blur(8px);
+            background: rgba(26, 26, 26, 0.98);
+            backdrop-filter: blur(10px);
             z-index: 2000;
             display: none;
             flex-direction: column;
@@ -197,7 +179,36 @@
             box-sizing: border-box;
         }
 
-        .link-content-box { width: 100%; max-width: 350px; display: flex; flex-direction: column; gap: 15px; }
+        .settings-content {
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .setting-group {
+            background: #333;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #444;
+        }
+
+        .setting-label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: var(--sub-text);
+            font-size: 0.9rem;
+        }
+
+        .speed-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type=range] { flex: 1; accent-color: var(--btn-active); }
 
         .link-item {
             background: var(--card-bg);
@@ -205,20 +216,21 @@
             border-radius: 15px;
             text-decoration: none;
             color: var(--link-color);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             text-align: center;
             border: 1px solid rgba(46, 204, 113, 0.2);
         }
 
         .close-btn {
-            margin-top: 20px;
+            margin-top: 10px;
             background: var(--danger-color);
             color: white;
-            padding: 15px;
+            padding: 16px;
             border-radius: 12px;
             border: none;
             font-weight: bold;
+            font-size: 1rem;
             width: 100%;
         }
 
@@ -229,7 +241,7 @@
 <body>
 
     <div class="source-selector">
-        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">🎲全域隨機10句</button>
+        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">全域隨機10句</button>
         <div class="grid-selector">
             <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
             <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
@@ -239,30 +251,37 @@
             <button class="source-btn" onclick="switchSource('color', this)">顏色</button>
             <button class="source-btn" onclick="switchSource('ben', this)">Ben</button>
             <button class="source-btn" onclick="switchSource('self', this)">自建</button>
-            <button id="btn-fav" class="source-btn" style="color: var(--star-color);" onclick="showFavorites(this)">⭐收藏</button>
+            <button id="btn-fav" class="source-btn" style="color: var(--star-color);" onclick="showFavorites(this)">收藏</button>
         </div>
     </div>
 
-    <button class="nav-btn" onclick="toggleLinkPage(true)">🔗外部連結</button>
+    <button class="nav-btn" onclick="toggleSettings(true)">設定與外部資源</button>
 
-    <div class="controls-panel">
-        <div class="speed-control">
-            <label>語速: <span id="speed-val">1.0</span>x</label>
-            <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed()">
-        </div>
-        <input type="search" id="search-input" placeholder="搜尋中文或泰文..." oninput="handleSearch()">
+    <div class="search-container">
+        <input type="search" id="search-input" placeholder="搜尋全部分頁..." oninput="handleSearch()">
     </div>
 
     <div id="search-info"></div>
-    <div id="loading">正在同步雲端資料...</div>
+    <div id="loading">正在同步資料...</div>
     <div id="app"></div>
 
-    <div id="link-page">
-        <h2 style="margin-bottom: 20px; color: white;">外部資源</h2>
-        <div class="link-content-box">
+    <div id="settings-page">
+        <h2 style="margin-bottom: 25px; color: white;">設定與資源</h2>
+        <div class="settings-content">
+            
+            <div class="setting-group">
+                <span class="setting-label">發音語速設定</span>
+                <div class="speed-box">
+                    <span id="speed-val" style="min-width: 35px; font-weight: bold;">1.0</span>
+                    <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed()">
+                </div>
+            </div>
+
+            <span class="setting-label" style="margin-bottom: -5px; margin-left: 5px;">外部學習資源</span>
             <a href="https://thai-alphabet.com/" target="_blank" class="link-item">thai-alphabet</a>
             <a href="https://www.thai2english.com/" target="_blank" class="link-item">thai2english</a>
-            <button class="close-btn" onclick="toggleLinkPage(false)">關閉返回</button>
+            
+            <button class="close-btn" onclick="toggleSettings(false)">儲存並返回</button>
         </div>
     </div>
 
@@ -284,6 +303,10 @@
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         let currentSpeed = 1.0;
 
+        function toggleSettings(show) {
+            document.getElementById('settings-page').style.display = show ? 'flex' : 'none';
+        }
+
         function updateSpeed() {
             currentSpeed = document.getElementById('speed-slider').value;
             document.getElementById('speed-val').innerText = parseFloat(currentSpeed).toFixed(1);
@@ -298,39 +321,23 @@
                     return rows.map(row => {
                         const cols = row.split(',');
                         const thai = cols[0]?.trim();
-                        const chinese = cols[1]?.trim();
-                        // 產生唯一的 ID 用於收藏夾 (以泰文內容為鍵值)
-                        return { id: btoa(unescape(encodeURIComponent(thai))), thai, chinese, source: gids[key].name };
+                        return { id: btoa(unescape(encodeURIComponent(thai))), thai, chinese: cols[1]?.trim(), source: gids[key].name };
                     }).filter(item => item.thai);
                 });
                 const results = await Promise.all(fetchPromises);
                 allData = results.flat();
                 document.getElementById('loading').style.display = 'none';
                 displayRandom();
-            } catch (e) {
-                document.getElementById('loading').innerText = '資料同步失敗';
-            }
+            } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
         }
 
         function toggleFavorite(id) {
             const index = favorites.indexOf(id);
-            if (index > -1) {
-                favorites.splice(index, 1);
-            } else {
-                favorites.push(id);
-            }
+            if (index > -1) { favorites.splice(index, 1); } else { favorites.push(id); }
             localStorage.setItem('thai_favs', JSON.stringify(favorites));
-            
-            // 重新渲染當前列表以更新星星顏色 (如果是從收藏分頁點擊，則移除該項)
             const activeBtn = document.querySelector('.source-btn.active');
-            if (activeBtn && activeBtn.id === 'btn-fav') {
-                showFavorites(activeBtn);
-            } else {
-                // 僅更新星星視覺效果
-                document.querySelectorAll(`[data-id="${id}"]`).forEach(btn => {
-                    btn.classList.toggle('favorited');
-                });
-            }
+            if (activeBtn && activeBtn.id === 'btn-fav') { showFavorites(activeBtn); } 
+            else { document.querySelectorAll(`[data-id="${id}"]`).forEach(btn => btn.classList.toggle('favorited')); }
         }
 
         function showFavorites(btnElement) {
@@ -345,9 +352,7 @@
         function handleSearch() {
             const kw = document.getElementById('search-input').value.trim().toLowerCase();
             if (!kw) { displayRandom(); return; }
-            const results = allData.filter(item => 
-                item.thai.toLowerCase().includes(kw) || item.chinese.toLowerCase().includes(kw)
-            );
+            const results = allData.filter(item => item.thai.toLowerCase().includes(kw) || item.chinese.toLowerCase().includes(kw));
             renderList(results);
             document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
             clearActiveButtons();
@@ -379,7 +384,7 @@
             const container = document.getElementById('app');
             container.innerHTML = '';
             if (list.length === 0) {
-                container.innerHTML = '<div style="margin-top:30px; color:#666;">目前沒有內容</div>';
+                container.innerHTML = '<div style="margin-top:30px; color:#666;">無內容</div>';
                 return;
             }
             list.forEach(item => {
@@ -412,8 +417,6 @@
         function clearActiveButtons() {
             document.querySelectorAll('.source-btn, .btn-main').forEach(btn => btn.classList.remove('active'));
         }
-
-        function toggleLinkPage(show) { document.getElementById('link-page').style.display = show ? 'flex' : 'none'; }
 
         initAllData();
     </script>
