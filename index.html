@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Speak</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .card { background: white; border-radius: 15px; padding: 20px; margin: 10px 0; width: 100%; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .thai { font-size: 1.5rem; color: #2c3e50; margin-bottom: 10px; font-weight: bold; }
+        .chinese { color: #7f8c8d; margin-bottom: 15px; }
+        button { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 1rem; }
+        .btn-refresh { background: #2980b9; padding: 15px 30px; font-size: 1.2rem; margin-top: 20px; }
+        .btn-speak { background: #e67e22; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <h2>🇹🇭 泰文生活句型練習</h2>
+    <div id="loading">載入句子中...</div>
+    <div id="app"></div>
+    <button class="btn-refresh" onclick="displayRandom()">換一組練習</button>
+
+    <script>
+        const sheetUrl = 'YOUR_CSV_URL_HERE'; // 這裡貼上你的 CSV 網址
+        let sentences = [];
+
+        // 讀取 Google Sheet
+        async function fetchData() {
+            try {
+                const response = await fetch(sheetUrl);
+                const data = await response.text();
+                const rows = data.split('\n').slice(1); // 略過標題列
+                sentences = rows.map(row => {
+                    const columns = row.split(',');
+                    return { thai: columns[0], chinese: columns[1] };
+                }).filter(s => s.thai); // 過濾空白行
+                displayRandom();
+                document.getElementById('loading').style.display = 'none';
+            } catch (e) {
+                alert('讀取資料失敗，請檢查網址設定');
+            }
+        }
+
+        // 隨機選 5 句
+        function displayRandom() {
+            const container = document.getElementById('app');
+            container.innerHTML = '';
+            const shuffled = [...sentences].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 5);
+
+            selected.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                    <div class="thai">${item.thai}</div>
+                    <div class="chinese">${item.chinese}</div>
+                    <button class="btn-speak" onclick="speak('${item.thai}')">🔊 播放發音</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // 語音功能 (使用手機內建 TTS)
+        function speak(text) {
+            const msg = new SpeechSynthesisUtterance();
+            msg.text = text;
+            msg.lang = 'th-TH'; // 設定為泰語
+            window.speechSynthesis.speak(msg);
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
