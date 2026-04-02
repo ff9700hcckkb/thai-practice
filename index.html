@@ -3,49 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thai Speak</title>
+    <title>泰語隨身練</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .card { background: white; border-radius: 15px; padding: 20px; margin: 10px 0; width: 100%; max-width: 400px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        .thai { font-size: 1.5rem; color: #2c3e50; margin-bottom: 10px; font-weight: bold; }
-        .chinese { color: #7f8c8d; margin-bottom: 15px; }
-        button { background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer; font-size: 1rem; }
-        .btn-refresh { background: #2980b9; padding: 15px 30px; font-size: 1.2rem; margin-top: 20px; }
-        .btn-speak { background: #e67e22; margin-top: 5px; }
+        :root {
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --sub-text: #7f8c8d;
+            --primary-btn: #2980b9;
+        }
+
+        /* 深色模式變數 */
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-color: #e0e0e0;
+            --sub-text: #b0b0b0;
+            --primary-btn: #3498db;
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-color);
+            padding: 20px; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .header-controls {
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin: 10px 0; 
+            width: 100%; 
+            max-width: 400px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            text-align: center; 
+            transition: 0.3s;
+        }
+
+        .thai { font-size: 1.6rem; margin-bottom: 10px; font-weight: bold; color: var(--text-color); }
+        .chinese { font-size: 1.1rem; color: var(--sub-text); margin-bottom: 15px; }
+
+        button { 
+            border: none; 
+            padding: 12px 20px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: 600;
+        }
+
+        .btn-refresh { background: var(--primary-btn); color: white; flex: 2; }
+        .btn-theme { background: #9b59b6; color: white; flex: 1; }
+        .btn-speak { background: #e67e22; color: white; width: 100%; margin-top: 5px; }
+
+        #loading { margin-top: 50px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h2>🇹🇭 泰文生活句型練習</h2>
+    <div class="header-controls">
+        <button class="btn-refresh" onclick="displayRandom()">🔄 換一組練習</button>
+        <button class="btn-theme" onclick="toggleTheme()">🌓 模式</button>
+    </div>
+
     <div id="loading">載入句子中...</div>
     <div id="app"></div>
-    <button class="btn-refresh" onclick="displayRandom()">換一組練習</button>
 
     <script>
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv'; // 這裡貼上你的 CSV 網址
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv'; // 記得填入你的 CSV 網址
         let sentences = [];
 
-        // 讀取 Google Sheet
+        // 切換深色模式
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', targetTheme);
+            localStorage.setItem('theme', targetTheme); // 儲存偏好
+        }
+
+        // 載入儲存的模式
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+
         async function fetchData() {
             try {
                 const response = await fetch(sheetUrl);
                 const data = await response.text();
-                const rows = data.split('\n').slice(1); // 略過標題列
+                const rows = data.split('\n').slice(1);
                 sentences = rows.map(row => {
                     const columns = row.split(',');
                     return { thai: columns[0], chinese: columns[1] };
-                }).filter(s => s.thai); // 過濾空白行
+                }).filter(s => s.thai && s.thai.trim() !== "");
                 displayRandom();
                 document.getElementById('loading').style.display = 'none';
             } catch (e) {
-                alert('讀取資料失敗，請檢查網址設定');
+                document.getElementById('loading').innerText = '讀取失敗，請檢查網路或網址';
             }
         }
 
-        // 隨機選 5 句
         function displayRandom() {
+            window.scrollTo(0, 0); // 重整時回到最上方
             const container = document.getElementById('app');
             container.innerHTML = '';
+            
+            if (sentences.length === 0) return;
+
             const shuffled = [...sentences].sort(() => 0.5 - Math.random());
             const selected = shuffled.slice(0, 5);
 
@@ -61,11 +141,11 @@
             });
         }
 
-        // 語音功能 (使用手機內建 TTS)
         function speak(text) {
             const msg = new SpeechSynthesisUtterance();
             msg.text = text;
-            msg.lang = 'th-TH'; // 設定為泰語
+            msg.lang = 'th-TH';
+            msg.rate = 0.9; // 稍微放慢一點點，方便聽清楚
             window.speechSynthesis.speak(msg);
         }
 
