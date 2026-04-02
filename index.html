@@ -5,18 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>泰語隨身練</title>
     <style>
+        /* 定義顏色變數 */
         :root {
             --bg-color: #1a1a1a;
             --card-bg: #2d2d2d;
             --text-color: #f0f0f0;
             --sub-text: #b0b0b0;
-            --accent-color: #e67e22;
             --btn-inactive: #3a3a3a;
-            --btn-active: #3498db;
             --search-bg: #333;
+            --search-border: #444;
+            --nav-bg: #252525;
+            
+            --accent-color: #e67e22;
+            --btn-active: #3498db;
             --link-color: #2ecc71;
             --danger-color: #e74c3c;
             --star-color: #f1c40f;
+            
+            --thai-size: 2.05rem;
+            --zh-size: 1.2rem;
+        }
+
+        /* 淺色模式變數 */
+        [data-theme="light"] {
+            --bg-color: #f5f5f5;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --sub-text: #7f8c8d;
+            --btn-inactive: #e0e0e0;
+            --search-bg: #ffffff;
+            --search-border: #bdc3c7;
+            --nav-bg: #ecf0f1;
         }
 
         body { 
@@ -29,6 +48,7 @@
             flex-direction: column; 
             align-items: center;
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
 
         .source-selector {
@@ -43,6 +63,7 @@
             background: var(--bg-color);
             padding: 10px 0;
             z-index: 100;
+            transition: background 0.3s;
         }
 
         .btn-main {
@@ -50,7 +71,7 @@
             padding: 14px;
             font-size: 1.05rem;
             background: var(--btn-inactive);
-            color: white;
+            color: var(--text-color);
             border: none;
             border-radius: 12px;
             font-weight: bold;
@@ -76,7 +97,6 @@
 
         .active { background: var(--btn-active) !important; color: white !important; }
 
-        /* 搜尋框區塊：現在變得很乾淨 */
         .search-container {
             width: 100%;
             max-width: 480px;
@@ -87,15 +107,14 @@
             width: 100%;
             padding: 16px;
             border-radius: 14px;
-            border: 2px solid #444;
+            border: 2px solid var(--search-border);
             background: var(--search-bg);
-            color: white;
+            color: var(--text-color);
             font-size: 1.1rem;
             box-sizing: border-box;
             outline: none;
         }
 
-        /* 卡片設計 */
         .card { 
             background: var(--card-bg); 
             border-radius: 20px; 
@@ -107,7 +126,8 @@
             align-items: center;
             justify-content: space-between;
             box-sizing: border-box;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: relative;
         }
 
@@ -127,7 +147,7 @@
             border: none;
             font-size: 1.3rem;
             cursor: pointer;
-            color: #555;
+            color: #999;
             padding: 0;
             line-height: 1;
         }
@@ -135,7 +155,7 @@
         .btn-star.favorited { color: var(--star-color); }
 
         .thai { 
-            font-size: 2.05rem; 
+            font-size: var(--thai-size); 
             line-height: 1.4;
             margin-bottom: 8px; 
             font-weight: 700; 
@@ -143,20 +163,19 @@
             padding-right: 25px;
         }
 
-        .chinese { font-size: 1.2rem; color: var(--sub-text); }
+        .chinese { font-size: var(--zh-size); color: var(--sub-text); }
 
         .btn-speak { 
             border: none; background: transparent; color: var(--accent-color); 
             font-size: 2.2rem; cursor: pointer; padding-left: 10px;
         }
 
-        /* 外部連結/設定按鈕 */
         .nav-btn {
             padding: 12px;
             border-radius: 12px;
-            border: 1px solid #444;
-            background: #252525;
-            color: #ccc;
+            border: 1px solid var(--search-border);
+            background: var(--nav-bg);
+            color: var(--sub-text);
             font-weight: 600;
             width: 100%;
             max-width: 480px;
@@ -164,12 +183,11 @@
             cursor: pointer;
         }
 
-        /* 設定彈窗面板 */
+        /* 設定彈窗 */
         #settings-page {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(26, 26, 26, 0.98);
-            backdrop-filter: blur(10px);
+            background: var(--bg-color);
             z-index: 2000;
             display: none;
             flex-direction: column;
@@ -184,42 +202,55 @@
             max-width: 350px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
         .setting-group {
-            background: #333;
-            padding: 20px;
+            background: var(--card-bg);
+            padding: 15px 20px;
             border-radius: 15px;
-            border: 1px solid #444;
+            border: 1px solid var(--search-border);
         }
 
         .setting-label {
             display: block;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-weight: bold;
             color: var(--sub-text);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
 
-        .speed-box {
+        .control-box {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 15px;
+        }
+
+        /* 模式切換按鈕樣式 */
+        .theme-switch-btn {
+            background: var(--btn-active);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
         }
 
         input[type=range] { flex: 1; accent-color: var(--btn-active); }
 
         .link-item {
             background: var(--card-bg);
-            padding: 18px;
+            padding: 15px;
             border-radius: 15px;
             text-decoration: none;
             color: var(--link-color);
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             text-align: center;
-            border: 1px solid rgba(46, 204, 113, 0.2);
+            border: 1px solid var(--search-border);
         }
 
         .close-btn {
@@ -241,7 +272,7 @@
 <body>
 
     <div class="source-selector">
-        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">全域隨機10句</button>
+        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">🎲 全域隨機10句</button>
         <div class="grid-selector">
             <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
             <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
@@ -251,11 +282,11 @@
             <button class="source-btn" onclick="switchSource('color', this)">顏色</button>
             <button class="source-btn" onclick="switchSource('ben', this)">Ben</button>
             <button class="source-btn" onclick="switchSource('self', this)">自建</button>
-            <button id="btn-fav" class="source-btn" style="color: var(--star-color);" onclick="showFavorites(this)">收藏</button>
+            <button id="btn-fav" class="source-btn" style="color: var(--star-color);" onclick="showFavorites(this)">⭐ 收藏</button>
         </div>
     </div>
 
-    <button class="nav-btn" onclick="toggleSettings(true)">設定與外部資源</button>
+    <button class="nav-btn" onclick="toggleSettings(true)">⚙️ 設定與外部資源</button>
 
     <div class="search-container">
         <input type="search" id="search-input" placeholder="搜尋全部分頁..." oninput="handleSearch()">
@@ -266,18 +297,31 @@
     <div id="app"></div>
 
     <div id="settings-page">
-        <h2 style="margin-bottom: 25px; color: white;">設定與資源</h2>
+        <h2 style="margin-bottom: 20px;">⚙️ 設定與外部資源</h2>
         <div class="settings-content">
             
             <div class="setting-group">
-                <span class="setting-label">發音語速設定</span>
-                <div class="speed-box">
-                    <span id="speed-val" style="min-width: 35px; font-weight: bold;">1.0</span>
+                <span class="setting-label">🌓 介面主題模式</span>
+                <button id="theme-toggle" class="theme-switch-btn" onclick="toggleTheme()">切換至淺色模式</button>
+            </div>
+
+            <div class="setting-group">
+                <span class="setting-label">🔊 發音語速設定</span>
+                <div class="control-box">
+                    <span id="speed-val" style="min-width: 30px; font-weight: bold;">1.0</span>
                     <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed()">
                 </div>
             </div>
 
-            <span class="setting-label" style="margin-bottom: -5px; margin-left: 5px;">外部學習資源</span>
+            <div class="setting-group">
+                <span class="setting-label">🔤 字體大小設定</span>
+                <div class="control-box">
+                    <span id="font-val" style="min-width: 30px; font-weight: bold;">32</span>
+                    <input type="range" id="font-slider" min="14" max="48" step="1" value="32" oninput="updateFontSize()">
+                </div>
+            </div>
+
+            <span class="setting-label" style="margin-left: 5px;">🔗 外部學習資源</span>
             <a href="https://thai-alphabet.com/" target="_blank" class="link-item">thai-alphabet</a>
             <a href="https://www.thai2english.com/" target="_blank" class="link-item">thai2english</a>
             
@@ -303,6 +347,25 @@
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         let currentSpeed = 1.0;
 
+        // 主題管理
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme');
+            const target = current === 'light' ? 'dark' : 'light';
+            setTheme(target);
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('thai_theme', theme);
+            const btn = document.getElementById('theme-toggle');
+            btn.innerText = theme === 'light' ? '切換至深色模式' : '切換至淺色模式';
+            btn.style.background = theme === 'light' ? '#2c3e50' : '#3498db';
+        }
+
+        // 初始化主題
+        const savedTheme = localStorage.getItem('thai_theme') || 'dark';
+        setTheme(savedTheme);
+
         function toggleSettings(show) {
             document.getElementById('settings-page').style.display = show ? 'flex' : 'none';
         }
@@ -310,6 +373,14 @@
         function updateSpeed() {
             currentSpeed = document.getElementById('speed-slider').value;
             document.getElementById('speed-val').innerText = parseFloat(currentSpeed).toFixed(1);
+        }
+
+        function updateFontSize() {
+            const size = document.getElementById('font-slider').value;
+            document.getElementById('font-val').innerText = size;
+            const root = document.documentElement;
+            root.style.setProperty('--thai-size', size + 'px');
+            root.style.setProperty('--zh-size', (size * 0.6) + 'px');
         }
 
         async function initAllData() {
