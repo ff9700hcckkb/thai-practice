@@ -15,6 +15,7 @@
             --btn-active: #3498db;
             --search-bg: #333;
             --link-color: #2ecc71;
+            --danger-color: #e74c3c;
         }
 
         body { 
@@ -22,15 +23,17 @@
             background: var(--bg-color); 
             color: var(--text-color);
             padding: 10px 15px 50px 15px; 
+            margin: 0;
             display: flex; 
             flex-direction: column; 
             align-items: center;
+            min-height: 100vh;
         }
 
-        /* 頂部按鈕容器 */
+        /* 頂部按鈕容器 - RWD 寬度適應 */
         .source-selector {
             width: 100%;
-            max-width: 450px;
+            max-width: 480px;
             display: flex;
             flex-direction: column;
             gap: 8px;
@@ -42,75 +45,70 @@
             z-index: 100;
         }
 
-        /* 隨機按鈕：獨佔上方 */
-        .mode-btn-container {
-            width: 100%;
-        }
         .btn-main {
             width: 100%;
-            padding: 12px;
-            font-size: 1rem;
+            padding: 14px;
+            font-size: 1.05rem;
             background: var(--btn-inactive);
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: bold;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
-        /* 8個分頁：4x2 網格佈局 */
         .grid-selector {
             display: grid;
-            grid-template-columns: repeat(4, 1fr); /* 4 欄 */
-            gap: 6px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
         }
 
         .source-btn {
-            padding: 10px 2px;
-            border-radius: 8px;
+            padding: 12px 2px;
+            border-radius: 10px;
             border: none;
             background: var(--btn-inactive);
             color: var(--sub-text);
             font-weight: 600;
             font-size: 0.85rem; 
             cursor: pointer;
-            text-align: center;
         }
 
-        .source-btn.active, .btn-main.active {
-            background: var(--btn-active);
-            color: white;
+        .active {
+            background: var(--btn-active) !important;
+            color: white !important;
         }
 
-        /* 搜尋框與其他控制項 */
+        /* 控制項 */
         .extra-controls {
             width: 100%;
-            max-width: 450px;
-            margin-bottom: 10px;
+            max-width: 480px;
+            margin-bottom: 15px;
         }
 
         .nav-btn {
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #555;
-            background: #222;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #444;
+            background: #252525;
             color: #ccc;
             font-weight: 600;
-            font-size: 0.9rem;
             width: 100%;
             cursor: pointer;
         }
 
+        /* 搜尋框 RWD */
         .search-container {
             width: 100%;
-            max-width: 450px;
-            margin-bottom: 20px;
+            max-width: 480px;
+            margin-bottom: 15px;
         }
 
         #search-input {
             width: 100%;
-            padding: 15px;
-            border-radius: 12px;
+            padding: 16px;
+            border-radius: 14px;
             border: 2px solid #444;
             background: var(--search-bg);
             color: white;
@@ -119,124 +117,139 @@
             outline: none;
         }
 
-        /* 卡片內容 */
+        /* 卡片設計 */
         .card { 
             background: var(--card-bg); 
-            border-radius: 18px; 
-            padding: 22px 24px; 
-            margin: 12px 0; 
+            border-radius: 20px; 
+            padding: 24px; 
+            margin: 10px 0; 
             width: 100%; 
-            max-width: 450px; 
+            max-width: 480px; 
             display: flex; 
             align-items: center;
             justify-content: space-between;
             box-sizing: border-box;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.05);
             position: relative;
         }
 
         .source-tag {
             position: absolute;
-            top: 8px;
-            right: 12px;
-            font-size: 0.7rem;
+            top: 10px;
+            right: 15px;
+            font-size: 0.75rem;
             color: var(--btn-active);
-            opacity: 0.7;
+            font-weight: bold;
         }
 
         .thai { 
             font-size: 2.05rem; 
             line-height: 1.4;
-            margin-bottom: 6px; 
+            margin-bottom: 8px; 
             font-weight: 700; 
-            color: var(--text-color);
             word-wrap: break-word;
         }
 
-        .chinese { font-size: 1.15rem; color: var(--sub-text); }
+        .chinese { font-size: 1.2rem; color: var(--sub-text); }
 
-        button.btn-speak { 
+        .btn-speak { 
             border: none; background: transparent; color: var(--accent-color); 
-            font-size: 1.9rem; cursor: pointer; min-width: 55px;
+            font-size: 2rem; cursor: pointer; padding-left: 10px;
         }
 
-        /* 外部連結 Overlay */
+        /* === RWD 外部連結頁面優化 === */
         #link-page {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
-            z-index: 200;
+            top: 0; left: 0; 
+            width: 100%; height: 100%;
+            background: rgba(26, 26, 26, 0.95); /* 深色背景 */
+            backdrop-filter: blur(8px); /* 磨砂玻璃效果 */
+            z-index: 2000;
             display: none;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .link-content-box {
+            width: 100%;
+            max-width: 350px; /* 限制寬度在手機正中央 */
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
         .link-item {
             background: var(--card-bg);
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            margin: 10px 0;
+            padding: 18px;
             border-radius: 15px;
             text-decoration: none;
             color: var(--link-color);
             font-size: 1.2rem;
             font-weight: bold;
             text-align: center;
-            border: 1px solid rgba(46, 204, 113, 0.3);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            transition: transform 0.1s;
         }
 
+        .link-item:active { transform: scale(0.98); }
+
         .close-btn {
-            margin-top: 30px;
-            background: #e74c3c;
+            margin-top: 20px;
+            background: var(--danger-color);
             color: white;
-            padding: 12px 40px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 12px;
             border: none;
+            font-size: 1rem;
+            font-weight: bold;
             cursor: pointer;
+            width: 100%;
         }
 
         #loading { margin-top: 50px; font-size: 1.1rem; color: var(--sub-text); }
-        #search-info { color: var(--sub-text); margin-bottom: 10px; font-size: 0.9rem; width: 100%; max-width: 450px; text-align: left; }
+        #search-info { color: var(--sub-text); margin-bottom: 10px; font-size: 0.9rem; width: 100%; max-width: 480px; }
     </style>
 </head>
 <body>
 
     <div class="source-selector">
         <div class="mode-btn-container">
-            <button class="btn-main active" onclick="switchMode('random')">全域隨機10句</button>
+            <button id="btn-random" class="btn-main active" onclick="switchMode('random')">🎲 隨機 10 句 (全域)</button>
         </div>
-        
         <div class="grid-selector">
-            <button class="source-btn" onclick="switchSource('custom')">網抓</button>
-            <button class="source-btn" onclick="switchSource('thai2')">泰二</button>
-            <button class="source-btn" onclick="switchSource('time')">時間</button>
-            <button class="source-btn" onclick="switchSource('month')">月份</button>
-            <button class="source-btn" onclick="switchSource('week')">星期</button>
-            <button class="source-btn" onclick="switchSource('color')">顏色</button>
-            <button class="source-btn" onclick="switchSource('ben')">Ben</button>
-            <button class="source-btn" onclick="switchSource('self')">自建</button>
+            <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
+            <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
+            <button class="source-btn" onclick="switchSource('time', this)">時間</button>
+            <button class="source-btn" onclick="switchSource('month', this)">月份</button>
+            <button class="source-btn" onclick="switchSource('week', this)">星期</button>
+            <button class="source-btn" onclick="switchSource('color', this)">顏色</button>
+            <button class="source-btn" onclick="switchSource('ben', this)">Ben</button>
+            <button class="source-btn" onclick="switchSource('self', this)">自建</button>
         </div>
     </div>
 
     <div class="extra-controls">
-        <button class="nav-btn" onclick="toggleLinkPage(true)">🔗 外部連結</button>
+        <button class="nav-btn" onclick="toggleLinkPage(true)">🔗 外部連結資源</button>
     </div>
 
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="輸入泰文或中文搜尋全部分頁..." oninput="handleSearch()">
+        <input type="search" id="search-input" placeholder="搜尋全部分頁..." oninput="handleSearch()">
     </div>
 
     <div id="search-info"></div>
-    <div id="loading">正在同步所有分頁資料...</div>
+    <div id="loading">正在同步資料...</div>
     <div id="app"></div>
 
     <div id="link-page">
-        <h2 style="margin-bottom: 30px;">外部資源</h2>
-        <a href="https://thai-alphabet.com/" target="_blank" class="link-item">thai-alphabet</a>
-        <a href="https://www.thai2english.com/" target="_blank" class="link-item">thai2english</a>
-        <button class="close-btn" onclick="toggleLinkPage(false)">返回練習</button>
+        <h2 style="margin-bottom: 20px; color: white;">外部資源</h2>
+        <div class="link-content-box">
+            <a href="https://thai-alphabet.com/" target="_blank" class="link-item">thai-alphabet</a>
+            <a href="https://www.thai2english.com/" target="_blank" class="link-item">thai2english</a>
+            <button class="close-btn" onclick="toggleLinkPage(false)">關閉返回</button>
+        </div>
     </div>
 
     <script>
@@ -268,21 +281,16 @@
                     const rows = csvText.split(/\r?\n/).slice(1);
                     return rows.map(row => {
                         const cols = row.split(',');
-                        return { 
-                            thai: cols[0]?.trim(), 
-                            chinese: cols[1]?.trim(), 
-                            source: gids[key].name 
-                        };
+                        return { thai: cols[0]?.trim(), chinese: cols[1]?.trim(), source: gids[key].name };
                     }).filter(item => item.thai);
                 });
-
                 const results = await Promise.all(fetchPromises);
                 allData = results.flat();
                 isLoaded = true;
                 document.getElementById('loading').style.display = 'none';
                 displayRandom();
             } catch (e) {
-                document.getElementById('loading').innerText = '同步失敗，請重新整理';
+                document.getElementById('loading').innerText = '讀取失敗，請重整';
             }
         }
 
@@ -310,14 +318,14 @@
             document.getElementById('search-input').value = '';
             document.getElementById('search-info').innerText = '';
             clearActiveButtons();
-            event.currentTarget.classList.add('active');
+            document.getElementById('btn-random').classList.add('active');
             displayRandom();
         }
 
-        function switchSource(key) {
+        function switchSource(key, btnElement) {
             document.getElementById('search-input').value = '';
             clearActiveButtons();
-            event.currentTarget.classList.add('active');
+            btnElement.classList.add('active');
             const filtered = allData.filter(item => item.source === gids[key].name);
             renderList(filtered.sort(() => 0.5 - Math.random()).slice(0, 10));
             document.getElementById('search-info').innerText = `目前顯示：${gids[key].name} (隨機10句)`;
@@ -333,7 +341,7 @@
             const container = document.getElementById('app');
             container.innerHTML = '';
             if (list.length === 0) {
-                container.innerHTML = '<div style="margin-top:20px; color:#b0b0b0;">找不到符合的內容</div>';
+                container.innerHTML = '<div style="margin-top:30px; color:#b0b0b0;">無搜尋結果</div>';
                 return;
             }
             list.forEach(item => {
@@ -341,7 +349,7 @@
                 div.className = 'card';
                 div.innerHTML = `
                     <div class="source-tag">${item.source}</div>
-                    <div class="content-area">
+                    <div>
                         <div class="thai">${item.thai}</div>
                         <div class="chinese">${item.chinese}</div>
                     </div>
