@@ -25,28 +25,27 @@
             align-items: center;
         }
 
-        /* 5個資料來源切換按鈕區 - 改為 Grid 兩列排列 */
+        /* 恢復為 4 個按鈕的 Grid 排列 */
         .source-selector {
             width: 100%;
             max-width: 450px;
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 第一列放三個 */
-            gap: 8px;
+            grid-template-columns: repeat(4, 1fr); 
+            gap: 6px;
             margin-bottom: 15px;
             position: sticky;
             top: 10px;
             z-index: 100;
         }
 
-        /* 讓最後兩個按鈕在第二排自動分配空間 */
         .source-btn {
-            padding: 10px 5px;
+            padding: 10px 2px;
             border-radius: 10px;
             border: none;
             background: var(--btn-inactive);
             color: var(--sub-text);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem; 
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
@@ -58,19 +57,6 @@
             color: white;
             box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
-
-        /* 特殊處理：當有5個按鈕時，讓後兩個平分空間 */
-        .source-selector > button:nth-child(4),
-        .source-selector > button:nth-child(5) {
-            grid-column: span 1.5; /* 這需要配合下方 grid 調整，或簡單維持 repeat(3) */
-        }
-        
-        /* 修正為更彈性的 Grid 排列 */
-        .source-selector {
-            grid-template-columns: repeat(6, 1fr); 
-        }
-        .source-btn { grid-column: span 2; } /* 前三個按鈕各佔 2/6 */
-        #btn-ben, #btn-pronounce { grid-column: span 3; } /* 後兩個按鈕各佔 3/6 */
 
         .card { 
             background: var(--card-bg); 
@@ -117,6 +103,7 @@
             align-items: center;
             justify-content: center;
             min-width: 55px;
+            transition: transform 0.1s;
         }
 
         button.btn-speak:active { 
@@ -134,7 +121,6 @@
         <button id="btn-thai2" class="source-btn" onclick="switchSource('thai2')">泰二</button>
         <button id="btn-time" class="source-btn" onclick="switchSource('time')">時間</button>
         <button id="btn-ben" class="source-btn" onclick="switchSource('ben')">Ben</button>
-        <button id="btn-pronounce" class="source-btn" onclick="switchSource('pronounce')">發音</button>
     </div>
 
     <div id="loading">載入練習中...</div>
@@ -145,8 +131,7 @@
             custom: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv",
             thai2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjm7j2vq2047v5aLY3tNBU_va83hqS9u6_skG35lTdtVxK4nCNC7qRoePHg_FsbdxvjbkR0s-JxmNt/pub?output=csv",
             time: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3bHaY_7eyJ7RBHZl22Gr-y7gH6Is3oCL6CKS5x4qQpAopl4i2bsS2Xk6N7xgUK3n5o5A1_xUd9ab-/pub?output=csv",
-            ben: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTA2sY9XzLuD8nsn6cv75mBv5_izZrVYxnykdMhdK4PKoCtZ2q-7x_R8xg5NIRhzXPNNBj1qjWSAHG0/pub?output=csv",
-            pronounce: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQok7O8YweceFcSnpWdYlCVG7gAzfR0-JpeY3zCRmNVEE64oXVtf_FQO8Wamee56kCjcc-aqYaZqp_C/pub?output=csv"
+            ben: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTA2sY9XzLuD8nsn6cv75mBv5_izZrVYxnykdMhdK4PKoCtZ2q-7x_R8xg5NIRhzXPNNBj1qjWSAHG0/pub?output=csv"
         };
 
         let currentSourceKey = 'custom';
@@ -155,16 +140,15 @@
         async function switchSource(key) {
             currentSourceKey = key;
             
-            // 更新所有按鈕狀態
+            // 更新按鈕樣式
             document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = {
+            const activeBtnId = {
                 custom: 'btn-custom',
                 thai2: 'btn-thai2',
                 time: 'btn-time',
-                ben: 'btn-ben',
-                pronounce: 'btn-pronounce'
+                ben: 'btn-ben'
             }[key];
-            document.getElementById(activeBtn).classList.add('active');
+            document.getElementById(activeBtnId).classList.add('active');
             
             document.getElementById('app').innerHTML = '';
             document.getElementById('loading').style.display = 'block';
