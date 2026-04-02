@@ -3,17 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>泰語隨身練</title>
+    <title>泰語常用句</title>
     <style>
+        /* 直接設定深色主題變數 */
         :root {
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #2c3e50;
-            --sub-text: #7f8c8d;
-            --primary-btn: #2980b9;
-        }
-
-        [data-theme="dark"] {
             --bg-color: #1a1a1a;
             --card-bg: #2d2d2d;
             --text-color: #e0e0e0;
@@ -29,15 +22,13 @@
             display: flex; 
             flex-direction: column; 
             align-items: center;
-            transition: 0.3s;
         }
 
         .header-controls {
             width: 100%;
             max-width: 400px;
             display: flex;
-            justify-content: space-between;
-            gap: 10px;
+            justify-content: center; /* 居中重整按鈕 */
             margin-bottom: 20px;
             position: sticky;
             top: 10px;
@@ -51,15 +42,13 @@
             margin: 10px 0; 
             width: 100%; 
             max-width: 400px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
             text-align: center; 
-            transition: 0.3s;
         }
 
-        /* 調整後的泰文字體大小 */
         .thai { 
-            font-size: 1.85rem; /* 已調大約 4pt */
-            line-height: 1.4;   /* 增加行高，避免泰文字符重疊 */
+            font-size: 1.85rem; 
+            line-height: 1.4;
             margin-bottom: 8px; 
             font-weight: bold; 
             color: var(--text-color);
@@ -81,43 +70,37 @@
             font-weight: 600;
         }
 
-        .btn-refresh { background: var(--primary-btn); color: white; flex: 2; }
-        .btn-theme { background: #9b59b6; color: white; flex: 1; }
+        /* 強化重整按鈕的視覺感 */
+        .btn-refresh { 
+            background: var(--primary-btn); 
+            color: white; 
+            width: 100%; 
+            max-width: 250px;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
         .btn-speak { background: #e67e22; color: white; width: 100%; margin-top: 5px; }
 
-        #loading { margin-top: 50px; font-weight: bold; }
+        #loading { margin-top: 50px; font-weight: bold; color: var(--sub-text); }
     </style>
 </head>
 <body>
 
     <div class="header-controls">
-        <button class="btn-refresh" onclick="displayRandom()">換一組</button>
-        <button class="btn-theme" onclick="toggleTheme()">黑/白</button>
+        <button class="btn-refresh" onclick="displayRandom()">🔄 換一組練習</button>
     </div>
 
     <div id="loading">載入句子中...</div>
     <div id="app"></div>
 
     <script>
-        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv'; // 替換為你的 CSV 網址
+        const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv'; // 請確保此處填入你的 CSV 連結
         let sentences = [];
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const targetTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', targetTheme);
-            localStorage.setItem('theme', targetTheme);
-        }
-
-        if (localStorage.getItem('theme') === 'dark') {
-            document.documentElement.setAttribute('data-theme', 'dark');
-        }
 
         async function fetchData() {
             try {
                 const response = await fetch(sheetUrl);
                 const data = await response.text();
-                // 處理 CSV 格式，考慮到可能會有逗號出現在內容中，使用簡易判斷
                 const rows = data.split('\n').slice(1);
                 sentences = rows.map(row => {
                     const columns = row.split(',');
@@ -126,7 +109,7 @@
                 displayRandom();
                 document.getElementById('loading').style.display = 'none';
             } catch (e) {
-                document.getElementById('loading').innerText = '讀取失敗，請確認試算表已發布為 CSV';
+                document.getElementById('loading').innerText = '讀取失敗，請確認網路連線';
             }
         }
 
@@ -153,13 +136,11 @@
         }
 
         function speak(text) {
-            // 先停止當前所有正在播放的聲音
             window.speechSynthesis.cancel();
-            
             const msg = new SpeechSynthesisUtterance();
             msg.text = text;
             msg.lang = 'th-TH';
-            msg.rate = 0.85; // 稍微調慢讓發音更紮實
+            msg.rate = 0.85;
             window.speechSynthesis.speak(msg);
         }
 
