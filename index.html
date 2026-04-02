@@ -25,12 +25,13 @@
             align-items: center;
         }
 
-        /* 3個資料來源切換按鈕區 */
+        /* 4個資料來源切換按鈕區 - 優化排列 */
         .source-selector {
             width: 100%;
             max-width: 450px;
-            display: flex;
-            gap: 8px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 均分四格 */
+            gap: 6px;
             margin-bottom: 15px;
             position: sticky;
             top: 10px;
@@ -38,17 +39,17 @@
         }
 
         .source-btn {
-            flex: 1;
-            padding: 10px 5px;
+            padding: 10px 2px;
             border-radius: 10px;
             border: none;
             background: var(--btn-inactive);
             color: var(--sub-text);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem; /* 稍微縮小字體以容納4個按鈕 */
             cursor: pointer;
             transition: all 0.2s;
             white-space: nowrap;
+            text-align: center;
         }
 
         .source-btn.active {
@@ -79,7 +80,7 @@
         }
 
         .thai { 
-            font-size: 2.05rem; 
+            font-size: 2.05rem; /* 維持超大字體 */
             line-height: 1.4;
             margin-bottom: 6px; 
             font-weight: 700; 
@@ -88,7 +89,7 @@
         }
 
         .chinese { 
-            font-size: 1.1rem; 
+            font-size: 1.15rem; 
             color: var(--sub-text); 
         }
 
@@ -102,7 +103,6 @@
             align-items: center;
             justify-content: center;
             min-width: 55px;
-            transition: transform 0.1s;
         }
 
         button.btn-speak:active { 
@@ -117,8 +117,9 @@
 
     <div class="source-selector">
         <button id="btn-custom" class="source-btn active" onclick="switchSource('custom')">自建</button>
-        <button id="btn-thai100" class="source-btn" onclick="switchSource('thai100')">泰二</button>
+        <button id="btn-thai2" class="source-btn" onclick="switchSource('thai2')">泰二</button>
         <button id="btn-time" class="source-btn" onclick="switchSource('time')">時間</button>
+        <button id="btn-ben" class="source-btn" onclick="switchSource('ben')">Ben</button>
     </div>
 
     <div id="loading">載入練習中...</div>
@@ -127,8 +128,9 @@
     <script>
         const sources = {
             custom: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv",
-            thai100: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjm7j2vq2047v5aLY3tNBU_va83hqS9u6_skG35lTdtVxK4nCNC7qRoePHg_FsbdxvjbkR0s-JxmNt/pub?output=csv",
-            time: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3bHaY_7eyJ7RBHZl22Gr-y7gH6Is3oCL6CKS5x4qQpAopl4i2bsS2Xk6N7xgUK3n5o5A1_xUd9ab-/pub?output=csv"
+            thai2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vRjm7j2vq2047v5aLY3tNBU_va83hqS9u6_skG35lTdtVxK4nCNC7qRoePHg_FsbdxvjbkR0s-JxmNt/pub?output=csv",
+            time: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ3bHaY_7eyJ7RBHZl22Gr-y7gH6Is3oCL6CKS5x4qQpAopl4i2bsS2Xk6N7xgUK3n5o5A1_xUd9ab-/pub?output=csv",
+            ben: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTA2sY9XzLuD8nsn6cv75mBv5_izZrVYxnykdMhdK4PKoCtZ2q-7x_R8xg5NIRhzXPNNBj1qjWSAHG0/pub?output=csv"
         };
 
         let currentSourceKey = 'custom';
@@ -139,8 +141,9 @@
             
             // 更新按鈕樣式
             document.getElementById('btn-custom').classList.toggle('active', key === 'custom');
-            document.getElementById('btn-thai100').classList.toggle('active', key === 'thai100');
+            document.getElementById('btn-thai2').classList.toggle('active', key === 'thai2');
             document.getElementById('btn-time').classList.toggle('active', key === 'time');
+            document.getElementById('btn-ben').classList.toggle('active', key === 'ben');
             
             document.getElementById('app').innerHTML = '';
             document.getElementById('loading').style.display = 'block';
@@ -173,7 +176,6 @@
             if (sentences.length === 0) return;
 
             const shuffled = [...sentences].sort(() => 0.5 - Math.random());
-            // 修改為顯示 10 句
             const selected = shuffled.slice(0, 10);
 
             selected.forEach(item => {
