@@ -27,11 +27,12 @@
             align-items: center;
         }
 
+        /* 頂部按鈕容器 */
         .source-selector {
             width: 100%;
             max-width: 450px;
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 8px;
             margin-bottom: 10px;
             position: sticky;
@@ -41,10 +42,32 @@
             z-index: 100;
         }
 
-        .source-btn {
-            flex: 1 1 calc(25% - 8px);
-            padding: 10px 5px;
+        /* 隨機按鈕：獨佔上方 */
+        .mode-btn-container {
+            width: 100%;
+        }
+        .btn-main {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            background: var(--btn-inactive);
+            color: white;
+            border: none;
             border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* 8個分頁：4x2 網格佈局 */
+        .grid-selector {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 欄 */
+            gap: 6px;
+        }
+
+        .source-btn {
+            padding: 10px 2px;
+            border-radius: 8px;
             border: none;
             background: var(--btn-inactive);
             color: var(--sub-text);
@@ -54,15 +77,16 @@
             text-align: center;
         }
 
-        .source-btn.active {
+        .source-btn.active, .btn-main.active {
             background: var(--btn-active);
             color: white;
         }
 
+        /* 搜尋框與其他控制項 */
         .extra-controls {
             width: 100%;
             max-width: 450px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .nav-btn {
@@ -95,6 +119,7 @@
             outline: none;
         }
 
+        /* 卡片內容 */
         .card { 
             background: var(--card-bg); 
             border-radius: 18px; 
@@ -135,6 +160,7 @@
             font-size: 1.9rem; cursor: pointer; min-width: 55px;
         }
 
+        /* 外部連結 Overlay */
         #link-page {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -178,15 +204,20 @@
 <body>
 
     <div class="source-selector">
-        <button class="source-btn active" onclick="switchMode('random')">隨機10句</button>
-        <button class="source-btn" onclick="switchSource('custom')">網抓</button>
-        <button class="source-btn" onclick="switchSource('thai2')">泰二</button>
-        <button class="source-btn" onclick="switchSource('time')">時間</button>
-        <button class="source-btn" onclick="switchSource('month')">月份</button>
-        <button class="source-btn" onclick="switchSource('week')">星期</button>
-        <button class="source-btn" onclick="switchSource('color')">顏色</button>
-        <button class="source-btn" onclick="switchSource('ben')">Ben</button>
-        <button class="source-btn" onclick="switchSource('self')">自建</button>
+        <div class="mode-btn-container">
+            <button class="btn-main active" onclick="switchMode('random')">🎲 隨機 10 句 (全域)</button>
+        </div>
+        
+        <div class="grid-selector">
+            <button class="source-btn" onclick="switchSource('custom')">網抓</button>
+            <button class="source-btn" onclick="switchSource('thai2')">泰二</button>
+            <button class="source-btn" onclick="switchSource('time')">時間</button>
+            <button class="source-btn" onclick="switchSource('month')">月份</button>
+            <button class="source-btn" onclick="switchSource('week')">星期</button>
+            <button class="source-btn" onclick="switchSource('color')">顏色</button>
+            <button class="source-btn" onclick="switchSource('ben')">Ben</button>
+            <button class="source-btn" onclick="switchSource('self')">自建</button>
+        </div>
     </div>
 
     <div class="extra-controls">
@@ -268,20 +299,24 @@
             );
             renderList(results);
             document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
-            document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
+            clearActiveButtons();
+        }
+
+        function clearActiveButtons() {
+            document.querySelectorAll('.source-btn, .btn-main').forEach(btn => btn.classList.remove('active'));
         }
 
         function switchMode(mode) {
             document.getElementById('search-input').value = '';
             document.getElementById('search-info').innerText = '';
-            document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
+            clearActiveButtons();
             event.currentTarget.classList.add('active');
             displayRandom();
         }
 
         function switchSource(key) {
             document.getElementById('search-input').value = '';
-            document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
+            clearActiveButtons();
             event.currentTarget.classList.add('active');
             const filtered = allData.filter(item => item.source === gids[key].name);
             renderList(filtered.sort(() => 0.5 - Math.random()).slice(0, 10));
