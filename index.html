@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>泰語隨身練</title>
+    <title>泰語隨身練 - 全域搜尋版</title>
     <style>
         :root {
             --bg-color: #1a1a1a;
@@ -13,7 +13,7 @@
             --accent-color: #e67e22;
             --btn-inactive: #3a3a3a;
             --btn-active: #3498db;
-            --link-color: #2ecc71;
+            --search-bg: #333;
         }
 
         body { 
@@ -26,58 +26,63 @@
             align-items: center;
         }
 
-        /* 調整按鈕區：改用 flex 讓 7 個按鈕能自動換列 */
+        /* 頂部按鈕區 */
         .source-selector {
             width: 100%;
             max-width: 450px;
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             position: sticky;
-            top: 10px;
+            top: 0;
+            background: var(--bg-color);
+            padding: 10px 0;
             z-index: 100;
         }
 
         .source-btn {
-            flex: 1 1 calc(33.33% - 8px); /* 預設一排三個 */
-            min-width: 80px;
-            padding: 12px 5px;
+            flex: 1 1 calc(25% - 8px);
+            padding: 10px 5px;
             border-radius: 10px;
             border: none;
             background: var(--btn-inactive);
             color: var(--sub-text);
             font-weight: 600;
-            font-size: 0.95rem; 
+            font-size: 0.85rem; 
             cursor: pointer;
-            transition: all 0.2s;
             text-align: center;
         }
 
         .source-btn.active {
             background: var(--btn-active);
             color: white;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
         }
 
-        .extra-controls {
+        /* 搜尋框樣式 */
+        .search-container {
             width: 100%;
             max-width: 450px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
-        .nav-btn {
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #555;
-            background: #222;
-            color: #ccc;
-            font-weight: 600;
-            font-size: 0.9rem;
+        #search-input {
             width: 100%;
-            cursor: pointer;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid #444;
+            background: var(--search-bg);
+            color: white;
+            font-size: 1.1rem;
+            box-sizing: border-box;
+            outline: none;
         }
 
+        #search-input:focus {
+            border-color: var(--btn-active);
+        }
+
+        /* 卡片樣式 */
         .card { 
             background: var(--card-bg); 
             border-radius: 18px; 
@@ -85,12 +90,22 @@
             margin: 12px 0; 
             width: 100%; 
             max-width: 450px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4); 
             display: flex; 
             align-items: center;
             justify-content: space-between;
             box-sizing: border-box;
             border: 1px solid rgba(255,255,255,0.06);
+            position: relative;
+        }
+
+        /* 顯示來源標籤 */
+        .source-tag {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.7rem;
+            color: var(--btn-active);
+            opacity: 0.7;
         }
 
         .content-area { flex: 1; text-align: left; padding-right: 8px; }
@@ -111,48 +126,15 @@
             font-size: 1.9rem; cursor: pointer; min-width: 55px;
         }
 
-        #link-page {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
-            z-index: 200;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            padding: 40px 20px;
-        }
-
-        .link-item {
-            background: var(--card-bg);
-            width: 100%;
-            max-width: 400px;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 15px;
-            text-decoration: none;
-            color: var(--link-color);
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .close-btn {
-            margin-top: 30px;
-            background: #e74c3c;
-            color: white;
-            padding: 12px 40px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-        }
-
         #loading { margin-top: 50px; font-size: 1.1rem; color: var(--sub-text); }
+        #search-info { color: var(--sub-text); margin-bottom: 10px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="source-selector">
-        <button id="btn-custom" class="source-btn active" onclick="switchSource('custom')">自建</button>
+        <button class="source-btn active" onclick="switchMode('random')">隨機10句</button>
+        <button id="btn-custom" class="source-btn" onclick="switchSource('custom')">自建</button>
         <button id="btn-thai2" class="source-btn" onclick="switchSource('thai2')">泰二</button>
         <button id="btn-time" class="source-btn" onclick="switchSource('time')">時間</button>
         <button id="btn-month" class="source-btn" onclick="switchSource('month')">月份</button>
@@ -161,79 +143,108 @@
         <button id="btn-ben" class="source-btn" onclick="switchSource('ben')">Ben</button>
     </div>
 
-    <div class="extra-controls">
-        <button class="nav-btn" onclick="toggleLinkPage(true)">🔗 外部連結</button>
+    <div class="search-container">
+        <input type="text" id="search-input" placeholder="輸入泰文或中文搜尋全部分頁..." oninput="handleSearch()">
     </div>
 
-    <div id="loading">載入練習中...</div>
+    <div id="search-info"></div>
+    <div id="loading">正在同步所有分頁資料...</div>
     <div id="app"></div>
-
-    <div id="link-page">
-        <h2 style="margin-bottom: 30px;">外部工具資源</h2>
-        <a href="https://thai-alphabet.com/" target="_blank" class="link-item">🇹🇭 thai-alphabet</a>
-        <button class="close-btn" onclick="toggleLinkPage(false)">返回練習</button>
-    </div>
 
     <script>
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
-        
-        // 更新後的 7 個分頁 GIDs
         const gids = {
-            custom: "538865502",
-            thai2: "2121125782",
-            time: "1355116620",
-            month: "1685596903",
-            week: "1150463518",
-            color: "2103981449",
-            ben: "296346577"
+            custom: { name: "自建", id: "538865502" },
+            thai2: { name: "泰二", id: "2121125782" },
+            time: { name: "時間", id: "1355116620" },
+            month: { name: "月份", id: "1685596903" },
+            week: { name: "星期", id: "1150463518" },
+            color: { name: "顏色", id: "2103981449" },
+            ben: { name: "Ben", id: "296346577" }
         };
 
-        let currentSourceKey = 'custom';
-        let sentences = [];
+        let allData = []; // 儲存所有分頁彙整後的資料
+        let isLoaded = false;
 
-        function toggleLinkPage(show) {
-            document.getElementById('link-page').style.display = show ? 'flex' : 'none';
-        }
-
-        async function switchSource(key) {
-            currentSourceKey = key;
-            document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // 動態找出對應按鈕並設為 active
-            const activeBtn = document.querySelector(`button[onclick*="'${key}'"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-
-            document.getElementById('app').innerHTML = '';
-            document.getElementById('loading').style.display = 'block';
-            await fetchData();
-        }
-
-        async function fetchData() {
+        // 初始化：一次抓取所有資料
+        async function initAllData() {
             try {
-                const response = await fetch(`${base_url}&gid=${gids[currentSourceKey]}`);
-                const data = await response.text();
-                const rows = data.split('\n').slice(1);
-                sentences = rows.map(row => {
-                    const columns = row.split(',');
-                    return { thai: columns[0], chinese: columns[1] };
-                }).filter(s => s.thai && s.thai.trim() !== "");
-                displayRandom();
+                const fetchPromises = Object.keys(gids).map(async (key) => {
+                    const response = await fetch(`${base_url}&gid=${gids[key].id}`);
+                    const csvText = await response.text();
+                    const rows = csvText.split('\n').slice(1);
+                    return rows.map(row => {
+                        const cols = row.split(',');
+                        return { 
+                            thai: cols[0]?.trim(), 
+                            chinese: cols[1]?.trim(), 
+                            source: gids[key].name 
+                        };
+                    }).filter(item => item.thai);
+                });
+
+                const results = await Promise.all(fetchPromises);
+                allData = results.flat();
+                isLoaded = true;
                 document.getElementById('loading').style.display = 'none';
+                displayRandom(); // 預設顯示隨機
             } catch (e) {
-                document.getElementById('loading').innerText = '載入失敗';
+                document.getElementById('loading').innerText = '同步失敗，請重新整理';
             }
         }
 
+        // 切換模式（隨機或特定分頁）
+        function switchMode(mode) {
+            document.getElementById('search-input').value = '';
+            document.getElementById('search-info').innerText = '';
+            document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            displayRandom();
+        }
+
+        function switchSource(key) {
+            document.getElementById('search-input').value = '';
+            document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            const filtered = allData.filter(item => item.source === gids[key].name);
+            renderList(filtered.sort(() => 0.5 - Math.random()).slice(0, 10));
+            document.getElementById('search-info').innerText = `目前顯示：${gids[key].name} (隨機10句)`;
+        }
+
+        // 搜尋邏輯
+        function handleSearch() {
+            const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+            if (!keyword) {
+                displayRandom();
+                document.getElementById('search-info').innerText = '';
+                return;
+            }
+
+            const results = allData.filter(item => 
+                item.thai.toLowerCase().includes(keyword) || 
+                item.chinese.toLowerCase().includes(keyword)
+            );
+
+            renderList(results);
+            document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
+            document.querySelectorAll('.source-btn').forEach(btn => btn.classList.remove('active'));
+        }
+
         function displayRandom() {
-            window.scrollTo(0, 0);
+            if (!isLoaded) return;
+            const shuffled = [...allData].sort(() => 0.5 - Math.random()).slice(0, 10);
+            renderList(shuffled);
+        }
+
+        function renderList(list) {
             const container = document.getElementById('app');
             container.innerHTML = '';
-            if (sentences.length === 0) return;
-            const shuffled = [...sentences].sort(() => 0.5 - Math.random());
-            shuffled.slice(0, 10).forEach(item => {
+            list.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.innerHTML = `
+                    <div class="source-tag">${item.source}</div>
                     <div class="content-area">
                         <div class="thai">${item.thai}</div>
                         <div class="chinese">${item.chinese}</div>
@@ -253,7 +264,7 @@
             window.speechSynthesis.speak(msg);
         }
 
-        fetchData();
+        initAllData();
     </script>
 </body>
 </html>
