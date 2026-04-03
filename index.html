@@ -128,7 +128,7 @@
 <body>
 
     <div class="source-selector">
-        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">🎲 全域隨機10句</button>
+        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">全域隨機10句</button>
         <div class="grid-selector">
             <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
             <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
@@ -145,7 +145,7 @@
     <button class="nav-btn" onclick="toggleSettings(true)">⚙️ 設定與外部資源</button>
 
     <div class="search-container">
-        <input type="search" id="search-input" placeholder="搜尋全部分頁..." oninput="handleSearch()">
+        <input type="search" id="search-input" placeholder="輸入泰文或中文搜尋全部分頁..." oninput="handleSearch()">
     </div>
 
     <div id="search-info"></div>
@@ -155,8 +155,10 @@
     <div id="settings-page">
         <h2 style="margin-bottom: 20px;">⚙️ 設定與外部資源</h2>
         <p style="color: var(--sub-text); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; text-align: center; padding: 0 10px;">
-    點選上方來源可切換題庫來源，系統預設隨機顯示10句。
-    利用搜尋框可即時查找全表內容，並透過滑桿自訂語速與字體大小。
+        使用說明：</p>
+        點選上方來源可切換題庫來源，系統預設隨機顯示10句。</p>
+        利用搜尋框可即時查找全表內容，並透過滑桿自訂語速與字體大小。</p>
+        題庫為自行搜集，再由AI協助整理，若有誤請告知。</p>
         </p>
         <div class="settings-content">
             <div class="setting-group">
