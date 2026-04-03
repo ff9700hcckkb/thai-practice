@@ -201,7 +201,71 @@
         <button class="close-btn" style="background: var(--nav-bg); color: var(--sub-text);" onclick="toggleSidebar()">關閉選單</button>
     </div>
 
-    <div id="about-page" class="modal-page"><div class="modal-content"><h2 style="text-align:center">ℹ️ 關於本站</h2><div class="setting-group"><p class="info-text">• 點選星號收藏<br>• 測驗模式可遮罩中文<br>• 點擊字卡顯示中文</p></div><button class="close-btn" onclick="closeModal('about-page')">返回</button></div></div>
+
+    <div id="about-page" class="modal-page">
+
+        <div class="modal-content">
+
+            <h2 style="text-align:center">ℹ️ 關於本站</h2>
+
+            
+
+            <div class="setting-group">
+
+                <span class="sidebar-label">📚 內容相關</span>
+
+                <p class="info-text">
+
+                    • 內容由開發者收集，再透過 AI 進行排版呈現<br>
+
+                    • 點字卡右上角星號可將其加入收藏<br>
+
+                    • 點開右上角☰選單可展開更多內容<br>
+
+                    • 測驗模式可將中文遮罩，再點一次即可顯示<br>
+
+                </p>
+
+            </div>
+
+
+
+            <div class="setting-group">
+
+                <span class="sidebar-label">🎲 抽選邏輯</span>
+
+                <p class="info-text">
+
+                    • 隨機10句：從所有頁面隨機抽選10筆<br>
+
+                    • 分類隨機：從指定的分類中抽選 10 筆<br>
+
+                    • 搜尋模式：輸入關鍵字可搜尋所有分類資料<br>
+
+                </p>
+
+            </div>
+
+
+
+            <div class="setting-group">
+
+                <span class="sidebar-label">🔊 語音說明</span>
+
+                <p class="info-text">
+
+                    • 語音採用瀏覽器內建的 TTS 技術<br>
+
+                    • 發音準確度取決於您裝置系統語言包<br>
+
+                </p>
+
+            </div>
+
+            <button class="close-btn" onclick="closeModal('about-page')">返回主頁面</button>
+        </div>
+    </div>
+    
     <div id="settings-page" class="modal-page"><div class="modal-content"><h2 style="text-align:center">⚙️ 偏好設定</h2><div class="setting-group"><span class="sidebar-label">🌓 主題切換</span><button id="theme-toggle" class="side-full-btn" style="text-align:center; background:var(--btn-active); color:white;" onclick="toggleTheme()">切換模式</button></div><div class="setting-group"><span class="sidebar-label">🔊 語速</span><input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)" style="width:100%"></div><button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button></div></div>
     <div id="links-page" class="modal-page"><div class="modal-content"><h2 style="text-align:center">🔗 外部資源</h2><a href="https://thai-alphabet.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">Thai Alphabet</a><button class="close-btn" onclick="closeModal('links-page')">返回</button></div></div>
 
