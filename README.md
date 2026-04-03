@@ -1,3 +1,3 @@
 # thai-practice
 
-練習泰語
+練習泰語口說
