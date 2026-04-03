@@ -265,7 +265,7 @@
         </div>
     </div>
     
-   <div id="settings-page" class="modal-page">
+<div id="settings-page" class="modal-page">
         <div class="modal-content">
             <h2 style="text-align:center">⚙️ 偏好設定</h2>
             
@@ -275,15 +275,15 @@
             </div>
 
             <div class="setting-group">
-                <span class="sidebar-label">🔊 語速</span>
+                <span class="sidebar-label">🔊 語音語速</span>
                 <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)" style="width:100%">
                 <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">目前語速：<span id="speed-val">1.0</span>x</div>
             </div>
 
             <div class="setting-group">
                 <span class="sidebar-label">📏 字體大小</span>
-                <input type="range" id="font-slider" min="24" max="60" step="2" value="32" oninput="updateFontSize(this.value)" style="width:100%">
-                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">目前大小：<span id="font-val">32</span>px</div>
+                <input type="range" id="font-slider" min="24" max="38" step="1" value="30" oninput="updateFontSize(this.value)" style="width:100%">
+                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">目前大小：<span id="font-val">30</span>px</div>
             </div>
 
             <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
@@ -343,14 +343,21 @@
             document.getElementById('speed-val').innerText = val; // 更新顯示數值
         }
 
-        // 更新字體大小
+    // 1. 更新字體大小函式
         function updateFontSize(val) {
-            document.documentElement.style.setProperty('--thai-size', val + 'px');
-            document.documentElement.style.setProperty('--zh-size', (val * 0.6) + 'px');
-            localStorage.setItem('thai_font_size', val); // 儲存設定
-            document.getElementById('font-val').innerText = val; // 更新顯示數值
+            const size = parseFloat(val);
+            document.documentElement.style.setProperty('--thai-size', size + 'px');
+            document.documentElement.style.setProperty('--zh-size', (size * 0.6) + 'px');
+            localStorage.setItem('thai_font_size', size); 
+            
+            // 確保滑桿數值文字同步更新
+            if(document.getElementById('font-val')) document.getElementById('font-val').innerText = size;
+            if(document.getElementById('font-slider')) document.getElementById('font-slider').value = size;
         }
-        updateFontSize(localStorage.getItem('thai_font_size') || 32);
+
+        // 2. 初始化字體大小（優先讀取暫存，沒有就用 30）
+        const savedFontSize = localStorage.getItem('thai_font_size') || 30;
+        updateFontSize(savedFontSize);
 
         // 資料初始化
         async function initAllData() {
