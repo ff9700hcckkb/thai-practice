@@ -47,7 +47,7 @@
         .header {
             width: 100%; max-width: 480px; display: flex;
             justify-content: space-between; align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
         .app-title { font-size: 1.4rem; font-weight: bold; color: var(--btn-active); letter-spacing: 1px; }
         .menu-toggle {
@@ -56,16 +56,23 @@
             border-radius: 10px; cursor: pointer; z-index: 1001;
         }
 
-        /* 主畫面功能說明區 */
-        .main-info {
-            width: 100%; max-width: 480px;
-            background: var(--card-bg); border-radius: 15px;
-            padding: 15px; margin-bottom: 15px;
-            border: 1px solid var(--search-border);
-            box-sizing: border-box;
+        /* 操作控制區 (搜尋 + 重整) */
+        .control-row {
+            width: 100%; max-width: 480px; display: flex; gap: 10px; margin-bottom: 15px;
         }
-        .main-info ul { margin: 0; padding-left: 20px; font-size: 0.85rem; color: var(--sub-text); line-height: 1.6; }
-        .main-info li b { color: var(--btn-active); }
+        .search-container { flex: 1; }
+        #search-input {
+            width: 100%; padding: 14px; border-radius: 12px;
+            border: 2px solid var(--search-border); background: var(--search-bg);
+            color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none;
+        }
+        .refresh-btn {
+            background: var(--btn-active); color: white; border: none;
+            border-radius: 12px; padding: 0 15px; cursor: pointer;
+            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .refresh-btn:active { background: var(--accent-color); }
 
         /* 側邊欄 Sidebar */
         .sidebar {
@@ -83,7 +90,6 @@
         .sidebar-section { margin-bottom: 25px; }
         .sidebar-label { color: var(--sub-text); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--search-border); padding-bottom: 5px; }
 
-        /* 按鈕樣式調整 */
         .grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .source-btn {
             padding: 12px 2px; border-radius: 10px; border: none;
@@ -97,24 +103,6 @@
             background: var(--nav-bg); color: var(--text-color);
             margin-bottom: 8px; text-align: left; cursor: pointer; font-weight: bold;
         }
-
-        /* 操作控制區 (搜尋 + 重整) */
-        .control-row {
-            width: 100%; max-width: 480px; display: flex; gap: 10px; margin-bottom: 15px;
-        }
-        .search-container { flex: 1; }
-        #search-input {
-            width: 100%; padding: 14px; border-radius: 12px;
-            border: 2px solid var(--search-border); background: var(--search-bg);
-            color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none;
-        }
-        .refresh-btn {
-            background: var(--btn-active); color: white; border: none;
-            border-radius: 12px; padding: 0 15px; cursor: pointer;
-            font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
-            transition: transform 0.2s;
-        }
-        .refresh-btn:active { transform: rotate(45deg); }
 
         /* 卡片樣式 */
         .card { 
@@ -154,20 +142,11 @@
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
 
-    <div class="main-info">
-        <ul>
-            <li>🎲 <b>全域隨機</b>：網抓、泰二、Ben、自建。</li>
-            <li>🔄 <b>換一組</b>：點擊按鈕即時刷新隨機清單。</li>
-            <li>🔍 <b>搜尋</b>：輸入中泰文可查找全庫。</li>
-            <li>⭐ <b>收藏</b>：點擊 ★ 記錄到收藏夾。</li>
-        </ul>
-    </div>
-
     <div class="control-row">
         <div class="search-container">
             <input type="search" id="search-input" placeholder="搜尋全題庫..." oninput="handleSearch()">
         </div>
-        <button class="refresh-btn" onclick="refreshContent()" title="換一組">🔄</button>
+        <button class="refresh-btn" onclick="refreshContent()" title="換一組單字">🔄</button>
     </div>
 
     <div id="search-info"></div>
@@ -178,8 +157,8 @@
 
     <div id="sidebar" class="sidebar">
         <div class="sidebar-section">
-            <span class="sidebar-label">核心功能</span>
-            <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')"> 隨機 10 句</button>
+            <span class="sidebar-label">主要模式</span>
+            <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')">🎲 全域隨機 10 句</button>
             <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號收藏</button>
         </div>
 
@@ -222,7 +201,7 @@
                 <span class="sidebar-label">🔤 字體 (<span id="font-val">32</span>px)</span>
                 <input type="range" id="font-slider" min="20" max="48" step="1" value="32" oninput="updateFontSize(this.value)" style="width:100%">
             </div>
-            <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
+            <button class="close-btn" onclick="closeModal('settings-page')">儲存返回</button>
         </div>
     </div>
 
@@ -251,7 +230,7 @@
 
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
-        let currentMode = 'random'; // 追蹤當前選取的分類
+        let currentMode = 'random';
         let currentSourceKey = null;
 
         function toggleSidebar() {
@@ -273,7 +252,6 @@
         }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // --- 核心邏輯 ---
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('thai_theme', theme);
@@ -315,7 +293,6 @@
             } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
         }
 
-        // --- 重整功能 ---
         function refreshContent() {
             document.getElementById('search-input').value = '';
             if (currentMode === 'random') {
