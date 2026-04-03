@@ -351,12 +351,23 @@
             document.getElementById('search-info').innerText = `收藏：共 ${favItems.length} 筆`;
         }
 
-        function toggleQuizMode() {
+     function toggleQuizMode() {
             isQuizMode = !isQuizMode;
             const btn = document.getElementById('quiz-btn');
+            const container = document.getElementById('app');
+            
+            // 1. 切換按鈕樣式與文字
             btn.classList.toggle('active');
             btn.innerText = isQuizMode ? '🙈 測驗模式：ON' : '👁️ 測驗模式';
-            refreshContent();
+            
+            // 2. 切換容器的 Class，讓 CSS 自動處理遮罩（不呼叫 refreshContent）
+            if (isQuizMode) {
+                container.classList.add('quiz-mode');
+            } else {
+                container.classList.remove('quiz-mode');
+                // 關閉測驗模式時，順便移除所有字卡的 revealed 狀態，恢復原狀
+                document.querySelectorAll('.card').forEach(card => card.classList.remove('revealed'));
+            }
         }
 
         function renderList(list) {
