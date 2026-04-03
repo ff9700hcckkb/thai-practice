@@ -282,6 +282,12 @@
                 </p>
             </div>
 
+<div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--sub-text); font-size: 0.85rem; color: var(--sub-text); line-height: 1.8;">
+    <div id="stat-total-count">詞庫總筆數：更新中...</div>
+    <div id="stat-last-update">最後更新時間：載入中...</div>
+</div>
+
+            
             <button class="close-btn" onclick="closeModal('about-page')">返回</button>
         </div>
     </div>
@@ -400,8 +406,30 @@
                 allData = results.flat();
                 document.getElementById('loading').style.display = 'none';
                 displayRandom();
+                refreshSiteStats();
             } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
         }
+
+        // 更新統計資訊的函式 (放在 initAllData 之外)
+function refreshSiteStats() {
+    // 1. 更新總筆數 (直接抓 allData 陣列的長度)
+    const totalCount = allData.length;
+    const countElem = document.getElementById('stat-total-count');
+    if (countElem) {
+        countElem.innerHTML = `詞庫總筆數：<strong style="color:var(--btn-active)">${totalCount}</strong> 筆`;
+    }
+
+    // 2. 更新最後更新時間 (自動抓取今天日期)
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    
+    const timeElem = document.getElementById('stat-last-update');
+    if (timeElem) {
+        timeElem.innerText = `最後更新時間：${yyyy}-${mm}-${dd}`;
+    }
+}
 
         // 隨機抽選邏輯：全部抽選
         function displayRandom() {
@@ -412,6 +440,36 @@
             document.getElementById('search-info').innerText = '';
             document.getElementById('refresh-btn-main').style.display = 'flex';
         }
+
+        function updateSiteInfo() {
+    // 1. 計算總筆數與各分類筆數
+    // 假設妳的所有資料存放在 allData 物件中，格式為 { '網抓': [...], '日月': [...] }
+    let total = 0;
+    let detailStrings = [];
+
+    for (const category in allData) {
+        const count = allData[category].length;
+        total += count;
+        detailStrings.push(`${category}：${count}筆`);
+    }
+
+    // 2. 顯示總數與各分頁詳情
+    const countElement = document.getElementById('total-count-info');
+    if (countElement) {
+        countElement.innerHTML = `詞庫總筆數：<strong>${total}</strong> 筆<br>` + 
+                               `<span style="font-size: 0.8rem; opacity: 0.8;">(${detailStrings.join('、')})</span>`;
+    }
+
+    // 3. 更新時間 (如果妳想要自動抓取今天日期)
+    const timeElement = document.getElementById('last-update-info');
+    if (timeElement) {
+        const today = new Date().toISOString().split('T')[0]; // 格式會是 2026-04-04
+        timeElement.innerText = `最後更新時間：${today}`;
+    }
+}
+
+// 記得在資料載入完成的地方呼叫這個 function
+// 例如：initAllData().then(() => { ... updateSiteInfo(); });
 
         function refreshContent() {
             if (currentMode === 'random') displayRandom();
