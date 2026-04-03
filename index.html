@@ -313,7 +313,10 @@
         }
 
         function displayRandom() {
-            const shuffled = [...allData].sort(() => 0.5 - Math.random()).slice(0, 10);
+            // 排除來源為「歌詞」的資料後再進行隨機抽樣
+            const filteredData = allData.filter(item => item.source !== "歌詞");
+            const shuffled = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, 10);
+            
             renderList(shuffled);
             document.getElementById('search-info').innerText = '';
         }
