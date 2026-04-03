@@ -314,28 +314,44 @@
 
         async function initAllData() {
             try {
+                // 產生一個時間戳記，防止瀏覽器快取舊資料
+                const cacheBuster = new Date().getTime();
+                
                 const fetchPromises = Object.keys(gids).map(async (key) => {
-                    const response = await fetch(`${base_url}&gid=${gids[key].id}`);
+                    // 在網址後方加上 &t=時間戳記
+                    const fetchUrl = `${base_url}&gid=${gids[key].id}&t=${cacheBuster}`;
+                    
+                    const response = await fetch(fetchUrl);
                     const csvText = await response.text();
                     const rows = csvText.split(/\r?\n/).slice(1);
+                    
                     return rows.map(row => {
                         const cols = row.split(',');
-                        // 如果是 Google 表單產出的 CSV，第一欄通常是時間戳記，泰語和中文可能在第二、三欄
-                        // 這裡會嘗試判斷：若欄位數 > 2，則取後兩欄；否則取前兩欄
                         let t = cols[0]?.trim();
                         let c = cols[1]?.trim();
+                        
+                        // 針對 Google 表單產出格式的優化邏輯
                         if(cols.length > 2) {
                             t = cols[1]?.trim();
                             c = cols[2]?.trim();
                         }
-                        return { id: btoa(unescape(encodeURIComponent(t))), thai: t, chinese: c, source: gids[key].name };
+                        return { 
+                            id: btoa(unescape(encodeURIComponent(t))), 
+                            thai: t, 
+                            chinese: c, 
+                            source: gids[key].name 
+                        };
                     }).filter(item => item.thai);
                 });
+
                 const results = await Promise.all(fetchPromises);
                 allData = results.flat();
                 document.getElementById('loading').style.display = 'none';
                 displayRandom();
-            } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
+            } catch (e) { 
+                console.error(e);
+                document.getElementById('loading').innerText = '資料同步失敗，請檢查網路連接'; 
+            }
         }
 
         function refreshContent() {
