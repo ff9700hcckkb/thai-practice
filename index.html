@@ -101,7 +101,7 @@
         .chinese { font-size: var(--zh-size); color: var(--sub-text); }
         .btn-speak { border: none; background: transparent; color: var(--accent-color); font-size: 2.2rem; cursor: pointer; }
 
-        /* 彈窗樣式 (通用) */
+        /* 彈窗樣式 */
         .modal-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-color); z-index: 2000; display: none;
@@ -131,18 +131,18 @@
     </div>
 
     <div class="source-selector">
-        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">全域隨機10句</button>
+        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">隨機10句</button>
         <div class="grid-selector">
-    <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
-    <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
-    <button class="source-btn" onclick="switchSource('time', this)">時間</button>
-    <button class="source-btn" onclick="switchSource('month', this)">月份</button>
-    <button class="source-btn" onclick="switchSource('week', this)">星期</button>
-    <button class="source-btn" onclick="switchSource('color', this)">顏色</button>
-    <button class="source-btn" onclick="switchSource('ben', this)">Ben</button>
-    <button class="source-btn" onclick="switchSource('lyrics', this)">歌詞</button>
-    <button class="source-btn" onclick="switchSource('self', this)">自建</button>
-</div>
+            <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
+            <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
+            <button class="source-btn" onclick="switchSource('ben', this)">Ben</button>
+            <button class="source-btn" onclick="switchSource('month', this)">月份</button>
+            <button class="source-btn" onclick="switchSource('week', this)">星期</button>
+            <button class="source-btn" onclick="switchSource('time', this)">時間</button>
+            <button class="source-btn" onclick="switchSource('color', this)">顏色</button>
+            <button class="source-btn" onclick="switchSource('lyrics', this)">歌詞</button>
+            <button class="source-btn" onclick="switchSource('self', this)">自建</button>
+        </div>
         <button id="btn-fav" class="source-btn" style="width:100%; margin-top:8px; color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
     </div>
 
@@ -159,12 +159,11 @@
             <h2 style="text-align: center;">💡 使用說明</h2>
             <div class="setting-group" style="background: rgba(255, 88, 9, 0.05); border-color: rgba(255, 88, 9, 0.2);">
                 <ul style="font-size: 0.95rem;">
-                    <li>隨機顯示10句，點右方喇叭可發音</li>
-                    <li>點上方來源可切換題庫</li>
+                    <li>隨機10句來源：網抓、泰二、Ben、自建</li>
+                    <li>點上方來源可切換題庫，點右方喇叭發音</li>
                     <li>點右上角星號可將該句加入收藏</li>
-                    <li>隨機顯示的句子不會包含歌詞頁面的內容</li>
                     <li>搜尋框可輸入泰文、中文查找全表內容</li>
-                    <li>偏好設定可切換模式、自訂語速與字體大小</li>
+                    <li>偏好設定可切換主題、自訂語速與字體大小</li>
                     <li>題庫為自行搜集，AI協助整理</li>
                 </ul>
             </div>
@@ -209,23 +208,21 @@
         const gids = { 
             custom: { name: "網抓", id: "538865502" }, 
             thai2: { name: "泰二", id: "2121125782" }, 
-            lyrics: { name: "歌詞", id: "1404447959" },
-            time: { name: "時間", id: "1355116620" }, 
+            ben: { name: "Ben", id: "296346577" },
             month: { name: "月份", id: "1685596903" }, 
             week: { name: "星期", id: "1150463518" }, 
+            time: { name: "時間", id: "1355116620" }, 
             color: { name: "顏色", id: "2103981449" }, 
-            ben: { name: "Ben", id: "296346577" }, 
+            lyrics: { name: "歌詞", id: "1404447959" },
             self: { name: "自建", id: "134632937" } 
         };
 
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         
-        // --- 彈窗控制 ---
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // --- 設定記憶 ---
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('thai_theme', theme);
@@ -245,7 +242,6 @@
             localStorage.setItem('thai_speed', currentSpeed);
         }
         document.getElementById('speed-slider').value = currentSpeed;
-        document.getElementById('speed-val').innerText = currentSpeed.toFixed(1);
 
         function updateFontSize(val, store = true) {
             document.getElementById('font-val').innerText = val;
@@ -257,7 +253,6 @@
         updateFontSize(savedSize, false);
         document.getElementById('font-slider').value = savedSize;
 
-        // --- 資料處理 ---
         async function initAllData() {
             try {
                 const fetchPromises = Object.keys(gids).map(async (key) => {
@@ -292,13 +287,11 @@
             document.getElementById('search-info').innerText = `收藏夾：共 ${favItems.length} 筆`;
         }
 
-      function handleSearch() {
+        function handleSearch() {
             const kw = document.getElementById('search-input').value.trim().toLowerCase();
             if (!kw) { displayRandom(); return; }
             const results = allData.filter(item => item.thai.toLowerCase().includes(kw) || item.chinese.toLowerCase().includes(kw));
             renderList(results);
-            
-            // 搜尋結果建議保留數量顯示，方便知道找了多少筆
             document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
             clearActiveButtons();
         }
@@ -306,11 +299,9 @@
         function switchSource(key, btnElement) {
             clearActiveButtons();
             btnElement.classList.add('active');
-            document.getElementById('search-input').value = ''; // 切換來源時清空搜尋框
+            document.getElementById('search-input').value = '';
             const filtered = allData.filter(item => item.source === gids[key].name);
             renderList(filtered.sort(() => 0.5 - Math.random()).slice(0, 10));
-            
-            // 移除這行：document.getElementById('search-info').innerText = ...
             document.getElementById('search-info').innerText = ''; 
         }
 
@@ -320,12 +311,12 @@
             displayRandom();
         }
 
-       function displayRandom() {
-            const filteredData = allData.filter(item => item.source !== "歌詞");
+        function displayRandom() {
+            // 指定僅從這四個頁面抽取隨機句子
+            const allowed = ["網抓", "泰二", "Ben", "自建"];
+            const filteredData = allData.filter(item => allowed.includes(item.source));
             const shuffled = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, 10);
             renderList(shuffled);
-            
-            // 確保隨機模式下資訊欄也是空的
             document.getElementById('search-info').innerText = '';
         }
 
