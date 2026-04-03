@@ -133,7 +133,17 @@
         .source-tag { font-size: 0.75rem; color: var(--btn-active); font-weight: bold; }
         .btn-star { background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: #999; }
         .btn-star.favorited { color: var(--star-color); }
-        .thai { font-size: var(--thai-size); line-height: 1.4; margin-bottom: 8px; font-weight: 700; word-wrap: break-word; padding-right: 25px; }
+        .thai { 
+    /* 使用系統預設最穩定的字體組合，確保小圓圈（頭）清晰可見 */
+    font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
+    font-size: var(--thai-size); 
+    line-height: 1.6; /* 稍微拉高行高，避免母音符號（上下標）擠在一起 */
+    margin-bottom: 10px; 
+    font-weight: 700; 
+    letter-spacing: 0.5px; /* 增加微小字距，幫助辨識每個字母的邊界 */
+    word-wrap: break-word; 
+    padding-right: 25px;
+}
         .chinese { font-size: var(--zh-size); color: var(--sub-text); }
         .btn-speak { border: none; background: transparent; color: var(--accent-color); font-size: 2.2rem; cursor: pointer; }
 
