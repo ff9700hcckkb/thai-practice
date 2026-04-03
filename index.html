@@ -37,46 +37,57 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             background: var(--bg-color); color: var(--text-color);
-            padding: 10px 15px 60px 15px; margin: 0;
+            padding: 20px 15px 60px 15px; margin: 0;
             display: flex; flex-direction: column; align-items: center;
             min-height: 100vh; transition: background 0.3s, color 0.3s;
+            overflow-x: hidden;
         }
 
-        /* 頂部導航按鈕區 */
-        .top-nav {
-            width: 100%; max-width: 480px; display: grid;
-            grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px;
+        /* 頂部 Header */
+        .header {
+            width: 100%; max-width: 480px; display: flex;
+            justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
         }
-        .nav-small-btn {
-            padding: 10px; border-radius: 10px; border: 1px solid var(--search-border);
-            background: var(--nav-bg); color: var(--sub-text); font-size: 0.85rem;
-            font-weight: 600; cursor: pointer;
-        }
-
-        /* 來源選擇區 */
-        .source-selector {
-            width: 100%; max-width: 480px; display: flex; flex-direction: column;
-            gap: 8px; margin-bottom: 10px; position: sticky; top: 0;
-            background: var(--bg-color); padding: 10px 0; z-index: 100;
+        .app-title { font-size: 1.2rem; font-weight: bold; color: var(--btn-active); }
+        .menu-toggle {
+            background: var(--nav-bg); border: 1px solid var(--search-border);
+            color: var(--text-color); font-size: 1.5rem; padding: 8px 12px;
+            border-radius: 10px; cursor: pointer; z-index: 1001;
         }
 
-        .btn-main {
-            width: 100%; padding: 14px; font-size: 1.05rem;
-            background: var(--btn-inactive); color: var(--text-color);
-            border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
+        /* 側邊欄 Sidebar */
+        .sidebar {
+            position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
+            background: var(--bg-color); box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+            transition: 0.3s ease; z-index: 2000; padding: 25px;
+            overflow-y: auto; box-sizing: border-box;
+        }
+        .sidebar.open { right: 0; }
+        .sidebar-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; z-index: 1999;
         }
 
-        .grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .sidebar-section { margin-bottom: 25px; }
+        .sidebar-label { color: var(--sub-text); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--search-border); padding-bottom: 5px; }
 
+        /* 按鈕樣式調整 */
+        .grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .source-btn {
             padding: 12px 2px; border-radius: 10px; border: none;
             background: var(--btn-inactive); color: var(--sub-text);
             font-weight: 600; font-size: 0.85rem; cursor: pointer;
         }
-
         .active { background: var(--btn-active) !important; color: white !important; }
+        
+        .side-full-btn {
+            width: 100%; padding: 12px; border-radius: 10px; border: none;
+            background: var(--nav-bg); color: var(--text-color);
+            margin-bottom: 8px; text-align: left; cursor: pointer; font-weight: bold;
+        }
 
-        /* 搜尋與卡片 */
+        /* 搜尋框 */
         .search-container { width: 100%; max-width: 480px; margin-bottom: 15px; }
         #search-input {
             width: 100%; padding: 16px; border-radius: 14px;
@@ -84,6 +95,7 @@
             color: var(--text-color); font-size: 1.1rem; box-sizing: border-box; outline: none;
         }
 
+        /* 卡片樣式 */
         .card { 
             background: var(--card-bg); border-radius: 20px; padding: 24px; margin: 12px 0; 
             width: 100%; max-width: 480px; display: flex; align-items: center;
@@ -91,12 +103,10 @@
             border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             position: relative;
         }
-
         .card-header { position: absolute; top: 10px; right: 15px; display: flex; gap: 10px; align-items: center; }
         .source-tag { font-size: 0.75rem; color: var(--btn-active); font-weight: bold; }
         .btn-star { background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: #999; }
         .btn-star.favorited { color: var(--star-color); }
-
         .thai { font-size: var(--thai-size); line-height: 1.4; margin-bottom: 8px; font-weight: 700; word-wrap: break-word; padding-right: 25px; }
         .chinese { font-size: var(--zh-size); color: var(--sub-text); }
         .btn-speak { border: none; background: transparent; color: var(--accent-color); font-size: 2.2rem; cursor: pointer; }
@@ -104,67 +114,79 @@
         /* 彈窗樣式 */
         .modal-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 2000; display: none;
+            background: var(--bg-color); z-index: 3000; display: none;
             flex-direction: column; align-items: center; justify-content: center;
             padding: 20px; box-sizing: border-box;
         }
         .modal-content { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 15px; }
         .setting-group { background: var(--card-bg); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--search-border); }
-        .setting-label { display: block; margin-bottom: 12px; font-weight: bold; color: var(--sub-text); font-size: 0.85rem; }
-        .control-box { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-        .theme-switch-btn { background: var(--btn-active); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
-        input[type=range] { flex: 1; accent-color: var(--btn-active); }
-        .link-item { background: var(--card-bg); padding: 15px; border-radius: 15px; text-decoration: none; color: var(--link-color); font-size: 1rem; font-weight: bold; text-align: center; border: 1px solid var(--search-border); }
-        .close-btn { margin-top: 10px; background: var(--danger-color); color: white; padding: 16px; border-radius: 12px; border: none; font-weight: bold; font-size: 1rem; width: 100%; }
+        .close-btn { background: var(--danger-color); color: white; padding: 16px; border-radius: 12px; border: none; font-weight: bold; width: 100%; }
         
         #loading { margin-top: 50px; color: var(--sub-text); }
-        #search-info { color: var(--sub-text); margin-bottom: 10px; font-size: 0.9rem; width: 100%; max-width: 480px; }
-        ul { padding-left: 20px; margin: 0; color: var(--sub-text); line-height: 1.8; }
+        #search-info { color: var(--sub-text); margin-bottom: 10px; font-size: 0.9rem; width: 100%; max-width: 480px; text-align: center;}
     </style>
 </head>
 <body>
 
-    <div class="top-nav">
-        <button class="nav-small-btn" onclick="openModal('info-page')">💡 功能說明</button>
-        <button class="nav-small-btn" onclick="openModal('settings-page')">⚙️ 偏好設定</button>
-        <button class="nav-small-btn" onclick="openModal('links-page')">🔗 外部資源</button>
-    </div>
-
-    <div class="source-selector">
-        <button id="btn-random" class="btn-main active" onclick="switchMode('random')">隨機10句</button>
-        <div class="grid-selector">
-            <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
-            <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
-            <button class="source-btn" onclick="switchSource('ben', this)">Ben</button>
-            <button class="source-btn" onclick="switchSource('month', this)">月份</button>
-            <button class="source-btn" onclick="switchSource('week', this)">星期</button>
-            <button class="source-btn" onclick="switchSource('time', this)">時間</button>
-            <button class="source-btn" onclick="switchSource('color', this)">顏色</button>
-            <button class="source-btn" onclick="switchSource('lyrics', this)">歌詞</button>
-            <button class="source-btn" onclick="switchSource('self', this)">自建</button>
-        </div>
-        <button id="btn-fav" class="source-btn" style="width:100%; margin-top:8px; color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
+    <div class="header">
+        <div class="app-title">泰語隨身練</div>
+        <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
 
     <div class="search-container">
-        <input type="search" id="search-input" placeholder="輸入泰文或中文搜尋....." oninput="handleSearch()">
+        <input type="search" id="search-input" placeholder="搜尋泰文或中文..." oninput="handleSearch()">
     </div>
 
     <div id="search-info"></div>
-    <div id="loading">正在同步雲端資料...</div>
+    <div id="loading">同步雲端資料中...</div>
     <div id="app"></div>
+
+    <div id="overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <div id="sidebar" class="sidebar">
+        <div class="sidebar-section">
+            <span class="sidebar-label">核心功能</span>
+            <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')">🎲 全域隨機 10 句</button>
+            <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號收藏</button>
+        </div>
+
+        <div class="sidebar-section">
+            <span class="sidebar-label">分類題庫</span>
+            <div class="grid-selector">
+                <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
+                <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
+                <button class="source-btn" onclick="switchSource('ben', this)">Ben</button>
+                <button class="source-btn" onclick="switchSource('month', this)">月份</button>
+                <button class="source-btn" onclick="switchSource('week', this)">星期</button>
+                <button class="source-btn" onclick="switchSource('time', this)">時間</button>
+                <button class="source-btn" onclick="switchSource('color', this)">顏色</button>
+                <button class="source-btn" onclick="switchSource('lyrics', this)">歌詞</button>
+                <button class="source-btn" onclick="switchSource('self', this)">自建</button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <span class="sidebar-label">系統與資源</span>
+            <button class="side-full-btn" onclick="openModal('settings-page')">⚙️ 偏好設定</button>
+            <button class="side-full-btn" onclick="openModal('info-page')">💡 功能說明</button>
+            <button class="side-full-btn" onclick="openModal('links-page')">🔗 外部資源</button>
+        </div>
+        
+        <button class="close-btn" style="background: var(--nav-bg); color: var(--sub-text);" onclick="toggleSidebar()">關閉選單</button>
+    </div>
 
     <div id="info-page" class="modal-page">
         <div class="modal-content">
-            <h2 style="text-align: center;">💡 使用說明</h2>
-            <div class="setting-group" style="background: rgba(255, 88, 9, 0.05); border-color: rgba(255, 88, 9, 0.2);">
-                <ul style="font-size: 0.95rem;">
+            <h2 style="text-align:center">💡 功能說明</h2>
+            <div class="setting-group">
+                <ul style="font-size:0.9rem; padding-left:15px; color:var(--sub-text);">
+                 
                     <li>隨機10句來源：網抓、泰二、Ben、自建</li>
-                    <li>上方各功能扭可切換主題，點右方喇叭發音</li>
-                    <li>右上角星號可將該句加入收藏</li>
-                    <li>搜尋框可輸入泰文、中文查找全表內容</li>
-                    <li>偏好設定可切換主題、自訂語速與字體大小</li>
-                    <li>題庫為自行搜集，AI協助整理</li>
+<li>上方各功能扭可切換主題，點右方喇叭發音</li>
+<li>右上角星號可將該句加入收藏</li>
+<li>搜尋框可輸入泰文、中文查找全表內容</li>
+<li>偏好設定可切換主題、自訂語速與字體大小</li>
+<li>題庫為自行搜集，AI協助整理</li>
                 </ul>
             </div>
             <button class="close-btn" onclick="closeModal('info-page')">返回</button>
@@ -173,32 +195,28 @@
 
     <div id="settings-page" class="modal-page">
         <div class="modal-content">
-            <h2 style="text-align: center;">⚙️ 偏好設定</h2>
+            <h2 style="text-align:center">⚙️ 偏好設定</h2>
             <div class="setting-group">
-                <span class="setting-label">🌓 介面主題</span>
-                <button id="theme-toggle" class="theme-switch-btn" onclick="toggleTheme()">切換模式</button>
+                <span class="sidebar-label">🌓 介面主題</span>
+                <button id="theme-toggle" class="side-full-btn" style="text-align:center; background:var(--btn-active); color:white;" onclick="toggleTheme()">切換模式</button>
             </div>
             <div class="setting-group">
-                <span class="setting-label">🔊 發音語速 (<span id="speed-val">1.0</span>)</span>
-                <div class="control-box">
-                    <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
-                </div>
+                <span class="sidebar-label">🔊 語速 (<span id="speed-val">1.0</span>)</span>
+                <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)" style="width:100%">
             </div>
             <div class="setting-group">
-                <span class="setting-label">🔤 字體大小 (<span id="font-val">32</span>px)</span>
-                <div class="control-box">
-                    <input type="range" id="font-slider" min="20" max="48" step="1" value="32" oninput="updateFontSize(this.value)">
-                </div>
+                <span class="sidebar-label">🔤 字體 (<span id="font-val">32</span>px)</span>
+                <input type="range" id="font-slider" min="20" max="48" step="1" value="32" oninput="updateFontSize(this.value)" style="width:100%">
             </div>
-            <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
+            <button class="close-btn" onclick="closeModal('settings-page')">儲存返回</button>
         </div>
     </div>
 
     <div id="links-page" class="modal-page">
         <div class="modal-content">
-            <h2 style="text-align: center;">🔗 外部資源</h2>
-            <a href="https://thai-alphabet.com/" target="_blank" class="link-item">Thai Alphabet (字母學習)</a>
-            <a href="https://www.thai2english.com/" target="_blank" class="link-item">Thai2English (線上字典)</a>
+            <h2 style="text-align:center">🔗 外部資源</h2>
+            <a href="https://thai-alphabet.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">Thai Alphabet</a>
+            <a href="https://www.thai2english.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">Thai2English</a>
             <button class="close-btn" onclick="closeModal('links-page')">返回</button>
         </div>
     </div>
@@ -219,21 +237,35 @@
 
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
-        
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+
+        // --- 側邊欄控制 ---
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            const isOpen = sb.classList.contains('open');
+            if(isOpen) {
+                sb.classList.remove('open');
+                ov.style.display = 'none';
+            } else {
+                sb.classList.add('open');
+                ov.style.display = 'block';
+            }
+        }
+
+        function openModal(id) { 
+            document.getElementById(id).style.display = 'flex'; 
+            if(window.innerWidth < 600) toggleSidebar(); // 手機版點擊功能後自動收起側欄
+        }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        // --- 核心邏輯 ---
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('thai_theme', theme);
             document.getElementById('theme-toggle').innerText = theme === 'light' ? '切換至深色模式' : '切換至淺色模式';
         }
         setTheme(localStorage.getItem('thai_theme') || 'dark');
-
-        function toggleTheme() {
-            const current = document.documentElement.getAttribute('data-theme');
-            setTheme(current === 'light' ? 'dark' : 'light');
-        }
+        function toggleTheme() { setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
 
         let currentSpeed = parseFloat(localStorage.getItem('thai_speed')) || 1.0;
         function updateSpeed(val) {
@@ -241,7 +273,6 @@
             document.getElementById('speed-val').innerText = currentSpeed.toFixed(1);
             localStorage.setItem('thai_speed', currentSpeed);
         }
-        document.getElementById('speed-slider').value = currentSpeed;
 
         function updateFontSize(val, store = true) {
             document.getElementById('font-val').innerText = val;
@@ -249,9 +280,7 @@
             document.documentElement.style.setProperty('--zh-size', (val * 0.6) + 'px');
             if(store) localStorage.setItem('thai_font_size', val);
         }
-        const savedSize = localStorage.getItem('thai_font_size') || 32;
-        updateFontSize(savedSize, false);
-        document.getElementById('font-slider').value = savedSize;
+        updateFontSize(localStorage.getItem('thai_font_size') || 32, false);
 
         async function initAllData() {
             try {
@@ -261,8 +290,7 @@
                     const rows = csvText.split(/\r?\n/).slice(1);
                     return rows.map(row => {
                         const cols = row.split(',');
-                        const thai = cols[0]?.trim();
-                        return { id: btoa(unescape(encodeURIComponent(thai))), thai, chinese: cols[1]?.trim(), source: gids[key].name };
+                        return { id: btoa(unescape(encodeURIComponent(cols[0]?.trim()))), thai: cols[0]?.trim(), chinese: cols[1]?.trim(), source: gids[key].name };
                     }).filter(item => item.thai);
                 });
                 const results = await Promise.all(fetchPromises);
@@ -272,19 +300,12 @@
             } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
         }
 
-        function toggleFavorite(id) {
-            const index = favorites.indexOf(id);
-            if (index > -1) favorites.splice(index, 1); else favorites.push(id);
-            localStorage.setItem('thai_favs', JSON.stringify(favorites));
-            document.querySelectorAll(`[data-id="${id}"]`).forEach(btn => btn.classList.toggle('favorited'));
-        }
-
-        function showFavorites(btnElement) {
-            clearActiveButtons();
-            btnElement.classList.add('active');
-            const favItems = allData.filter(item => favorites.includes(item.id));
-            renderList(favItems);
-            document.getElementById('search-info').innerText = `收藏夾：共 ${favItems.length} 筆`;
+        function displayRandom() {
+            const allowed = ["網抓", "泰二", "Ben", "自建"];
+            const filteredData = allData.filter(item => allowed.includes(item.source));
+            const shuffled = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, 10);
+            renderList(shuffled);
+            document.getElementById('search-info').innerText = '';
         }
 
         function handleSearch() {
@@ -299,7 +320,7 @@
         function switchSource(key, btnElement) {
             clearActiveButtons();
             btnElement.classList.add('active');
-            document.getElementById('search-input').value = '';
+            toggleSidebar(); // 選完後自動關閉
             const filtered = allData.filter(item => item.source === gids[key].name);
             renderList(filtered.sort(() => 0.5 - Math.random()).slice(0, 10));
             document.getElementById('search-info').innerText = ''; 
@@ -308,16 +329,17 @@
         function switchMode(mode) {
             clearActiveButtons();
             document.getElementById('btn-random').classList.add('active');
+            toggleSidebar();
             displayRandom();
         }
 
-        function displayRandom() {
-            // 指定僅從這四個頁面抽取隨機句子
-            const allowed = ["網抓", "泰二", "Ben", "自建"];
-            const filteredData = allData.filter(item => allowed.includes(item.source));
-            const shuffled = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, 10);
-            renderList(shuffled);
-            document.getElementById('search-info').innerText = '';
+        function showFavorites(btnElement) {
+            clearActiveButtons();
+            btnElement.classList.add('active');
+            toggleSidebar();
+            const favItems = allData.filter(item => favorites.includes(item.id));
+            renderList(favItems);
+            document.getElementById('search-info').innerText = `收藏夾：共 ${favItems.length} 筆`;
         }
 
         function renderList(list) {
@@ -332,26 +354,29 @@
                         <span class="source-tag">${item.source}</span>
                         <button class="btn-star ${isFav ? 'favorited' : ''}" data-id="${item.id}" onclick="toggleFavorite('${item.id}')">★</button>
                     </div>
-                    <div>
-                        <div class="thai">${item.thai}</div>
-                        <div class="chinese">${item.chinese}</div>
-                    </div>
+                    <div><div class="thai">${item.thai}</div><div class="chinese">${item.chinese}</div></div>
                     <button class="btn-speak" onclick="speak('${item.thai}')">🔊</button>
                 `;
                 container.appendChild(div);
             });
         }
 
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index > -1) favorites.splice(index, 1); else favorites.push(id);
+            localStorage.setItem('thai_favs', JSON.stringify(favorites));
+            document.querySelectorAll(`[data-id="${id}"]`).forEach(btn => btn.classList.toggle('favorited'));
+        }
+
         function speak(text) {
             window.speechSynthesis.cancel();
             const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'th-TH';
-            msg.rate = currentSpeed;
+            msg.lang = 'th-TH'; msg.rate = currentSpeed;
             window.speechSynthesis.speak(msg);
         }
 
         function clearActiveButtons() {
-            document.querySelectorAll('.source-btn, .btn-main, #btn-fav').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.source-btn, .side-full-btn').forEach(btn => btn.classList.remove('active'));
         }
 
         initAllData();
