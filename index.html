@@ -292,11 +292,13 @@
             document.getElementById('search-info').innerText = `收藏夾：共 ${favItems.length} 筆`;
         }
 
-        function handleSearch() {
+      function handleSearch() {
             const kw = document.getElementById('search-input').value.trim().toLowerCase();
             if (!kw) { displayRandom(); return; }
             const results = allData.filter(item => item.thai.toLowerCase().includes(kw) || item.chinese.toLowerCase().includes(kw));
             renderList(results);
+            
+            // 搜尋結果建議保留數量顯示，方便知道找了多少筆
             document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
             clearActiveButtons();
         }
@@ -304,9 +306,12 @@
         function switchSource(key, btnElement) {
             clearActiveButtons();
             btnElement.classList.add('active');
+            document.getElementById('search-input').value = ''; // 切換來源時清空搜尋框
             const filtered = allData.filter(item => item.source === gids[key].name);
             renderList(filtered.sort(() => 0.5 - Math.random()).slice(0, 10));
-            document.getElementById('search-info').innerText = `目前顯示：${gids[key].name}`;
+            
+            // 移除這行：document.getElementById('search-info').innerText = ...
+            document.getElementById('search-info').innerText = ''; 
         }
 
         function switchMode(mode) {
@@ -315,12 +320,12 @@
             displayRandom();
         }
 
-        function displayRandom() {
-            // 排除來源為「歌詞」的資料後再進行隨機抽樣
+       function displayRandom() {
             const filteredData = allData.filter(item => item.source !== "歌詞");
             const shuffled = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, 10);
-            
             renderList(shuffled);
+            
+            // 確保隨機模式下資訊欄也是空的
             document.getElementById('search-info').innerText = '';
         }
 
