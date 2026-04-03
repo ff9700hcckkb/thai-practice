@@ -242,9 +242,13 @@
             </div>
             
              <div class="setting-group">
-                <span class="sidebar-label">🫩 其它</span>
+                <span class="sidebar-label">🫩 其它碎唸</span>
                 <p class="info-text">
-                   沒什麼好說的 88~~~
+                    想練泰文口說搞出來的頁面<br>
+                    版面差不多就這樣了，未來頂多微調<br>
+                    詞庫會不定時更新<br>
+                    發現Bug、語法有誤或是有其它指教再跟我說啦<br>
+                    สู้ๆนะ!<br>
                 </p>
             </div>
 
@@ -253,7 +257,13 @@
     </div>
     
     <div id="settings-page" class="modal-page"><div class="modal-content"><h2 style="text-align:center">⚙️ 偏好設定</h2><div class="setting-group"><span class="sidebar-label">🌓 主題切換</span><button id="theme-toggle" class="side-full-btn" style="text-align:center; background:var(--btn-active); color:white;" onclick="toggleTheme()">切換模式</button></div><div class="setting-group"><span class="sidebar-label">🔊 語速</span><input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)" style="width:100%"></div><button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button></div></div>
-    <div id="links-page" class="modal-page"><div class="modal-content"><h2 style="text-align:center">🔗 外部資源</h2><a href="https://thai-alphabet.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">Thai Alphabet</a><button class="close-btn" onclick="closeModal('links-page')">返回</button></div></div>
+    <div id="links-page" class="modal-page"><div class="modal-content">
+        <h2 style="text-align:center">🔗 外部資源</h2>
+        <a href="https://thai-alphabet.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">Thai Alphabet</a>
+        <a href="https://www.thai2english.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">thai2english</a>
+        <button class="close-btn" onclick="closeModal('links-page')">返回</button>
+    </div>
+    </div>
 
     <script>
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
