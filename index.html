@@ -202,7 +202,7 @@
     <div class="control-area">
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: -5px;">
             <div onclick="openModal('about-page')" style="cursor: pointer; color: var(--btn-active); font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 4px;">
-                ‼️點我點我點我我叫你點‼️
+                ‼️點我點我我叫你點‼️
             </div>
             <div id="search-info"></div>
         </div>
@@ -283,7 +283,7 @@
 
                 <span class="sidebar-label">🎲 抽選邏輯</span>
                 <p class="info-text">
-                    • 隨機字卡：從所有頁面隨機抽選設定的題數<br>
+                    • 隨機字卡：從所有分類隨機抽選設定的題數<br>
                     • 分類隨機：從指定的分類中抽選設定的題數<br>
                     • 搜尋模式：輸入關鍵字可搜尋所有分類資料<br>
                 </p>
@@ -569,7 +569,7 @@ function displayRandom() {
             renderList(shuffledFiltered);
 
             // 4. 更新介面顯示 (讓使用者知道現在看的是哪一類，且是隨機的)
-            document.getElementById('search-info').innerText = `來源：${gids[key].name} (隨機抽出 ${quizCount} 筆)`;
+            document.getElementById('search-info').innerText = `${gids[key].name} 隨機抽 ${quizCount} 筆`;
             
             // 5. 處理按鈕高亮與側邊欄關閉
             document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
