@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-X7B1H72720"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-X7B1H72720');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-X7B1H72720"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-X7B1H72720');
+    </script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -90,8 +88,6 @@
         .quiz-toggle.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         .quiz-mode .chinese { opacity: 0; transition: opacity 0.3s; }
         .card.revealed .chinese { opacity: 1; color: var(--accent-color); }
-        .card { cursor: pointer; transition: transform 0.1s; }
-        .card:active { transform: scale(0.98); }
 
         .sidebar {
             position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
@@ -105,99 +101,83 @@
             background: rgba(0,0,0,0.5); display: none; z-index: 1999;
         }
 
-        .sidebar-section { margin-bottom: 25px; }
-        .sidebar-label { color: var(--sub-text); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--search-border); padding-bottom: 5px; }
-
-        .grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .source-btn {
-            padding: 12px 2px; border-radius: 10px; border: none;
-            background: var(--btn-inactive); color: var(--sub-text);
-            font-weight: 600; font-size: 0.85rem; cursor: pointer;
-        }
-        .active { background: var(--btn-active) !important; color: white !important; }
-        
-        .side-full-btn {
-            width: 100%; padding: 12px; border-radius: 10px; border: none;
-            background: var(--nav-bg); color: var(--text-color);
-            margin-bottom: 8px; text-align: left; cursor: pointer; font-weight: bold;
-        }
-
-/* ... 這是你原本其他的 CSS ... */
-
         .card { 
             background: var(--card-bg); 
             border-radius: 20px; 
-            padding: 24px; 
+            padding: 20px 24px; 
             margin: 12px 0; 
             width: 100%; 
             max-width: 480px; 
             display: flex; 
             align-items: center;
-            justify-content: space-between; 
+            justify-content: space-between; /* 關鍵：左右推開 */
             box-sizing: border-box;
             border: 1px solid rgba(0,0,0,0.05); 
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            position: relative;
-            min-height: 120px; /* 剛才建議你加的高度 */
-            /* 讓點擊效果更滑順 */
             transition: transform 0.1s, background-color 0.2s;
+            min-height: 110px;
         }
+        .card:active { transform: scale(0.98); }
 
-        /* 貼在這裡：針對字卡內的文字容器進行微調 */
-        .card > div:nth-child(2) {
+        /* 文字容器撐開空間 */
+        .card-content {
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
             padding-right: 15px;
-            flex-grow: 1; /* 讓文字區塊自動撐開，把喇叭按鈕推到最右邊 */
         }
 
-/* ... 後面接其他的 CSS ... */
-        .card-header { position: absolute; top: 10px; right: 15px; display: flex; gap: 10px; align-items: center; }
-        .source-tag { font-size: 0.75rem; color: var(--btn-active); font-weight: bold; }
-        .btn-star { background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: #999; }
-        .btn-star.favorited { color: var(--star-color); }
         .thai { 
-    /* 使用系統預設最穩定的字體組合，確保小圓圈（頭）清晰可見 */
-    font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
-    font-size: var(--thai-size); 
-    line-height: 1.6; /* 稍微拉高行高，避免母音符號（上下標）擠在一起 */
-    margin-bottom: 10px; 
-    font-weight: 700; 
-    letter-spacing: 0.5px; /* 增加微小字距，幫助辨識每個字母的邊界 */
-    word-wrap: break-word; 
-    padding-right: 25px;
-
-            /* 新增以下三行優化長句子 */
-    word-break: break-word;       /* 確保長句子會自動斷行 */
-    overflow-wrap: break-word;    /* 支援更多瀏覽器的斷行邏輯 */
-    display: block;               /* 確保佔滿寬度 */
-}
-        .chinese {
-    font-size: var(--zh-size);
-    color: var(--sub-text);
-    margin-top: 8px; /* 增加與泰文之間的呼吸空間 */
-}
-        .btn-speak { border: none; background: transparent; color: var(--accent-color); font-size: 2.2rem; cursor: pointer; }
-
-        .modal-page {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color); z-index: 3000; display: none;
-            flex-direction: column; align-items: center; padding: 30px 20px; box-sizing: border-box;
-            overflow-y: auto;
+            font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
+            font-size: var(--thai-size); 
+            line-height: 1.4;
+            font-weight: 700; 
+            word-break: break-word;
+            display: block;
         }
+        .chinese {
+            font-size: var(--zh-size);
+            color: var(--sub-text);
+            margin-top: 5px;
+            word-break: break-word;
+        }
+
+        /* 喇叭按鈕樣式 */
+        .card-action {
+            flex-shrink: 0; /* 防止按鈕被擠壓 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-speak { 
+            border: none; 
+            background: transparent; 
+            color: var(--accent-color); 
+            font-size: 2.2rem; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            padding: 5px;
+        }
+        .btn-speak.playing {
+            transform: scale(1.3);
+            color: var(--btn-active);
+            filter: drop-shadow(0 0 5px var(--btn-active));
+        }
+
+        /* 其他原本的 UI 組件 */
+        .sidebar-section { margin-bottom: 25px; }
+        .sidebar-label { color: var(--sub-text); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--search-border); padding-bottom: 5px; }
+        .grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .source-btn { padding: 12px 2px; border-radius: 10px; border: none; background: var(--btn-inactive); color: var(--sub-text); font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+        .source-btn.active, .side-full-btn.active { background: var(--btn-active) !important; color: white !important; }
+        .side-full-btn { width: 100%; padding: 12px; border-radius: 10px; border: none; background: var(--nav-bg); color: var(--text-color); margin-bottom: 8px; text-align: left; cursor: pointer; font-weight: bold; }
+        .modal-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 3000; display: none; flex-direction: column; align-items: center; padding: 30px 20px; box-sizing: border-box; overflow-y: auto; }
         .modal-content { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; }
         .setting-group { background: var(--card-bg); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--search-border); }
         .info-text { font-size: 0.95rem; line-height: 1.6; color: var(--text-color); margin-bottom: 10px; }
         .close-btn { background: var(--danger-color); color: white; padding: 16px; border-radius: 12px; border: none; font-weight: bold; width: 100%; cursor: pointer; }
-        
         #loading { margin-top: 50px; color: var(--sub-text); }
         #search-info { color: var(--sub-text); margin-bottom: 0; font-size: 0.85rem; text-align: right; }
-
-        /* 播放中的按鈕動畫 */
-.btn-speak.playing {
-    transform: scale(1.3);
-    color: var(--btn-active);
-    filter: drop-shadow(0 0 5px var(--btn-active));
-    transition: all 0.2s;
-}
     </style>
 </head>
 <body>
@@ -217,13 +197,11 @@
         <div class="search-container">
             <input type="text" id="search-input" maxlength="50" autocomplete="off" placeholder="輸入泰文或中文搜尋....." oninput="handleSearch()">
         </div>
-    <div class="action-row">
+        <div class="action-row">
             <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 測驗模式</button>
             <div id="refresh-btn-main" class="refresh-btn" onclick="handleRefresh()" style="display: flex;">
                 <span>🔄 更新</span>
             </div>
-        </div>
-            </button>
         </div>
     </div>
 
@@ -238,142 +216,91 @@
             <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')">🎲 隨機字卡</button>
             <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
         </div>
-
-    <div class="sidebar-section">
-    <span class="sidebar-label">分類詞庫</span>
-    <div style="font-size: 0.75rem; color: var(--sub-text); margin: -5px 0 10px 10px; opacity: 0.8;">
-        (點擊將隨機抽出設定之題數)
-    </div>
-    
-    <div class="grid-selector">
-        <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
-        <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
-        <button class="source-btn" onclick="switchSource('calendar', this)">月份星期</button>
-        <button class="source-btn" onclick="switchSource('time', this)">時間</button>
-        <button class="source-btn" onclick="switchSource('line', this)">line</button>
-        <button class="source-btn" onclick="switchSource('self', this)">自建</button>
-    </div>
-</div>
+        <div class="sidebar-section">
+            <span class="sidebar-label">分類詞庫</span>
+            <div class="grid-selector">
+                <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
+                <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
+                <button class="source-btn" onclick="switchSource('calendar', this)">月份星期</button>
+                <button class="source-btn" onclick="switchSource('time', this)">時間</button>
+                <button class="source-btn" onclick="switchSource('line', this)">line</button>
+                <button class="source-btn" onclick="switchSource('self', this)">自建</button>
+            </div>
+        </div>
         <div class="sidebar-section">
             <span class="sidebar-label">系統與說明</span>
             <button class="side-full-btn" onclick="openModal('about-page')">ℹ️ 關於本站</button>
             <button class="side-full-btn" onclick="openModal('settings-page')">⚙️ 偏好設定</button>
             <button class="side-full-btn" onclick="openModal('links-page')">🔗 外部資源</button>
         </div>
-        
         <button class="close-btn" style="background: var(--nav-bg); color: var(--sub-text);" onclick="toggleSidebar()">關閉選單</button>
     </div>
-
 
     <div id="about-page" class="modal-page">
         <div class="modal-content">
             <h2 style="text-align:center">ℹ️ 關於本站</h2>
-            
-            
             <div class="setting-group">
                 <span class="sidebar-label">🫩 關於這裡</span>
-                <p class="info-text">
-                    想練泰文口說搞出來的頁面<br>
-                    詞庫會不定時更新<br>
-                    句子有誤或是有其它指教再跟我說啦<br>
-                </p>
+                <p class="info-text">想練泰文口說搞出來的頁面<br>詞庫會不定時更新<br>句子有誤或是有其它指教再跟我說啦</p>
             </div>
-            
-            <div class="setting-group">
-                <span class="sidebar-label">📚 內容相關</span>
-                <p class="info-text">
-                    • 字卡內容由開發者收集彙整後呈現<br>
-                    • 點字卡右上角星號可將其加入收藏<br>
-                    • 測驗模式會遮蔽中文，再點一次字卡即可顯示<br>
-                </p>
-            </div>
-            <div class="setting-group">
-
-                <span class="sidebar-label">🎲 抽選邏輯</span>
-                <p class="info-text">
-                    • 隨機字卡：從所有分類隨機抽選設定的題數<br>
-                    • 分類隨機：從指定的分類中抽選設定的題數<br>
-                    • 搜尋模式：輸入關鍵字可搜尋所有分類資料<br>
-                </p>
-            </div>
-            <div class="setting-group">
-                <span class="sidebar-label">🔊 語音說明</span>
-                <p class="info-text">
-                    • 語音採用手機瀏覽器內建的TTS技術<br>
-                    • 發音準確度取決於您裝置系統語言包<br>
-                </p>
-            </div>
-            
-<div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--sub-text); font-size: 0.85rem; color: var(--sub-text); line-height: 1.8;">
-            <div id="stat-total-count">詞庫總筆數：更新中...</div>
-            <div id="stat-last-update">最後更新時間：載入中...</div>
-        </div>
-            
             <button class="close-btn" onclick="closeModal('about-page')">返回</button>
         </div>
     </div>
-    
-<div id="settings-page" class="modal-page">
+
+    <div id="settings-page" class="modal-page">
         <div class="modal-content">
             <h2 style="text-align:center">⚙️ 偏好設定</h2>
-            
             <div class="setting-group">
                 <span class="sidebar-label">🌓 主題切換</span>
                 <button id="theme-toggle" class="side-full-btn" style="text-align:center; background:var(--btn-active); color:white;" onclick="toggleTheme()">切換模式</button>
             </div>
-
             <div class="setting-group">
                 <span class="sidebar-label">🔊 語音語速</span>
                 <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)" style="width:100%">
                 <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">目前語速：<span id="speed-val">1.0</span>x</div>
             </div>
-
             <div class="setting-group">
                 <span class="sidebar-label">📏 字體大小</span>
                 <input type="range" id="font-slider" min="24" max="38" step="1" value="30" oninput="updateFontSize(this.value)" style="width:100%">
                 <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">目前大小：<span id="font-val">30</span>px</div>
             </div>
-
-<div class="setting-group">
+            <div class="setting-group">
                 <span class="sidebar-label">📝 練習題數</span>
-                <input type="number" id="quiz-count-input" min="10" max="30" value="10" 
-                       onchange="updateQuizCount(this.value)" 
-                       style="width:100%; padding: 8px; border-radius: 8px; border: 1px solid var(--sub-text); background: var(--bg); color: var(--text); box-sizing: border-box;">
-                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">最少10題，最多30題，儲存後請重整網頁</div>
+                <input type="number" id="quiz-count-input" min="10" max="30" value="10" onchange="updateQuizCount(this.value)" style="width:100%; padding: 8px; border-radius: 8px;">
             </div>
-            
             <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
         </div>
     </div>
-    
-    <div id="links-page" class="modal-page"><div class="modal-content">
-        <h2 style="text-align:center">🔗 外部資源</h2>
-        <a href="https://thai-alphabet.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">Thai Alphabet</a>
-        <a href="https://www.thai2english.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">thai2english</a>
-        <button class="close-btn" onclick="closeModal('links-page')">返回</button>
-    </div>
+
+    <div id="links-page" class="modal-page">
+        <div class="modal-content">
+            <h2 style="text-align:center">🔗 外部資源</h2>
+            <a href="https://thai-alphabet.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">Thai Alphabet</a>
+            <a href="https://www.thai2english.com/" target="_blank" class="side-full-btn" style="text-decoration:none; text-align:center; color:var(--link-color)">thai2english</a>
+            <button class="close-btn" onclick="closeModal('links-page')">返回</button>
+        </div>
     </div>
 
     <script>
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
-        
-  // 更新為妳指定的 6 個 GID
         const gids = { 
             custom: { name: "網抓", id: "538865502" }, 
             thai2: { name: "泰二", id: "2121125782" }, 
             calendar: { name: "月份星期", id: "1685596903" }, 
             time: { name: "時間", id: "1355116620" }, 
-            line: { name: "line", id: "1404447959" }, // 新增的分頁
+            line: { name: "line", id: "1404447959" },
             self: { name: "自建", id: "1725449061" }
         };
 
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         let currentMode = 'random';
-        let currentSourceKey = null;
         let isQuizMode = false;
         let searchTimer;
-        // UI 核心功能
+        let currentSpeed = parseFloat(localStorage.getItem('thai_speed')) || 1.0;
+        let quizCount = localStorage.getItem('thai_quiz_count') || 10;
+
+        // UI 核心
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('overlay');
@@ -383,6 +310,8 @@
         }
         function openModal(id) { document.getElementById(id).style.display = 'flex'; if(window.innerWidth < 600) toggleSidebar(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        // 主題與語速
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('thai_theme', theme);
@@ -390,65 +319,22 @@
         }
         setTheme(localStorage.getItem('thai_theme') || 'dark');
         function toggleTheme() { setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-
-        let currentSpeed = parseFloat(localStorage.getItem('thai_speed')) || 1.0;
-        // 更新語速
-        function updateSpeed(val) { 
-            currentSpeed = parseFloat(val); 
-            localStorage.setItem('thai_speed', currentSpeed); 
-            document.getElementById('speed-val').innerText = val; // 更新顯示數值
-        }
-let quizCount = localStorage.getItem('thai_quiz_count') || 10; // 讀取紀錄，預設 10
-
-    // 更新題數並儲存 (強制限制 10~30)
-        function updateQuizCount(val) {
-            let num = parseInt(val);
-            
-            // 邏輯判斷：若不是數字或小於 10 則設為 10，若大於 30 則設為 30
-            if (isNaN(num) || num < 10) {
-                num = 10;
-            } else if (num > 30) {
-                num = 30;
-            }
-            
-            quizCount = num;
-            localStorage.setItem('thai_quiz_count', num);
-            // 將修正後的數字填回輸入框
-            document.getElementById('quiz-count-input').value = num;
-        }
-function handleRefresh() {
-            // 檢查目前在哪個模式
-            if (currentMode === 'random') {
-                displayRandom(); // 全站隨機
-            } else {
-                // 如果是特定分頁，再次執行該分類的隨機抽取
-                switchSource(currentMode, null);
-            }
-        }
-        // 初始化時設定輸入框的值
-        document.getElementById('quiz-count-input').value = quizCount;
-    // 1. 更新字體大小函式
+        function updateSpeed(val) { currentSpeed = parseFloat(val); localStorage.setItem('thai_speed', val); document.getElementById('speed-val').innerText = val; }
+        function updateQuizCount(val) { quizCount = Math.min(Math.max(parseInt(val) || 10, 10), 30); localStorage.setItem('thai_quiz_count', quizCount); }
         function updateFontSize(val) {
             const size = parseFloat(val);
             document.documentElement.style.setProperty('--thai-size', size + 'px');
             document.documentElement.style.setProperty('--zh-size', (size * 0.6) + 'px');
-            localStorage.setItem('thai_font_size', size); 
-            
-            // 確保滑桿數值文字同步更新
-            if(document.getElementById('font-val')) document.getElementById('font-val').innerText = size;
-            if(document.getElementById('font-slider')) document.getElementById('font-slider').value = size;
+            localStorage.setItem('thai_font_size', size);
+            document.getElementById('font-val').innerText = size;
         }
+        updateFontSize(localStorage.getItem('thai_font_size') || 30);
 
-        // 2. 初始化字體大小（優先讀取暫存，沒有就用 30）
-        const savedFontSize = localStorage.getItem('thai_font_size') || 30;
-        updateFontSize(savedFontSize);
-
-    async function initAllData() {
+        // 資料處理
+        async function initAllData() {
             try {
-                const cacheBuster = new Date().getTime();
                 const fetchPromises = Object.keys(gids).map(async (key) => {
-                    const fetchUrl = `${base_url}&gid=${gids[key].id}&t=${cacheBuster}`;
-                    const response = await fetch(fetchUrl);
+                    const response = await fetch(`${base_url}&gid=${gids[key].id}&t=${Date.now()}`);
                     const csvText = await response.text();
                     const rows = csvText.split(/\r?\n/).slice(1);
                     return rows.map(row => {
@@ -462,163 +348,7 @@ function handleRefresh() {
                 allData = results.flat();
                 document.getElementById('loading').style.display = 'none';
                 displayRandom();
-                
-                // 確保這行存在，用來更新「關於本站」的資訊
-                refreshSiteStats(); 
-                
             } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
-        }
-
-        // 更新統計資訊的函式 (放在 initAllData 之外)
-function refreshSiteStats() {
-    // 1. 更新總筆數 (直接抓 allData 陣列的長度)
-    const totalCount = allData.length;
-    const countElem = document.getElementById('stat-total-count');
-    if (countElem) {
-        countElem.innerHTML = `詞庫總筆數：<strong style="color:var(--btn-active)">${totalCount}</strong> 筆`;
-    }
-
-    // 2. 更新最後更新時間 (自動抓取今天日期)
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    
-    const timeElem = document.getElementById('stat-last-update');
-    if (timeElem) {
-        timeElem.innerText = `最後更新時間：${yyyy}-${mm}-${dd}`;
-    }
-}
-
-        // 隨機抽選邏輯：全部抽選
-function displayRandom() {
-            currentMode = 'random';
-            
-            // 將原本的 .slice(0, 10) 改成 .slice(0, quizCount)
-            // 這樣就會根據妳在設定頁面輸入的數字來決定題數
-            const shuffled = [...allData].sort(() => 0.5 - Math.random()).slice(0, quizCount);
-            
-            renderList(shuffled);
-            
-            document.getElementById('search-info').innerText = '';
-            document.getElementById('refresh-btn-main').style.display = 'flex';
-        }
-
-        function updateSiteInfo() {
-    // 1. 計算總筆數與各分類筆數
-    // 假設妳的所有資料存放在 allData 物件中，格式為 { '網抓': [...], '日月': [...] }
-    let total = 0;
-    let detailStrings = [];
-
-    for (const category in allData) {
-        const count = allData[category].length;
-        total += count;
-        detailStrings.push(`${category}：${count}筆`);
-    }
-
-    // 2. 顯示總數與各分頁詳情
-    const countElement = document.getElementById('total-count-info');
-    if (countElement) {
-        countElement.innerHTML = `詞庫總筆數：<strong>${total}</strong> 筆<br>` + 
-                               `<span style="font-size: 0.8rem; opacity: 0.8;">(${detailStrings.join('、')})</span>`;
-    }
-
-    // 3. 更新時間 (如果妳想要自動抓取今天日期)
-    const timeElement = document.getElementById('last-update-info');
-    if (timeElement) {
-        const today = new Date().toISOString().split('T')[0]; // 格式會是 2026-04-04
-        timeElement.innerText = `最後更新時間：${today}`;
-    }
-}
-
-// 記得在資料載入完成的地方呼叫這個 function
-// 例如：initAllData().then(() => { ... updateSiteInfo(); });
-
-        function refreshContent() {
-            if (currentMode === 'random') displayRandom();
-            else if (currentMode === 'source') switchSource(currentSourceKey, document.querySelector(`.source-btn.active`));
-            else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
-        }
-
-function handleSearch() {
-    clearTimeout(searchTimer); // 每次輸入都先清除舊的計時器
-    searchTimer = setTimeout(() => {
-        const inputElement = document.getElementById('search-input');
-        const cleanInput = inputElement.value.replace(/[<>]/g, "").trim().toLowerCase();
-        
-        if (!cleanInput) { 
-            handleRefresh(); 
-            return; 
-        }
-        
-        const results = allData.filter(item => 
-            item.thai.toLowerCase().includes(cleanInput) || 
-            item.chinese.toLowerCase().includes(cleanInput)
-        );
-        
-        // 空搜尋結果處理：如果沒找到，顯示提示語
-        if (results.length === 0) {
-            document.getElementById('app').innerHTML = `
-                <div style="margin-top:50px; text-align:center; color:var(--sub-text);">
-                    <div style="font-size: 3rem; margin-bottom: 10px;">🔍</div>
-                    <div>找不到「${cleanInput}」相關詞彙</div>
-                </div>`;
-            document.getElementById('search-info').innerText = `搜尋結果：0 筆`;
-        } else {
-            document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
-            renderList(results);
-        }
-    }, 300); // 延遲 300 毫秒執行
-}
-
-   function switchSource(key, btn) {
-            currentMode = key; // 紀錄目前選中的分類 (key 可能為 'custom', 'thai2' 等)
-            
-            // 1. 先從總表中過濾出該分類的資料
-            const filteredData = allData.filter(item => item.source === gids[key].name);
-            
-            // 2. 進行隨機洗牌，並切出使用者設定的題數 (quizCount)
-            const shuffledFiltered = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, quizCount);
-            
-            // 3. 渲染到畫面上
-            renderList(shuffledFiltered);
-
-            // 4. 更新介面顯示 (讓使用者知道現在看的是哪一類，且是隨機的)
-            document.getElementById('search-info').innerText = `${gids[key].name} 隨機抽 ${quizCount} 筆`;
-            
-            // 5. 處理按鈕高亮與側邊欄關閉
-            document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            document.getElementById('refresh-btn-main').style.display = 'flex';
-            closeModal('sidebar-page');
-        }
-
-        function switchMode(mode) { clearActiveButtons(); document.getElementById('btn-random').classList.add('active'); toggleSidebar(); displayRandom(); }
-
-        function showFavorites(btnElement) {
-            currentMode = 'fav'; clearActiveButtons(); btnElement.classList.add('active'); toggleSidebar();
-            const favItems = allData.filter(item => favorites.includes(item.id));
-            renderList(favItems);
-            document.getElementById('search-info').innerText = `收藏：共 ${favItems.length} 筆`;
-        }
-
-     function toggleQuizMode() {
-            isQuizMode = !isQuizMode;
-            const btn = document.getElementById('quiz-btn');
-            const container = document.getElementById('app');
-            
-            // 1. 切換按鈕樣式與文字
-            btn.classList.toggle('active');
-            btn.innerText = isQuizMode ? '🙈 測驗模式：ON' : '👁️ 測驗模式';
-            
-            // 2. 切換容器的 Class，讓 CSS 自動處理遮罩（不呼叫 refreshContent）
-            if (isQuizMode) {
-                container.classList.add('quiz-mode');
-            } else {
-                container.classList.remove('quiz-mode');
-                // 關閉測驗模式時，順便移除所有字卡的 revealed 狀態，恢復原狀
-                document.querySelectorAll('.card').forEach(card => card.classList.remove('revealed'));
-            }
         }
 
         function renderList(list) {
@@ -628,57 +358,108 @@ function handleSearch() {
             list.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.onclick = function(e) { if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); };
-              // 新的寫法：增加了 this，代表把「按鈕自己」也傳進去 speak 函式裡
-div.innerHTML = `
-    <div class="card-content">
-        <div class="thai" lang="th">${item.thai}</div> <div class="chinese">${item.chinese}</div>
-    </div>
-    <div class="card-action">
-        <button class="btn-speak" onclick="speak('${item.thai}', this)">🔊</button> 
-    </div>
-`;
+                // 點擊卡片切換顯示（測驗模式下）
+                div.onclick = function(e) { 
+                    if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); 
+                };
+                
+                // 結構優化：左側文字包在 card-content，右側喇叭單獨存在
+                div.innerHTML = `
+                    <div class="card-content">
+                        <div class="thai" lang="th">${item.thai}</div>
+                        <div class="chinese">${item.chinese}</div>
+                    </div>
+                    <div class="card-action">
+                        <button class="btn-speak" onclick="speak('${item.thai}', this)">🔊</button>
+                    </div>
+                `;
                 container.appendChild(div);
             });
         }
 
-        function toggleFavorite(id, btn) {
-            const idx = favorites.indexOf(id);
-            if (idx > -1) favorites.splice(idx, 1); else favorites.push(id);
-            localStorage.setItem('thai_favs', JSON.stringify(favorites));
-            btn.classList.toggle('favorited');
+        // 搜尋功能 (含 Debounce)
+        function handleSearch() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                const cleanInput = document.getElementById('search-input').value.trim().toLowerCase();
+                if (!cleanInput) { handleRefresh(); return; }
+                const results = allData.filter(item => item.thai.toLowerCase().includes(cleanInput) || item.chinese.toLowerCase().includes(cleanInput));
+                document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
+                renderList(results);
+            }, 300);
         }
 
-   function speak(text, btnElement) {
-    window.speechSynthesis.cancel();
-    const msg = new SpeechSynthesisUtterance(text);
-    msg.lang = 'th-TH';
-    msg.rate = currentSpeed;
+        function handleRefresh() {
+            if (currentMode === 'random') displayRandom();
+            else switchSource(currentMode, null);
+        }
 
-    // 開始播放時增加 Class
-    if (btnElement) btnElement.classList.add('playing');
+        function displayRandom() {
+            currentMode = 'random';
+            const shuffled = [...allData].sort(() => 0.5 - Math.random()).slice(0, quizCount);
+            renderList(shuffled);
+            document.getElementById('search-info').innerText = '';
+        }
 
-    msg.onend = () => {
-        // 播放結束移除 Class
-        if (btnElement) btnElement.classList.remove('playing');
-    };
+        function switchSource(key, btn) {
+            currentMode = key;
+            const filtered = allData.filter(item => item.source === gids[key].name);
+            const shuffled = [...filtered].sort(() => 0.5 - Math.random()).slice(0, quizCount);
+            renderList(shuffled);
+            document.getElementById('search-info').innerText = `${gids[key].name} 抽 ${shuffled.length} 筆`;
+            if (btn) {
+                document.querySelectorAll('.source-btn, .side-full-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                toggleSidebar();
+            }
+        }
 
-    window.speechSynthesis.speak(msg);
-}
+        function switchMode(mode) { 
+            document.querySelectorAll('.source-btn, .side-full-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-random').classList.add('active');
+            displayRandom();
+            toggleSidebar();
+        }
 
-        function clearActiveButtons() { document.querySelectorAll('.source-btn, .side-full-btn').forEach(btn => btn.classList.remove('active')); }
+        function showFavorites(btn) {
+            currentMode = 'fav';
+            const favItems = allData.filter(item => favorites.includes(item.id));
+            renderList(favItems);
+            document.getElementById('search-info').innerText = `已收藏 ${favItems.length} 筆`;
+            document.querySelectorAll('.source-btn, .side-full-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            toggleSidebar();
+        }
+
+        function toggleQuizMode() {
+            isQuizMode = !isQuizMode;
+            const btn = document.getElementById('quiz-btn');
+            btn.classList.toggle('active');
+            btn.innerText = isQuizMode ? '🙈 測驗模式：ON' : '👁️ 測驗模式';
+            renderList(allData.filter(i => false)); // 暫時清空重繪或直接改 Class
+            handleRefresh(); // 重刷目前內容以套用模式
+        }
+
+        function speak(text, btnElement) {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'th-TH';
+            msg.rate = currentSpeed;
+            if (btnElement) btnElement.classList.add('playing');
+            msg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
+            window.speechSynthesis.speak(msg);
+        }
 
         initAllData();
+        
         window.onscroll = function() {
-    const btn = document.getElementById("back-to-top");
-    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-        btn.style.display = "block";
-    } else {
-        btn.style.display = "none";
-    }
-};
+            const btn = document.getElementById("back-to-top");
+            if (document.documentElement.scrollTop > 300) btn.style.display = "block";
+            else btn.style.display = "none";
+        };
     </script>
+
     <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-    style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
+        style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
 </body>
 </html>
