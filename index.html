@@ -207,7 +207,7 @@
             <div id="search-info"></div>
         </div>
         <div class="search-container">
-            <input type="search" id="search-input" placeholder="輸入中文或泰文搜尋....." oninput="handleSearch()">
+            <input type="text" id="search-input" maxlength="50" autocomplete="off" placeholder="搜尋泰文或中文..." oninput="handleSearch()">
         </div>
         <div class="action-row">
             <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 測驗模式</button>
@@ -488,14 +488,28 @@ function refreshSiteStats() {
             else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
         }
 
-        function handleSearch() {
-            const kw = document.getElementById('search-input').value.trim().toLowerCase();
-            if (!kw) { displayRandom(); return; }
-            const results = allData.filter(item => (item.thai?.toLowerCase().includes(kw)) || (item.chinese?.toLowerCase().includes(kw)));
+ function handleSearch() {
+            // 取得輸入值
+            let rawInput = document.getElementById('search-input').value;
+            
+            // 【新增這行】過濾掉 < 和 > 符號，防止 HTML 注入 (XSS)
+            let cleanInput = rawInput.replace(/[<>]/g, "").trim().toLowerCase();
+            
+            // 如果清理後是空的，就不處理或顯示全部（視妳原本邏輯而定）
+            if (!cleanInput) {
+                // 這裡通常是呼叫妳原本顯示全部資料的函式，例如：
+                // renderList(currentCategoryData); 
+                return;
+            }
+
+            // 【使用 cleanInput 進行過濾】
+            // 確保搜尋的是清理過的乾淨字串
+            const results = allData.filter(item => 
+                (item.thai && item.thai.toLowerCase().includes(cleanInput)) || 
+                (item.chinese && item.chinese.toLowerCase().includes(cleanInput))
+            );
+            
             renderList(results);
-            document.getElementById('search-info').innerText = `找到 ${results.length} 筆`;
-            document.getElementById('refresh-btn-main').style.display = 'none';
-            clearActiveButtons();
         }
 
         function switchSource(key, btnElement) {
