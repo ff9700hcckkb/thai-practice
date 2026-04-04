@@ -220,13 +220,14 @@
             <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
         </div>
 
-       <div class="sidebar-section">
+      <div class="sidebar-section">
             <span class="sidebar-label">分類詞庫</span>
             <div class="grid-selector">
                 <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
                 <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
                 <button class="source-btn" onclick="switchSource('calendar', this)">月份星期</button>
                 <button class="source-btn" onclick="switchSource('time', this)">時間</button>
+                <button class="source-btn" onclick="switchSource('line', this)">line</button>
                 <button class="source-btn" onclick="switchSource('self', this)">自建</button>
             </div>
         </div>
@@ -329,12 +330,13 @@
     <script>
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
         
-    // 更新為妳指定的 5 個 GID
+  // 更新為妳指定的 6 個 GID
         const gids = { 
             custom: { name: "網抓", id: "538865502" }, 
             thai2: { name: "泰二", id: "2121125782" }, 
-            time: { name: "時間", id: "1355116620" }, 
             calendar: { name: "月份星期", id: "1685596903" }, 
+            time: { name: "時間", id: "1355116620" }, 
+            line: { name: "line", id: "1404447959" }, // 新增的分頁
             self: { name: "自建", id: "1725449061" }
         };
 
