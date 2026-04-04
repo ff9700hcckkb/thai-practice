@@ -225,7 +225,7 @@
     <div id="sidebar" class="sidebar">
         <div class="sidebar-section">
             <span class="sidebar-label">主要模式</span>
-            <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')">🎲 隨機10句</button>
+            <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')">🎲 隨機字卡</button>
             <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
         </div>
 
@@ -321,11 +321,11 @@
             </div>
 
 <div class="setting-group">
-                <span class="sidebar-label">📝 隨機練習題數 (最大 30)</span>
+                <span class="sidebar-label">📝 練習題數</span>
                 <input type="number" id="quiz-count-input" min="1" max="30" value="10" 
                        onchange="updateQuizCount(this.value)" 
                        style="width:100%; padding: 8px; border-radius: 8px; border: 1px solid var(--sub-text); background: var(--bg); color: var(--text); box-sizing: border-box;">
-                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">預設為 10 題</div>
+                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">min:10，mix:30，儲存後請重整網頁</div>
             </div>
             
             <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
