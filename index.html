@@ -209,12 +209,12 @@
         <div class="search-container">
             <input type="text" id="search-input" maxlength="50" autocomplete="off" placeholder="輸入泰文或中文搜尋....." oninput="handleSearch()">
         </div>
-        <div class="action-row">
+    <div class="action-row">
             <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 測驗模式</button>
-            <button id="refresh-btn-main" class="refresh-btn" onclick="refreshContent()">
-             <div id="refresh-btn-main" class="refresh-btn" onclick="handleRefresh()" style="display: flex;">
-    <span>🔄 更新</span>
-</div>
+            <div id="refresh-btn-main" class="refresh-btn" onclick="handleRefresh()" style="display: flex;">
+                <span>🔄 更新</span>
+            </div>
+        </div>
             </button>
         </div>
     </div>
@@ -392,26 +392,31 @@
         }
 let quizCount = localStorage.getItem('thai_quiz_count') || 10; // 讀取紀錄，預設 10
 
-        // 更新題數並儲存
+    // 更新題數並儲存 (強制限制 10~30)
         function updateQuizCount(val) {
             let num = parseInt(val);
-            if (isNaN(num) || num < 1) num = 1;
-            if (num > 30) num = 30; // 強制限制最大 30 題
+            
+            // 邏輯判斷：若不是數字或小於 10 則設為 10，若大於 30 則設為 30
+            if (isNaN(num) || num < 10) {
+                num = 10;
+            } else if (num > 30) {
+                num = 30;
+            }
             
             quizCount = num;
             localStorage.setItem('thai_quiz_count', num);
+            // 將修正後的數字填回輸入框
             document.getElementById('quiz-count-input').value = num;
         }
 function handleRefresh() {
-    // 檢查目前在哪個模式
-    if (currentMode === 'random') {
-        displayRandom(); // 全站隨機
-    } else {
-        // 如果是特定分頁 (如 custom, thai2, line 等)
-        // 再次呼叫 switchSource 來達到「在該分頁內隨機換 5 筆」
-        switchSource(currentMode, null);
-    }
-}
+            // 檢查目前在哪個模式
+            if (currentMode === 'random') {
+                displayRandom(); // 全站隨機
+            } else {
+                // 如果是特定分頁，再次執行該分類的隨機抽取
+                switchSource(currentMode, null);
+            }
+        }
         // 初始化時設定輸入框的值
         document.getElementById('quiz-count-input').value = quizCount;
     // 1. 更新字體大小函式
