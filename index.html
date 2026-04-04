@@ -86,85 +86,51 @@
             border-radius: 10px; padding: 10px 15px; cursor: pointer; font-size: 0.9rem; font-weight: bold;
         }
         .quiz-toggle.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
-        .quiz-mode .chinese { opacity: 0; transition: opacity 0.3s; }
-        .card.revealed .chinese { opacity: 1; color: var(--accent-color); }
-
-        .sidebar {
-            position: fixed; top: 0; right: -320px; width: 300px; height: 100%;
-            background: var(--bg-color); box-shadow: -5px 0 15px rgba(0,0,0,0.3);
-            transition: 0.3s ease; z-index: 2000; padding: 25px;
-            overflow-y: auto; box-sizing: border-box;
-        }
-        .sidebar.open { right: 0; }
-        .sidebar-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); display: none; z-index: 1999;
-        }
-
+        
         .card { 
             background: var(--card-bg); 
             border-radius: 20px; 
-            padding: 20px 24px; 
+            padding: 24px; 
             margin: 12px 0; 
             width: 100%; 
             max-width: 480px; 
             display: flex; 
             align-items: center;
-            justify-content: space-between; /* 關鍵：左右推開 */
+            justify-content: space-between; /* 確保左右對齊 */
             box-sizing: border-box;
             border: 1px solid rgba(0,0,0,0.05); 
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+            min-height: 120px;
             transition: transform 0.1s, background-color 0.2s;
-            min-height: 110px;
+            cursor: pointer;
         }
         .card:active { transform: scale(0.98); }
 
-        /* 文字容器撐開空間 */
-        .card-content {
-            flex-grow: 1; 
-            display: flex;
-            flex-direction: column;
-            padding-right: 15px;
-        }
+        .card-content { flex-grow: 1; padding-right: 15px; }
+
+        .quiz-mode .chinese { opacity: 0; transition: opacity 0.3s; }
+        .card.revealed .chinese { opacity: 1; color: var(--accent-color); }
 
         .thai { 
             font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
             font-size: var(--thai-size); 
-            line-height: 1.4;
+            line-height: 1.6; 
+            margin-bottom: 10px; 
             font-weight: 700; 
+            letter-spacing: 0.5px;
             word-break: break-word;
             display: block;
         }
-        .chinese {
-            font-size: var(--zh-size);
-            color: var(--sub-text);
-            margin-top: 5px;
-            word-break: break-word;
-        }
+        .chinese { font-size: var(--zh-size); color: var(--sub-text); margin-top: 8px; word-break: break-word; }
+        
+        .btn-speak { border: none; background: transparent; color: var(--accent-color); font-size: 2.2rem; cursor: pointer; transition: all 0.2s; }
+        .btn-speak.playing { transform: scale(1.3); color: var(--btn-active); filter: drop-shadow(0 0 5px var(--btn-active)); }
 
-        /* 喇叭按鈕樣式 */
-        .card-action {
-            flex-shrink: 0; /* 防止按鈕被擠壓 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn-speak { 
-            border: none; 
-            background: transparent; 
-            color: var(--accent-color); 
-            font-size: 2.2rem; 
-            cursor: pointer; 
-            transition: all 0.2s;
-            padding: 5px;
-        }
-        .btn-speak.playing {
-            transform: scale(1.3);
-            color: var(--btn-active);
-            filter: drop-shadow(0 0 5px var(--btn-active));
-        }
-
-        /* 其他原本的 UI 組件 */
+        /* Sidebar & Modals */
+        .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: var(--bg-color); box-shadow: -5px 0 15px rgba(0,0,0,0.3); transition: 0.3s ease; z-index: 2000; padding: 25px; overflow-y: auto; box-sizing: border-box; }
+        .sidebar.open { right: 0; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1999; }
         .sidebar-section { margin-bottom: 25px; }
         .sidebar-label { color: var(--sub-text); font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; display: block; border-bottom: 1px solid var(--search-border); padding-bottom: 5px; }
         .grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
@@ -243,6 +209,22 @@
                 <span class="sidebar-label">🫩 關於這裡</span>
                 <p class="info-text">想練泰文口說搞出來的頁面<br>詞庫會不定時更新<br>句子有誤或是有其它指教再跟我說啦</p>
             </div>
+            <div class="setting-group">
+                <span class="sidebar-label">📚 內容相關</span>
+                <p class="info-text">• 字卡內容由開發者收集彙整後呈現<br>• 點字卡右上角星號可將其加入收藏<br>• 測驗模式會遮蔽中文，再點一次字卡即可顯示</p>
+            </div>
+            <div class="setting-group">
+                <span class="sidebar-label">🎲 抽選邏輯</span>
+                <p class="info-text">• 隨機字卡：從所有分類隨機抽選設定題數<br>• 分類隨機：從指定分類中抽選設定題數<br>• 搜尋模式：輸入關鍵字可搜尋所有資料</p>
+            </div>
+            <div class="setting-group">
+                <span class="sidebar-label">🔊 語音說明</span>
+                <p class="info-text">• 語音採用瀏覽器內建 TTS 技術<br>• 發音準確度取決於您裝置系統語言包</p>
+            </div>
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--sub-text); font-size: 0.85rem; color: var(--sub-text); line-height: 1.8;">
+                <div id="stat-total-count">詞庫總筆數：更新中...</div>
+                <div id="stat-last-update">最後更新時間：載入中...</div>
+            </div>
             <button class="close-btn" onclick="closeModal('about-page')">返回</button>
         </div>
     </div>
@@ -300,7 +282,6 @@
         let currentSpeed = parseFloat(localStorage.getItem('thai_speed')) || 1.0;
         let quizCount = localStorage.getItem('thai_quiz_count') || 10;
 
-        // UI 核心
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('overlay');
@@ -311,7 +292,6 @@
         function openModal(id) { document.getElementById(id).style.display = 'flex'; if(window.innerWidth < 600) toggleSidebar(); }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
-        // 主題與語速
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('thai_theme', theme);
@@ -319,18 +299,20 @@
         }
         setTheme(localStorage.getItem('thai_theme') || 'dark');
         function toggleTheme() { setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
+        
         function updateSpeed(val) { currentSpeed = parseFloat(val); localStorage.setItem('thai_speed', val); document.getElementById('speed-val').innerText = val; }
-        function updateQuizCount(val) { quizCount = Math.min(Math.max(parseInt(val) || 10, 10), 30); localStorage.setItem('thai_quiz_count', quizCount); }
+        function updateQuizCount(val) { quizCount = Math.min(Math.max(parseInt(val) || 10, 10), 30); localStorage.setItem('thai_quiz_count', quizCount); document.getElementById('quiz-count-input').value = quizCount; }
         function updateFontSize(val) {
             const size = parseFloat(val);
             document.documentElement.style.setProperty('--thai-size', size + 'px');
             document.documentElement.style.setProperty('--zh-size', (size * 0.6) + 'px');
             localStorage.setItem('thai_font_size', size);
             document.getElementById('font-val').innerText = size;
+            document.getElementById('font-slider').value = size;
         }
         updateFontSize(localStorage.getItem('thai_font_size') || 30);
+        document.getElementById('quiz-count-input').value = quizCount;
 
-        // 資料處理
         async function initAllData() {
             try {
                 const fetchPromises = Object.keys(gids).map(async (key) => {
@@ -348,7 +330,18 @@
                 allData = results.flat();
                 document.getElementById('loading').style.display = 'none';
                 displayRandom();
+                refreshSiteStats();
             } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
+        }
+
+        function refreshSiteStats() {
+            const countElem = document.getElementById('stat-total-count');
+            if (countElem) countElem.innerHTML = `詞庫總筆數：<strong style="color:var(--btn-active)">${allData.length}</strong> 筆`;
+            const timeElem = document.getElementById('stat-last-update');
+            if (timeElem) {
+                const today = new Date();
+                timeElem.innerText = `最後更新時間：${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+            }
         }
 
         function renderList(list) {
@@ -358,12 +351,8 @@
             list.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                // 點擊卡片切換顯示（測驗模式下）
-                div.onclick = function(e) { 
-                    if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); 
-                };
-                
-                // 結構優化：左側文字包在 card-content，右側喇叭單獨存在
+                div.onclick = function(e) { if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); };
+                // 喇叭靠右結構
                 div.innerHTML = `
                     <div class="card-content">
                         <div class="thai" lang="th">${item.thai}</div>
@@ -377,20 +366,24 @@
             });
         }
 
-        // 搜尋功能 (含 Debounce)
         function handleSearch() {
             clearTimeout(searchTimer);
             searchTimer = setTimeout(() => {
                 const cleanInput = document.getElementById('search-input').value.trim().toLowerCase();
                 if (!cleanInput) { handleRefresh(); return; }
                 const results = allData.filter(item => item.thai.toLowerCase().includes(cleanInput) || item.chinese.toLowerCase().includes(cleanInput));
+                if (results.length === 0) {
+                    document.getElementById('app').innerHTML = `<div style="margin-top:50px; text-align:center; color:var(--sub-text);"><div style="font-size: 3rem; margin-bottom: 10px;">🔍</div><div>找不到「${cleanInput}」相關詞彙</div></div>`;
+                } else {
+                    renderList(results);
+                }
                 document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
-                renderList(results);
             }, 300);
         }
 
         function handleRefresh() {
             if (currentMode === 'random') displayRandom();
+            else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
             else switchSource(currentMode, null);
         }
 
@@ -427,7 +420,7 @@
             renderList(favItems);
             document.getElementById('search-info').innerText = `已收藏 ${favItems.length} 筆`;
             document.querySelectorAll('.source-btn, .side-full-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            if (btn) btn.classList.add('active');
             toggleSidebar();
         }
 
@@ -436,8 +429,7 @@
             const btn = document.getElementById('quiz-btn');
             btn.classList.toggle('active');
             btn.innerText = isQuizMode ? '🙈 測驗模式：ON' : '👁️ 測驗模式';
-            renderList(allData.filter(i => false)); // 暫時清空重繪或直接改 Class
-            handleRefresh(); // 重刷目前內容以套用模式
+            handleRefresh();
         }
 
         function speak(text, btnElement) {
