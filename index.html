@@ -229,17 +229,21 @@
             <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
         </div>
 
-      <div class="sidebar-section">
-            <span class="sidebar-label">分類詞庫</span>
-            <div class="grid-selector">
-                <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
-                <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
-                <button class="source-btn" onclick="switchSource('calendar', this)">月份星期</button>
-                <button class="source-btn" onclick="switchSource('time', this)">時間</button>
-                <button class="source-btn" onclick="switchSource('line', this)">line</button>
-                <button class="source-btn" onclick="switchSource('self', this)">自建</button>
-            </div>
-        </div>
+    <div class="sidebar-section">
+    <span class="sidebar-label">分類詞庫</span>
+    <div style="font-size: 0.75rem; color: var(--sub-text); margin: -5px 0 10px 10px; opacity: 0.8;">
+        (點擊將隨機抽出設定之題數)
+    </div>
+    
+    <div class="grid-selector">
+        <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
+        <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
+        <button class="source-btn" onclick="switchSource('calendar', this)">月份星期</button>
+        <button class="source-btn" onclick="switchSource('time', this)">時間</button>
+        <button class="source-btn" onclick="switchSource('line', this)">line</button>
+        <button class="source-btn" onclick="switchSource('self', this)">自建</button>
+    </div>
+</div>
         <div class="sidebar-section">
             <span class="sidebar-label">系統與說明</span>
             <button class="side-full-btn" onclick="openModal('about-page')">ℹ️ 關於本站</button>
@@ -536,13 +540,26 @@ function displayRandom() {
             renderList(results);
         }
 
-        function switchSource(key, btnElement) {
-            currentMode = 'source'; currentSourceKey = key;
-            clearActiveButtons(); if(btnElement) btnElement.classList.add('active');
-            if(document.getElementById('sidebar').classList.contains('open')) toggleSidebar();
-            const filtered = allData.filter(item => item.source === gids[key].name);
-            renderList(filtered.sort(() => 0.5 - Math.random()).slice(0, 10));
+   function switchSource(key, btn) {
+            currentMode = key; // 紀錄目前選中的分類 (key 可能為 'custom', 'thai2' 等)
+            
+            // 1. 先從總表中過濾出該分類的資料
+            const filteredData = allData.filter(item => item.source === gids[key].name);
+            
+            // 2. 進行隨機洗牌，並切出使用者設定的題數 (quizCount)
+            const shuffledFiltered = [...filteredData].sort(() => 0.5 - Math.random()).slice(0, quizCount);
+            
+            // 3. 渲染到畫面上
+            renderList(shuffledFiltered);
+
+            // 4. 更新介面顯示 (讓使用者知道現在看的是哪一類，且是隨機的)
+            document.getElementById('search-info').innerText = `來源：${gids[key].name} (隨機抽出 ${quizCount} 筆)`;
+            
+            // 5. 處理按鈕高亮與側邊欄關閉
+            document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
             document.getElementById('refresh-btn-main').style.display = 'flex';
+            closeModal('sidebar-page');
         }
 
         function switchMode(mode) { clearActiveButtons(); document.getElementById('btn-random').classList.add('active'); toggleSidebar(); displayRandom(); }
