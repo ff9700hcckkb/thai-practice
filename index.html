@@ -277,8 +277,8 @@
 
                 <span class="sidebar-label">🎲 抽選邏輯</span>
                 <p class="info-text">
-                    • 隨機10句：從所有頁面隨機抽選10筆<br>
-                    • 分類隨機：從指定的分類中抽選10筆<br>
+                    • 隨機字卡：從所有頁面隨機抽選設定的題數<br>
+                    • 分類隨機：從指定的分類中抽選設定的題數<br>
                     • 搜尋模式：輸入關鍵字可搜尋所有分類資料<br>
                 </p>
             </div>
@@ -325,7 +325,7 @@
                 <input type="number" id="quiz-count-input" min="1" max="30" value="10" 
                        onchange="updateQuizCount(this.value)" 
                        style="width:100%; padding: 8px; border-radius: 8px; border: 1px solid var(--sub-text); background: var(--bg); color: var(--text); box-sizing: border-box;">
-                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">min:10，mix:30，儲存後請重整網頁</div>
+                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">最少10題，最多30題，儲存後請重整網頁</div>
             </div>
             
             <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
