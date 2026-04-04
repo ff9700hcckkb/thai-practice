@@ -320,6 +320,14 @@
                 <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">目前大小：<span id="font-val">30</span>px</div>
             </div>
 
+<div class="setting-group">
+                <span class="sidebar-label">📝 隨機練習題數 (最大 30)</span>
+                <input type="number" id="quiz-count-input" min="1" max="30" value="10" 
+                       onchange="updateQuizCount(this.value)" 
+                       style="width:100%; padding: 8px; border-radius: 8px; border: 1px solid var(--sub-text); background: var(--bg); color: var(--text); box-sizing: border-box;">
+                <div style="text-align:center; font-size: 0.8rem; color: var(--sub-text); margin-top: 5px;">預設為 10 題</div>
+            </div>
+            
             <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
         </div>
     </div>
@@ -376,7 +384,21 @@
             localStorage.setItem('thai_speed', currentSpeed); 
             document.getElementById('speed-val').innerText = val; // 更新顯示數值
         }
+let quizCount = localStorage.getItem('thai_quiz_count') || 10; // 讀取紀錄，預設 10
 
+        // 更新題數並儲存
+        function updateQuizCount(val) {
+            let num = parseInt(val);
+            if (isNaN(num) || num < 1) num = 1;
+            if (num > 30) num = 30; // 強制限制最大 30 題
+            
+            quizCount = num;
+            localStorage.setItem('thai_quiz_count', num);
+            document.getElementById('quiz-count-input').value = num;
+        }
+
+        // 初始化時設定輸入框的值
+        document.getElementById('quiz-count-input').value = quizCount;
     // 1. 更新字體大小函式
         function updateFontSize(val) {
             const size = parseFloat(val);
@@ -441,11 +463,15 @@ function refreshSiteStats() {
 }
 
         // 隨機抽選邏輯：全部抽選
-        function displayRandom() {
+function displayRandom() {
             currentMode = 'random';
-            // 2. 直接從 allData 抽選，不分來源
-            const shuffled = [...allData].sort(() => 0.5 - Math.random()).slice(0, 10);
+            
+            // 將原本的 .slice(0, 10) 改成 .slice(0, quizCount)
+            // 這樣就會根據妳在設定頁面輸入的數字來決定題數
+            const shuffled = [...allData].sort(() => 0.5 - Math.random()).slice(0, quizCount);
+            
             renderList(shuffled);
+            
             document.getElementById('search-info').innerText = '';
             document.getElementById('refresh-btn-main').style.display = 'flex';
         }
