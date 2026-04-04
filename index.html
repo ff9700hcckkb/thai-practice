@@ -126,7 +126,6 @@
         .btn-speak { border: none; background: transparent; color: var(--accent-color); font-size: 2.2rem; cursor: pointer; transition: all 0.2s; }
         .btn-speak.playing { transform: scale(1.3); color: var(--btn-active); filter: drop-shadow(0 0 5px var(--btn-active)); }
 
-        /* Sidebar & Modals */
         .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: var(--bg-color); box-shadow: -5px 0 15px rgba(0,0,0,0.3); transition: 0.3s ease; z-index: 2000; padding: 25px; overflow-y: auto; box-sizing: border-box; }
         .sidebar.open { right: 0; }
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1999; }
@@ -284,7 +283,7 @@
         let isQuizMode = false;
         let searchTimer;
         let currentSpeed = parseFloat(localStorage.getItem('thai_speed')) || 1.0;
-        let quizCount = localStorage.getItem('thai_quiz_count') || 10;
+        let quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
@@ -306,7 +305,11 @@
         function toggleTheme() { setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
         
         function updateSpeed(val) { currentSpeed = parseFloat(val); localStorage.setItem('thai_speed', val); document.getElementById('speed-val').innerText = val; }
-        function updateQuizCount(val) { quizCount = Math.min(Math.max(parseInt(val) || 10, 10), 30); localStorage.setItem('thai_quiz_count', quizCount); document.getElementById('quiz-count-input').value = quizCount; }
+        function updateQuizCount(val) { 
+            quizCount = Math.min(Math.max(parseInt(val) || 10, 10), 30); 
+            localStorage.setItem('thai_quiz_count', quizCount); 
+            document.getElementById('quiz-count-input').value = quizCount; 
+        }
         function updateFontSize(val) {
             const size = parseFloat(val);
             document.documentElement.style.setProperty('--thai-size', size + 'px');
@@ -381,6 +384,9 @@
         }
 
         function handleRefresh() {
+            // 強制重新讀取一次設定題數，確保是最新的
+            quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
+            
             if (currentMode === 'random') displayRandom();
             else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
             else switchSource(currentMode, null);
@@ -396,6 +402,7 @@
         function switchSource(key, btn) {
             currentMode = key;
             const filtered = allData.filter(item => item.source === gids[key].name);
+            // 這裡原本寫死了，現在改用變數 quizCount
             const shuffled = [...filtered].sort(() => 0.5 - Math.random()).slice(0, quizCount);
             renderList(shuffled);
             document.getElementById('search-info').innerText = `${gids[key].name} 抽 ${shuffled.length} 筆`;
