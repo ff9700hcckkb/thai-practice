@@ -110,7 +110,6 @@
         .btn-speak { border: none; background: transparent; color: var(--accent-color); font-size: 2.2rem; cursor: pointer; transition: all 0.2s; }
         .btn-speak.playing { transform: scale(1.3); color: var(--btn-active); filter: drop-shadow(0 0 5px var(--btn-active)); }
 
-        /* 側邊選單字體調大區域 */
         .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: var(--bg-color); box-shadow: -5px 0 15px rgba(0,0,0,0.3); transition: 0.3s ease; z-index: 2000; padding: 25px; overflow-y: auto; box-sizing: border-box; }
         .sidebar.open { right: 0; }
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1999; }
@@ -173,10 +172,10 @@
             <span class="sidebar-label">分類詞庫</span>
             <div class="grid-selector">
                 <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
-                <button class="source-btn" onclick="switchSource('thai2', this)">泰二</button>
+                <button class="source-btn" onclick="switchSource('thai2', this)">時泰</button>
                 <button class="source-btn" onclick="switchSource('calendar', this)">月份星期</button>
-                <button class="source-btn" onclick="switchSource('time', this)">時間</button>
-                <button class="source-btn" onclick="switchSource('line', this)">line</button>
+                <button class="source-btn" onclick="switchSource('anki', this)">Anki</button>
+                <button class="source-btn" onclick="switchSource('line', this)">Line</button>
                 <button class="source-btn" onclick="switchSource('self', this)">自建</button>
             </div>
         </div>
@@ -261,12 +260,14 @@
 
     <script>
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
+        
+        // 更新後的 GID 資料來源
         const gids = { 
             custom: { name: "網抓", id: "538865502" }, 
-            thai2: { name: "泰二", id: "2121125782" }, 
+            thai2: { name: "時泰", id: "2121125782" }, 
             calendar: { name: "月份星期", id: "1685596903" }, 
-            time: { name: "時間", id: "1355116620" }, 
-            line: { name: "line", id: "1404447959" },
+            anki: { name: "Anki", id: "248374266" }, 
+            line: { name: "Line", id: "1404447959" },
             self: { name: "自建", id: "1725449061" }
         };
 
