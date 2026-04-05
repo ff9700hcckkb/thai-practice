@@ -282,17 +282,18 @@
         </div>
     </div>
 
-    <div id="links-page" class="modal-page">
-        <div class="modal-content">
-            <h2 style="text-align:center">🔗 外部資源</h2>
-            <div id="external-links-container" style="display: flex; flex-direction: column; gap: 10px;">
-                <p style="text-align: center; color: var(--sub-text);">正在同步資源...</p>
-            </div>
-            <button class="close-btn" onclick="closeModal('links-page')">返回</button>
+<div id="links-page" class="modal-page">
+    <div class="modal-content" style="align-items: center;"> <h2 style="text-align:center">🔗 外部資源</h2>
+        
+        <div id="external-links-container" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+            <p style="text-align: center; color: var(--sub-text);">正在同步資源...</p>
         </div>
-    </div>
 
-    <script>
+        <button class="close-btn" onclick="closeModal('links-page')" style="width: 100%; margin-top: 20px;">返回</button>
+    </div>
+</div>
+
+<script>
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
         
         const gids = { 
@@ -373,36 +374,42 @@
             } catch (e) { document.getElementById('loading').innerText = '資料同步失敗'; }
         }
 
-        async function initExternalLinks() {
-            try {
-                const response = await fetch(`${base_url}&gid=${LINKS_GID}&t=${Date.now()}`);
-                const csvText = await response.text();
-                const rows = csvText.split(/\r?\n/).slice(1); // 跳過標題列
-                const container = document.getElementById('external-links-container');
-                container.innerHTML = ''; // 清空讀取中字樣
+       // 同時修改 initExternalLinks 函式中的按鈕產生邏輯
+async function initExternalLinks() {
+    try {
+        const response = await fetch(`${base_url}&gid=${LINKS_GID}&t=${Date.now()}`);
+        const csvText = await response.text();
+        const rows = csvText.split(/\r?\n/).slice(1);
+        const container = document.getElementById('external-links-container');
+        container.innerHTML = ''; 
 
-                rows.forEach(row => {
-                    const cols = row.split(',');
-                    if(cols.length >= 2) {
-                        const url = cols[0].trim();
-                        const name = cols[1].trim();
-                        if(url && name) {
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.target = "_blank";
-                            a.className = "side-full-btn";
-                            a.style.textDecoration = "none";
-                            a.style.textAlign = "center";
-                            a.style.color = "var(--link-color)";
-                            a.innerText = name;
-                            container.appendChild(a);
-                        }
-                    }
-                });
-            } catch (e) {
-                document.getElementById('external-links-container').innerHTML = '<p style="color:red; text-align:center;">外部資源載入失敗</p>';
+        rows.forEach(row => {
+            const cols = row.split(',');
+            if(cols.length >= 2) {
+                const url = cols[0].trim();
+                const name = cols[1].trim();
+                if(url && name) {
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = "_blank";
+                    // 關鍵修改：強制寬度 100% 並統一 Padding
+                    a.className = "side-full-btn";
+                    a.style.display = "block";
+                    a.style.width = "100%";
+                    a.style.boxSizing = "border-box";
+                    a.style.textDecoration = "none";
+                    a.style.textAlign = "center";
+                    a.style.color = "var(--link-color)";
+                    a.style.border = "1px solid var(--search-border)"; // 增加邊框感讓長度更顯眼
+                    a.innerText = name;
+                    container.appendChild(a);
+                }
             }
-        }
+        });
+    } catch (e) {
+        document.getElementById('external-links-container').innerHTML = '<p style="color:red; text-align:center;">外部資源載入失敗</p>';
+    }
+}
 
         function refreshSiteStats() {
             const countElem = document.getElementById('stat-total-count');
