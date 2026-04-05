@@ -628,10 +628,15 @@ function convertNumbersToThaiText(text) {
             }
         }
 
+  // 修改後的輪播播放函式
         function speakPromise(text) {
             return new Promise((resolve) => {
                 window.speechSynthesis.cancel();
-                const msg = new SpeechSynthesisUtterance(text);
+                
+                // 關鍵修改：先將數字轉換成泰文文字再播放
+                const processedText = convertNumbersToThaiText(text);
+                
+                const msg = new SpeechSynthesisUtterance(processedText);
                 msg.lang = 'th-TH';
                 msg.rate = currentSpeed;
                 msg.onend = () => resolve();
@@ -640,10 +645,15 @@ function convertNumbersToThaiText(text) {
             });
         }
 
+     // 修改後的單次播放函式
         function speak(text, btnElement, e) {
             if(e) e.stopPropagation();
             window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
+            
+            // 關鍵修改：先將數字轉換成泰文文字再播放
+            const processedText = convertNumbersToThaiText(text);
+            
+            const msg = new SpeechSynthesisUtterance(processedText);
             msg.lang = 'th-TH';
             msg.rate = currentSpeed;
             if (btnElement) btnElement.classList.add('playing');
