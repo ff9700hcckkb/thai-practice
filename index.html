@@ -72,18 +72,20 @@
             border: 2px solid var(--search-border); background: var(--search-bg);
             color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none;
         }
+        
+        /* 調整按鈕列佈局 */
         .action-row {
-            display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 8px;
+            display: flex; align-items: center; width: 100%; gap: 8px;
         }
-        .refresh-btn {
-            background: var(--btn-inactive); color: var(--text-color); border: 1px solid var(--search-border);
-            border-radius: 10px; padding: 10px 15px; cursor: pointer;
-            font-size: 0.9rem; font-weight: bold; display: flex; align-items: center; gap: 8px;
+        .left-actions {
+            display: flex; gap: 6px; flex-grow: 1; /* 讓左側佔據剩餘空間，推擠更新按鈕 */
         }
 
-        .quiz-toggle {
+        /* 統一按鈕樣式：邊框僅比文字大一點 */
+        .quiz-toggle, .refresh-btn {
             background: var(--btn-inactive); color: var(--text-color); border: 1px solid var(--search-border);
-            border-radius: 10px; padding: 10px 15px; cursor: pointer; font-size: 0.9rem; font-weight: bold; flex: 1;
+            border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: 0.85rem; font-weight: bold;
+            width: auto; white-space: nowrap; display: flex; align-items: center; gap: 4px;
         }
         .quiz-toggle.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         
@@ -150,9 +152,11 @@
             <input type="text" id="search-input" maxlength="50" autocomplete="off" placeholder="輸入泰文或中文搜尋....." oninput="handleSearch()">
         </div>
         <div class="action-row">
-            <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 測驗模式</button>
-            <button id="autoplay-btn" class="quiz-toggle" onclick="toggleAutoplay()">📢 輪播模式</button>
-            <div id="refresh-btn-main" class="refresh-btn" onclick="handleRefresh()" style="display: flex;">
+            <div class="left-actions">
+                <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 測驗模式</button>
+                <button id="autoplay-btn" class="quiz-toggle" onclick="toggleAutoplay()">📢 輪播模式</button>
+            </div>
+            <div id="refresh-btn-main" class="refresh-btn" onclick="handleRefresh()">
                 <span>🔄 更新</span>
             </div>
         </div>
@@ -294,11 +298,11 @@
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         let currentMode = 'random';
         let isQuizMode = false;
-        let isAutoplay = false; // 輪播狀態
+        let isAutoplay = false;
         let searchTimer;
         let currentSpeed = parseFloat(localStorage.getItem('thai_speed')) || 1.0;
         let quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
-        let currentDisplayedList = []; // 存儲目前頁面顯示的資料
+        let currentDisplayedList = [];
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
@@ -367,14 +371,14 @@
         }
 
         function renderList(list) {
-            currentDisplayedList = list; // 更新當下顯示的清單供輪播使用
+            currentDisplayedList = list;
             const container = document.getElementById('app');
             container.innerHTML = list.length === 0 ? '<div style="margin-top:30px;color:#666;text-align:center;">無相關詞庫</div>' : '';
             container.className = isQuizMode ? 'quiz-mode' : '';
             list.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.id = `card-${index}`; // 方便輪播時視覺識別
+                div.id = `card-${index}`;
                 div.onclick = function(e) { if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); };
                 div.innerHTML = `
                     <div class="card-content">
@@ -401,7 +405,7 @@
         }
 
         function handleRefresh() {
-            stopAutoplay(); // 重置或更新時停止輪播
+            stopAutoplay();
             quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
             if (currentMode === 'random') displayRandom();
             else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
@@ -453,7 +457,6 @@
             handleRefresh();
         }
 
-        // 輪播功能實作
         function toggleAutoplay() {
             if (isAutoplay) {
                 stopAutoplay();
@@ -479,26 +482,18 @@
         async function startAutoplayLogic() {
             for (let i = 0; i < currentDisplayedList.length; i++) {
                 if (!isAutoplay) break;
-                
                 const item = currentDisplayedList[i];
                 const card = document.getElementById(`card-${i}`);
-                
-                // 視覺標示正在播放哪一個
                 if(card) {
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     card.style.borderColor = 'var(--btn-active)';
                 }
-
-                // 播放兩次
                 await speakPromise(item.thai);
                 if (!isAutoplay) break;
-                await new Promise(r => setTimeout(r, 500)); // 兩次之間的間隔
+                await new Promise(r => setTimeout(r, 500));
                 await speakPromise(item.thai);
-                
                 if(card) card.style.borderColor = 'rgba(0,0,0,0.05)';
-                await new Promise(r => setTimeout(r, 1000)); // 單字之間的間隔
-                
-                // 播完最後一個自動結束
+                await new Promise(r => setTimeout(r, 1000));
                 if (i === currentDisplayedList.length - 1) stopAutoplay();
             }
         }
