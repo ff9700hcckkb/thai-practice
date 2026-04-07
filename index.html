@@ -658,7 +658,7 @@ function speak(text, btnElement, e) {
     
     // 處理重複符號：加入「逗號」產生微停頓，解決卡頓感
     // 我們稍微放寬抓取長度到 1-6 字元，確保涵蓋大部分單字
-    processedText = processedText.replace(/([ก-๙]{1,6})ๆ/g, '$1, $1');
+    processedText = processedText.replace(/([ก-๙]{1,6})ๆ/g, '$1 $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
     
@@ -671,7 +671,7 @@ function speak(text, btnElement, e) {
     msg.lang = 'th-TH';
     
     // 琪，建議先設為 0.9 測試卡頓感，如果順了再改回 1.0
-    msg.rate = 0.9; 
+    msg.rate = 1.1; 
 
     if (btnElement) btnElement.classList.add('playing');
     msg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
