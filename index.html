@@ -660,7 +660,8 @@ function speak(text, btnElement, e) {
     // 3. 強化處理重複符號 'ๆ'
     // 改用更精確的正則表達式：捕捉前面一組連續的泰文字符，然後重複它
     // 如果 ๆ 前面有空格，則重複空格後的那個詞
-    processedText = processedText.replace(/([ก-๙]+)ๆ/g, '$1 $1');
+   // 抓取前面 2 到 6 個字元（涵蓋 99% 的泰文單字長度）
+    processedText = processedText.replace(/([ก-๙]{2,6})ๆ/g, '$1 $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
     
