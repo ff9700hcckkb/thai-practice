@@ -656,28 +656,29 @@ function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
     window.speechSynthesis.cancel();
 
-    // 先進行標準化，確保「輔音+聲調+母音」的順序一致
+    // 1. 強制標準化與格式清理
     let processedText = text.normalize('NFC').trim();
     processedText = convertNumbersToThaiText(processedText);
 
-    // 【核心修正】處理帶聲調的 Am 音 (如 น้ำ)
-    // 這裡我們直接捕捉「聲調符號」與「Am母音」的各種組合
-    // \u0e48-\u0e4b 是四個聲調符號
-    // \u0e33 是單一 Am, \u0e4d\u0e32 是組合 Am
-    processedText = processedText.replace(/([\u0e48-\u0e4b]?)([\u0e33\u0eb3])|([\u0e48-\u0e4b]?)(\u0e4d\u0e32)/g, (match, tone1, am1, tone2, am2) => {
-        const tone = tone1 || tone2 || "";
-        return tone + "ัม"; 
+    // 2. 【終極手段】分兩階段處理 Am 音，徹底拆解堆疊
+    // 第一階段：先把所有的組合式 Am (ํ + า) 統一成單一字元 Am (ำ)
+    processedText = processedText.replace(/\u0e4d\u0e32/g, '\u0e33');
+
+    // 第二階段：處理「輔音 + 聲調 + ำ」的結構
+    // 這裡我們把聲調抽出來，強行把 ำ 換成 ัม
+    // [่้๊๋] 是泰文的四個聲調符號
+    processedText = processedText.replace(/([่้๊๋])?ำ/g, (match, tone) => {
+        return (tone ? tone : "") + "ัม";
     });
 
-    // 處理重複符號 ๆ (改回加個空格或逗號)
-    processedText = processedText.replace(/([ก-๙]{1,6})ๆ/g, '$1 $1');
+    // 3. 處理重複符號 ๆ (加逗號停頓效果最好)
+    processedText = processedText.replace(/([ก-๙]{1,6})ๆ/g, '$1, $1');
     
-    // 針對人稱代詞優化斷句
+    // 4. 斷句優化
     processedText = processedText.replace(/^(คุณ|ผม|ฉัน|เรา)/g, '$1 ');
 
     const msg = new SpeechSynthesisUtterance(processedText);
     
-    // 強制尋找高品質語音
     const voices = window.speechSynthesis.getVoices();
     const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced') || v.name.includes('Google')))
                     || voices.find(v => v.lang.includes('th'));
