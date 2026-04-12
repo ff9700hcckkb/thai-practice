@@ -656,23 +656,24 @@ function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
     window.speechSynthesis.cancel();
 
-    // 1. 標準化
+    // 1. 先用 NFC 標準化，再轉成字元陣列處理，避免編碼靈異現象
     let processedText = text.normalize('NFC').trim();
     processedText = convertNumbersToThaiText(processedText);
 
-    // 2. 終極編碼修復邏輯
-    processedText = processedText.replace(/([่้๊๋]?ำ|ำ[่้๊๋]?|([่้๊๋]?)\u0e4d\u0e32|\u0e4d\u0e32([่้๊๋]?))/gu, (match) => {
-        const toneMatch = match.match(/[่้๊๋]/);
-        const tone = toneMatch ? toneMatch[0] : "";
-        return tone + "ัม";
+    // 2. 【地毯式修正】
+    // 這裡我們不只抓 ำ，連被拆散的小圓圈 \u0e4d 和長音 \u0e32 都一起抓
+    // 並且允許聲調符號出現在這組零件的任何位置
+    const amRegex = /[\u0e33\u0eb3]|[\u0e4d]\u0e32|\u0e32[\u0e4d]/gu;
+    const toneRegex = /[\u0e48-\u0e4b]/u;
+
+    // 先處理最難搞的「輔音+聲調+零件」組合
+    processedText = processedText.replace(/([ก-๙])([่้๊๋]?)([\u0e33\u0eb3]|\u0e4d\u0e32|\u0e32\u0e4d)/gu, (match, con, tone, am) => {
+        // 強制回傳：輔音 + 聲調(如果有) + ัม
+        return con + (tone ? tone : "") + "ัม";
     });
 
-    // 3. 處理重複符號
+    // 3. 處理重複符號 ๆ
     processedText = processedText.replace(/([ก-๙]{1,6})ๆ/gu, '$1, $1');
-    
-    // 4. 顯示處理後的結果 (偵錯用)
-    console.log("Original:", text);
-    console.log("Final Text to Speech:", processedText);
 
     const msg = new SpeechSynthesisUtterance(processedText);
     
