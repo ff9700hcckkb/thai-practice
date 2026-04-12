@@ -656,27 +656,25 @@ function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
     window.speechSynthesis.cancel();
 
-    // 1. 先用 NFC 標準化，再轉成字元陣列處理，避免編碼靈異現象
+    // 1. 標準化編碼，這是解決「拆開唸」的第一步
     let processedText = text.normalize('NFC').trim();
     processedText = convertNumbersToThaiText(processedText);
 
-    // 2. 【地毯式修正】
-    // 這裡我們不只抓 ำ，連被拆散的小圓圈 \u0e4d 和長音 \u0e32 都一起抓
-    // 並且允許聲調符號出現在這組零件的任何位置
-    const amRegex = /[\u0e33\u0eb3]|[\u0e4d]\u0e32|\u0e32[\u0e4d]/gu;
-    const toneRegex = /[\u0e48-\u0e4b]/u;
-
-    // 先處理最難搞的「輔音+聲調+零件」組合
-    processedText = processedText.replace(/([ก-๙])([่้๊๋]?)([\u0e33\u0eb3]|\u0e4d\u0e32|\u0e32\u0e4d)/gu, (match, con, tone, am) => {
-        // 強制回傳：輔音 + 聲調(如果有) + ัม
-        return con + (tone ? tone : "") + "ัม";
+    // 2. 【核心取代】將所有形式的 Am 音 (包括帶聲調) 轉為穩定發音的 ัม
+    // 這裡使用了特殊的正規表達式，能精準捕捉被拆散的泰文字元零件
+    processedText = processedText.replace(/([\u0e48-\u0e4b]?)(\u0e33|\u0e4d\u0e32)/g, (match, tone, am) => {
+        // match: 抓到的原始字串 (如 ้ + ำ)
+        // tone: 抓到的聲調符號 (如 ้)
+        // am: 抓到的母音零件 (如 ำ 或 ํ+า)
+        return (tone ? tone : "") + "ัม";
     });
 
-    // 3. 處理重複符號 ๆ
+    // 3. 處理重複符號 ๆ (加個逗號讓停頓更自然)
     processedText = processedText.replace(/([ก-๙]{1,6})ๆ/gu, '$1, $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
     
+    // 4. 語音包優先順序
     const voices = window.speechSynthesis.getVoices();
     const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
                     || voices.find(v => v.lang.includes('th'));
