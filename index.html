@@ -99,15 +99,39 @@
     flex: 1; /* 佔滿剩餘空間 */
 }
 
-.quiz-toggle {
-    flex: 1; /* 讓 測驗/輪播/藝術 三顆按鈕等寬 */
-    padding: 8px 2px; /* 縮小內距 */
+/* 統一所有控制按鈕的基礎樣式 */
+.quiz-toggle, .refresh-btn {
+    background: var(--btn-inactive); /* 統一底色 */
+    color: var(--text-color);
+    border: 1px solid var(--search-border);
+    border-radius: 8px;
+    padding: 8px 4px; 
+    cursor: pointer;
     font-size: 0.8rem;
-    white-space: nowrap;
-    text-align: center;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    transition: all 0.2s;
+    box-sizing: border-box;
 }
-        .quiz-toggle.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
-        
+
+/* 移除原本 .refresh-btn 可能存在的特殊背景色設定 */
+#refresh-btn-main {
+    background: var(--btn-inactive) !important; 
+    flex: 0 0 auto; /* 讓更新按鈕維持適當寬度 */
+    width: auto;
+    padding: 8px 12px;
+}
+
+/* 當按鈕被啟動時（測驗ON、輪播ON、藝術ON）的顏色 */
+.quiz-toggle.active, 
+.quiz-toggle.art-active {
+    background: var(--accent-color) !important;
+    color: white !important;
+    border-color: var(--accent-color);
+}
         .card { 
             background: var(--card-bg); 
             border-radius: 20px; padding: 24px; margin: 12px 0; width: 100%; max-width: 480px; 
