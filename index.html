@@ -903,63 +903,44 @@ document.getElementById('passcode').addEventListener('keypress', function (e) {
 });
         const RULE_GID = '1909951115'; // 妳指定的分頁 GID
 
+// --- 1. 惡補一下功能 ---
+const RULE_GID = '1909951115';
 async function openRulePage() {
-    // 1. 取得顯示容器
     const modal = document.getElementById('rule-page');
     const container = modal.querySelector('.modal-content');
-    
-    // 2. 顯示讀取中狀態
     container.innerHTML = '<div style="text-align:center; padding:20px;">📖 正在翻閱泰文秘笈...</div>';
-    modal.style.display = 'flex'; // 顯示彈窗
+    modal.style.display = 'flex';
 
     try {
-        // 3. 抓取 Google 試算表資料
         const url = `${base_url}&gid=${RULE_GID}`;
         const response = await fetch(url);
         const csvText = await response.text();
-        
-        // 4. 解析 CSV (跳過第一行標題)
         const rows = csvText.split('\n').slice(1); 
-        let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">⚡ 泰文規則惡補</h2>`;
         
-        let hasData = false;
+        let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">⚡ 泰文規則惡補</h2>`;
         rows.forEach(row => {
-            // 使用正規表達式處理 CSV，避免內容裡的逗號導致切割錯誤
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             if (cols.length >= 2) {
                 const title = cols[0].replace(/"/g, '').trim();
                 const content = cols[1].replace(/"/g, '').trim();
-                if (title && content) {
-                    hasData = true;
+                if (title) {
                     html += `
                         <div style="background:#333; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #444; text-align:left;">
                             <div style="font-weight:bold; color:var(--accent-color); font-size:1.1rem; margin-bottom:8px;">■ ${title}</div>
                             <div style="font-size:0.95rem; line-height:1.6; white-space: pre-wrap; color:#ddd;">${content}</div>
-                        </div>
-                    `;
+                        </div>`;
                 }
             }
         });
-
-        if (!hasData) html += '<p style="text-align:center;">目前秘笈裡還沒有內容喔！</p>';
-
-        // 5. 加入關閉按鈕
         html += `<button class="close-btn" onclick="closeModal('rule-page')" style="margin-top:10px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer; font-weight:bold;">看完收工</button>`;
-        
         container.innerHTML = html;
-        
     } catch (error) {
-        console.error('Error fetching rules:', error);
-        container.innerHTML = `
-            <div style="color:var(--danger-color); text-align:center; padding:20px;">
-                抓不到秘笈，請檢查：<br>
-                1. 網路連線<br>
-                2. 試算表分頁 ${RULE_GID} 是否已發佈<br>
-                <button onclick="closeModal('rule-page')" style="margin-top:15px;">關閉</button>
-            </div>`;
+        container.innerHTML = '<div style="color:var(--danger-color); text-align:center; padding:20px;">抓不到秘笈，請檢查網路。</div>';
     }
 }
-        function checkPasscode() {
+
+// --- 2. 登入驗證功能 (獨立出來，不要包在別人裡面) ---
+function checkPasscode() {
     const input = document.getElementById('passcode').value;
     const authorizedPass = [
         'NTgzNDU4MzRhYUFB', // 原始密碼
@@ -977,29 +958,25 @@ async function openRulePage() {
     }
 }
 
-// 補上這段，按 Enter 才會動
+// 監聽 Enter 鍵
 document.getElementById('passcode').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        checkPasscode();
-    }
+    if (e.key === 'Enter') checkPasscode();
 });
-        // 頁面載入時的總初始化
+
+// --- 3. 頁面初始化與基礎功能 ---
 window.addEventListener('load', () => {
     const isAuth = localStorage.getItem('thai_auth');
     const authTime = localStorage.getItem('auth_time');
     const now = new Date().getTime();
-
-    // 檢查 24 小時內是否已驗證
     if (isAuth === 'true' && (now - authTime < 86400000)) {
         document.getElementById('login-overlay').style.display = 'none';
     }
-
-    initAllData(); // 啟動抓取試算表資料
+    initAllData();
 });
 
-// 惡補一下的開關功能
 function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 </script>
 
     <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
