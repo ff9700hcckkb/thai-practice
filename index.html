@@ -798,25 +798,30 @@ function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
     window.speechSynthesis.cancel();
 
-    // 1. 標準化編碼，這是解決「拆開唸」的第一步
+    // 1. 強制將所有泰文字元標準化 (處理組合字元的排序問題)
     let processedText = text.normalize('NFC').trim();
     processedText = convertNumbersToThaiText(processedText);
 
-    // 2. 【核心取代】將所有形式的 Am 音 (包括帶聲調) 轉為穩定發音的 ัม
-    // 這裡使用了特殊的正規表達式，能精準捕捉被拆散的泰文字元零件
-    processedText = processedText.replace(/([\u0e48-\u0e4b]?)(\u0e33|\u0e4d\u0e32)/g, (match, tone, am) => {
-        // match: 抓到的原始字串 (如 ้ + ำ)
-        // tone: 抓到的聲調符號 (如 ้)
-        // am: 抓到的母音零件 (如 ำ 或 ํ+า)
-        return (tone ? tone : "") + "ัม";
+    // 2. 針對「Nam」這個最常出錯的字進行「暴力修復」
+    // 這裡同時捕捉「單一編碼」與「組合編碼」的 Nam，並強制轉為發音最穩定的格式
+    // 包含：น้ำ (Nam), นํ้า (另一種編碼的 Nam)
+    processedText = processedText.replace(/น[\u0e33\u0e4d]\u0e32?\u0e49/g, "นั้ม"); 
+    processedText = processedText.replace(/น\u0e49[\u0e33\u0e4d]\u0e32?/g, "นั้ม");
+
+    // 3. 針對所有帶聲調的 Am 音 (ำ) 進行通用修復
+    // 捕捉：[子音] + [聲調] + [Am] 或 [子音] + [Am] + [聲調]
+    processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
+        let finalTone = tone ? tone : "";
+        // 將「子音+聲調+Am」轉換為「子音+短母音a+聲調+尾音m」的邏輯發音
+        return con + "ั" + finalTone + "ม";
     });
 
-    // 3. 處理重複符號 ๆ (加個逗號讓停頓更自然)
+    // 4. 處理重複符號 ๆ
     processedText = processedText.replace(/([ก-๙]{1,6})ๆ/gu, '$1, $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
     
-    // 4. 語音包優先順序
+    // 5. 語音包優先順序
     const voices = window.speechSynthesis.getVoices();
     const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
                     || voices.find(v => v.lang.includes('th'));
