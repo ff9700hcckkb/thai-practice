@@ -132,21 +132,6 @@
     color: white !important;
     border-color: var(--accent-color);
 }
-
-        /* 惡補一下按鈕專屬樣式 */
-.side-full-btn.rule-btn {
-    background: rgba(230, 126, 34, 0.1) !important; /* 淡淡的橘色底 */
-    border-left: 4px solid var(--accent-color) !important;
-    color: var(--accent-color) !important;
-    font-weight: bold;
-    margin-top: 10px;
-    text-align: left;
-    padding-left: 15px;
-}
-
-.side-full-btn.rule-btn:hover {
-    background: rgba(230, 126, 34, 0.2) !important;
-}
         .card { 
             background: var(--card-bg); 
             border-radius: 20px; padding: 24px; margin: 12px 0; width: 100%; max-width: 480px; 
@@ -265,6 +250,9 @@
         <span>🔄 更新</span>
     </div>
 </div>
+         
+       
+    
 
     <div id="loading">同步雲端資料中...</div>
     <div id="app"></div>
@@ -276,7 +264,6 @@
             <span class="sidebar-label">主要模式</span>
             <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')">🎲 隨機字卡</button>
             <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
-            <button id="btn-rules" class="side-full-btn rule-btn" onclick="openRulePage()">📖 惡補一下</button>
         </div>
         <div class="sidebar-section">
             <span class="sidebar-label">分類詞庫</span>
@@ -299,11 +286,9 @@
     </div>
 
  <div id="about-page" class="modal-page">
-    <div class="modal-content"></div>
+    <div class="modal-content">
+        </div>
 </div>
-        <div id="rule-page" class="modal-page">
-        <div class="modal-content"></div>
-    </div>
 
     <div id="settings-page" class="modal-page">
         <div class="modal-content">
@@ -373,57 +358,43 @@
         let quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
         let currentDisplayedList = [];
 
+function checkPasscode() {
+    const input = document.getElementById('passcode').value;
+    // 將所有允許的密碼 Base64 放在陣列中
+    const authorizedPass = [
+        'NTgzNDU4MzRhYUFB', 
+        'VGVzdDU1NjZAQA=='   
+    ];
 
+    // 檢查輸入的編碼是否符合陣列中的任何一組
+    if (authorizedPass.includes(btoa(input))) {
+        document.getElementById('login-overlay').style.display = 'none';
+        localStorage.setItem('thai_auth', 'true');
+        localStorage.setItem('auth_time', new Date().getTime());
+    } else {
+        const errorMsg = document.getElementById('error-msg');
+        errorMsg.style.display = 'block';
+        document.getElementById('passcode').value = '';
+    }
+}
 
+// 頁面載入時的總初始化
+window.addEventListener('load', () => {
+    // 1. 執行密碼檢查
+    const isAuth = localStorage.getItem('thai_auth');
+    const authTime = localStorage.getItem('auth_time');
+    const now = new Date().getTime();
+    
+    if (isAuth === 'true' && (now - authTime < 86400000)) {
+        document.getElementById('login-overlay').style.display = 'none';
+    }
+
+    // 2. 啟動資料抓取
+    initAllData();
+});
         
 let isArtFont = false;
 
-const RULE_GID = '1909951115';
-
-async function openRulePage() {
-    const container = document.querySelector('#rule-page .modal-content');
-    container.innerHTML = '<div style="text-align:center; padding:20px;">📖 正在翻閱泰文秘笈...</div>';
-    
-    // 借用妳原本就有的顯示彈窗函式
-    if (typeof openModal === 'function') {
-        openModal('rule-page');
-    } else {
-        document.getElementById('rule-page').style.display = 'flex';
-    }
-
-    try {
-        const url = `${base_url}&gid=${RULE_GID}`;
-        const response = await fetch(url);
-        const csvText = await response.text();
-        const rows = csvText.split('\n').slice(1); 
-        
-        let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">⚡ 泰文規則惡補</h2>`;
-        
-        rows.forEach(row => {
-            // 簡單處理 CSV 欄位，考慮到內容可能有逗號
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (cols.length >= 2) {
-                const title = cols[0].replace(/"/g, '').trim();
-                const content = cols[1].replace(/"/g, '').trim();
-                if (title) {
-                    html += `
-                        <div style="background:#333; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #444; text-align:left;">
-                            <div style="font-weight:bold; color:var(--accent-color); font-size:1.1rem; margin-bottom:8px;">■ ${title}</div>
-                            <div style="font-size:0.95rem; line-height:1.6; white-space: pre-wrap; color:#ddd;">${content}</div>
-                        </div>
-                    `;
-                }
-            }
-        });
-
-        html += `<button class="close-btn" onclick="closeModal('rule-page')" style="margin-top:10px; width:100%; padding:10px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer;">看完收工</button>`;
-        container.innerHTML = html;
-        
-    } catch (error) {
-        container.innerHTML = '<div style="color:var(--danger-color); text-align:center; padding:20px;">抓不到秘笈，請確認試算表分頁已發佈。</div>';
-    }
-}
-        
 function toggleArtFont() {
     isArtFont = !isArtFont;
     const btn = document.getElementById('art-font-btn');
@@ -860,7 +831,21 @@ function speak(text, btnElement, e) {
     window.speechSynthesis.speak(msg);
 }
 
+// 登入驗證函式
+function checkPasscode() {
+    const input = document.getElementById('passcode').value;
+    const encodedPass = 'NTgzNDU4MzRhYUFB'; // 妳的 Base64 密碼
 
+    if (btoa(input) === encodedPass) {
+        document.getElementById('login-overlay').style.display = 'none';
+        localStorage.setItem('thai_auth', 'true');
+        localStorage.setItem('auth_time', new Date().getTime());
+    } else {
+        const errorMsg = document.getElementById('error-msg');
+        errorMsg.style.display = 'block';
+        document.getElementById('passcode').value = '';
+    }
+}
 
 // 頁面載入時的總初始化
 window.addEventListener('load', () => {
@@ -887,96 +872,6 @@ window.onscroll = function() {
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-
-// 補上這段，讓 Enter 鍵生效
-document.getElementById('passcode').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        checkPasscode();
-    }
-});
-        // 讓密碼輸入框支援按 Enter 鍵登入
-document.getElementById('passcode').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        checkPasscode();
-    }
-});
-        const RULE_GID = '1909951115'; // 妳指定的分頁 GID
-
-// --- 1. 惡補一下功能 ---
-const RULE_GID = '1909951115';
-async function openRulePage() {
-    const modal = document.getElementById('rule-page');
-    const container = modal.querySelector('.modal-content');
-    container.innerHTML = '<div style="text-align:center; padding:20px;">📖 正在翻閱泰文秘笈...</div>';
-    modal.style.display = 'flex';
-
-    try {
-        const url = `${base_url}&gid=${RULE_GID}`;
-        const response = await fetch(url);
-        const csvText = await response.text();
-        const rows = csvText.split('\n').slice(1); 
-        
-        let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">⚡ 泰文規則惡補</h2>`;
-        rows.forEach(row => {
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (cols.length >= 2) {
-                const title = cols[0].replace(/"/g, '').trim();
-                const content = cols[1].replace(/"/g, '').trim();
-                if (title) {
-                    html += `
-                        <div style="background:#333; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid #444; text-align:left;">
-                            <div style="font-weight:bold; color:var(--accent-color); font-size:1.1rem; margin-bottom:8px;">■ ${title}</div>
-                            <div style="font-size:0.95rem; line-height:1.6; white-space: pre-wrap; color:#ddd;">${content}</div>
-                        </div>`;
-                }
-            }
-        });
-        html += `<button class="close-btn" onclick="closeModal('rule-page')" style="margin-top:10px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer; font-weight:bold;">看完收工</button>`;
-        container.innerHTML = html;
-    } catch (error) {
-        container.innerHTML = '<div style="color:var(--danger-color); text-align:center; padding:20px;">抓不到秘笈，請檢查網路。</div>';
-    }
-}
-
-// --- 2. 登入驗證功能 (獨立出來，不要包在別人裡面) ---
-function checkPasscode() {
-    const input = document.getElementById('passcode').value;
-    const authorizedPass = [
-        'NTgzNDU4MzRhYUFB', // 原始密碼
-        'VGVzdDU1NjZAQA=='   // Test5566@@
-    ];
-
-    if (authorizedPass.includes(btoa(input))) {
-        document.getElementById('login-overlay').style.display = 'none';
-        localStorage.setItem('thai_auth', 'true');
-        localStorage.setItem('auth_time', new Date().getTime());
-    } else {
-        const errorMsg = document.getElementById('error-msg');
-        errorMsg.style.display = 'block';
-        document.getElementById('passcode').value = '';
-    }
-}
-
-// 監聽 Enter 鍵
-document.getElementById('passcode').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') checkPasscode();
-});
-
-// --- 3. 頁面初始化與基礎功能 ---
-window.addEventListener('load', () => {
-    const isAuth = localStorage.getItem('thai_auth');
-    const authTime = localStorage.getItem('auth_time');
-    const now = new Date().getTime();
-    if (isAuth === 'true' && (now - authTime < 86400000)) {
-        document.getElementById('login-overlay').style.display = 'none';
-    }
-    initAllData();
-});
-
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 </script>
 
     <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
