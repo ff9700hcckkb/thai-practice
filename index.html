@@ -358,40 +358,37 @@
         let quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
         let currentDisplayedList = [];
 
+// 登入驗證函式
 function checkPasscode() {
     const input = document.getElementById('passcode').value;
-    
-  
-    const encodedPass = 'NTgzNDU4MzRhYUFB'; 
-
+    const encodedPass = 'NTgzNDU4MzRhYUFB'; // 妳的 Base64 密碼
 
     if (btoa(input) === encodedPass) {
-        // 密碼正確：隱藏登入畫面
-        const overlay = document.getElementById('login-overlay');
-        overlay.style.display = 'none';
-        
-        // 紀錄登入狀態 (24小時內免登入)
+        document.getElementById('login-overlay').style.display = 'none';
         localStorage.setItem('thai_auth', 'true');
         localStorage.setItem('auth_time', new Date().getTime());
     } else {
-        // 密碼錯誤
         const errorMsg = document.getElementById('error-msg');
         errorMsg.style.display = 'block';
         document.getElementById('passcode').value = '';
     }
 }
 
-// 頁面載入時檢查是否已經登入過
+// 頁面載入時的總初始化
 window.addEventListener('load', () => {
+    // 1. 執行密碼檢查
     const isAuth = localStorage.getItem('thai_auth');
     const authTime = localStorage.getItem('auth_time');
     const now = new Date().getTime();
     
-    // 如果 24 小時內登入過，就直接隱藏遮罩 (24小時 = 86400000 毫秒)
     if (isAuth === 'true' && (now - authTime < 86400000)) {
         document.getElementById('login-overlay').style.display = 'none';
     }
+
+    // 2. 啟動資料抓取
+    initAllData();
 });
+        
 let isArtFont = false;
 
 function toggleArtFont() {
@@ -851,11 +848,15 @@ function speak(text, btnElement, e) {
 }
         initAllData();
         
-        window.onscroll = function() {
-            const btn = document.getElementById("back-to-top");
-            if (document.documentElement.scrollTop > 300) btn.style.display = "block";
-            else btn.style.display = "none";
-        };
+  window.onscroll = function() {
+    const btn = document.getElementById("back-to-top");
+    if (document.documentElement.scrollTop > 300) btn.style.display = "block";
+    else btn.style.display = "none";
+};
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
     </script>
 
     <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
