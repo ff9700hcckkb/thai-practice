@@ -242,7 +242,7 @@
         </div>
 <div class="action-row">
     <div class="left-actions">
-        <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 測驗</button>
+        <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 遮蔽</button>
         <button id="autoplay-btn" class="quiz-toggle" onclick="toggleAutoplay()">📢 輪播</button>
         <button id="art-font-btn" class="quiz-toggle" onclick="toggleArtFont()">🎨 藝術</button>
     </div>
@@ -725,7 +725,7 @@ function convertNumbersToThaiText(text) {
     
     // 1. 切換按鈕樣式與文字
     btn.classList.toggle('active');
-    btn.innerText = isQuizMode ? '🙈 測驗：ON' : '👁️ 測驗';
+    btn.innerText = isQuizMode ? '🙈 遮蔽：ON' : '👁️ 遮蔽';
     
     // 2. 關鍵：直接在容器上切換 'quiz-mode' 類別，而不呼叫 handleRefresh()
     if (isQuizMode) {
