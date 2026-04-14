@@ -95,27 +95,16 @@
       /* 確保按鈕容器不換行，並平分空間或緊湊排列 */
 .left-actions {
     display: flex;
-    gap: 4px; /* 縮小按鈕之間的間距 */
-    flex-grow: 1;
-    overflow-x: auto; /* 若螢幕太窄，允許橫向滑動而不換行 */
-    white-space: nowrap; 
+    gap: 4px; 
+    flex: 1; /* 佔滿剩餘空間 */
 }
 
-     /* 調整按鈕內的文字與邊距，確保三顆按鈕擠得下 */
-.quiz-toggle, .refresh-btn {
-    background: var(--btn-inactive);
-    color: var(--text-color);
-    border: 1px solid var(--search-border);
-    border-radius: 8px;
-    padding: 8px 6px; /* 減少左右內距 */
-    cursor: pointer;
-    font-size: 0.75rem; /* 稍微縮小字體 */
-    font-weight: bold;
-    flex: 1; /* 讓三顆按鈕等寬 */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
+.quiz-toggle {
+    flex: 1; /* 讓 測驗/輪播/藝術 三顆按鈕等寬 */
+    padding: 8px 2px; /* 縮小內距 */
+    font-size: 0.8rem;
+    white-space: nowrap;
+    text-align: center;
 }
         .quiz-toggle.active { background: var(--accent-color); color: white; border-color: var(--accent-color); }
         
@@ -705,13 +694,24 @@ function convertNumbersToThaiText(text) {
             toggleSidebar();
         }
 
-        function toggleQuizMode() {
-            isQuizMode = !isQuizMode;
-            const btn = document.getElementById('quiz-btn');
-            btn.classList.toggle('active');
-            btn.innerText = isQuizMode ? '🙈 測驗：ON' : '👁️ 測驗';
-            handleRefresh();
-        }
+    function toggleQuizMode() {
+    isQuizMode = !isQuizMode;
+    const btn = document.getElementById('quiz-btn');
+    const container = document.getElementById('app'); // 取得字卡容器
+    
+    // 1. 切換按鈕樣式與文字
+    btn.classList.toggle('active');
+    btn.innerText = isQuizMode ? '🙈 測驗：ON' : '👁️ 測驗';
+    
+    // 2. 關鍵：直接在容器上切換 'quiz-mode' 類別，而不呼叫 handleRefresh()
+    if (isQuizMode) {
+        container.classList.add('quiz-mode');
+    } else {
+        container.classList.remove('quiz-mode');
+        // 取消所有卡片的 revealed 狀態，讓下次進入測驗模式時又是遮蔽的
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('revealed'));
+    }
+}
 
         function toggleAutoplay() {
             if (isAutoplay) { stopAutoplay(); } 
