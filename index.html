@@ -888,25 +888,6 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-  function checkPasscode() {
-    const input = document.getElementById('passcode').value;
-    // 這裡放入妳的所有密碼編碼
-    const authorizedPass = [
-        'NTgzNDU4MzRhYUFB', // 原始密碼
-        'VGVzdDU1NjZAQA=='   // Test5566@@
-    ];
-
-    // 檢查輸入的 Base64 是否在陣列中
-    if (authorizedPass.includes(btoa(input))) {
-        document.getElementById('login-overlay').style.display = 'none';
-        localStorage.setItem('thai_auth', 'true');
-        localStorage.setItem('auth_time', new Date().getTime());
-    } else {
-        const errorMsg = document.getElementById('error-msg');
-        errorMsg.style.display = 'block';
-        document.getElementById('passcode').value = '';
-    }
-}
 
 // 補上這段，讓 Enter 鍵生效
 document.getElementById('passcode').addEventListener('keypress', function (e) {
@@ -978,6 +959,30 @@ async function openRulePage() {
             </div>`;
     }
 }
+        function checkPasscode() {
+    const input = document.getElementById('passcode').value;
+    const authorizedPass = [
+        'NTgzNDU4MzRhYUFB', // 原始密碼
+        'VGVzdDU1NjZAQA=='   // Test5566@@
+    ];
+
+    if (authorizedPass.includes(btoa(input))) {
+        document.getElementById('login-overlay').style.display = 'none';
+        localStorage.setItem('thai_auth', 'true');
+        localStorage.setItem('auth_time', new Date().getTime());
+    } else {
+        const errorMsg = document.getElementById('error-msg');
+        errorMsg.style.display = 'block';
+        document.getElementById('passcode').value = '';
+    }
+}
+
+// 補上這段，按 Enter 才會動
+document.getElementById('passcode').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        checkPasscode();
+    }
+});
         // 頁面載入時的總初始化
 window.addEventListener('load', () => {
     const isAuth = localStorage.getItem('thai_auth');
