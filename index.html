@@ -791,48 +791,28 @@ function convertNumbersToThaiText(text) {
             });
         }
 
+// --- 請替換從 function speak 開始到結尾的內容 ---
+
 function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
     window.speechSynthesis.cancel();
 
-    // 1. 強制將所有泰文字元標準化 (處理組合字元的排序問題)
     let processedText = text.normalize('NFC').trim();
     processedText = convertNumbersToThaiText(processedText);
 
-    // 2. 針對「Nam」這個最常出錯的字進行「暴力修復」
-    // 這裡同時捕捉「單一編碼」與「組合編碼」的 Nam，並強制轉為發音最穩定的格式
-    // 包含：น้ำ (Nam), นํ้า (另一種編碼的 Nam)
-    processedText = processedText.replace(/น[\u0e33\u0e4d]\u0e32?\u0e49/g, "นั้ม"); 
-    processedText = processedText.replace(/น\u0e49[\u0e33\u0e4d]\u0e32?/g, "นั้ม");
-
-    // 3. 針對所有帶聲調的 Am 音 (ำ) 進行通用修復
-    // 捕捉：[子音] + [聲調] + [Am] 或 [子音] + [Am] + [聲調]function speak(text, btnElement, e) {
-    if(e) e.stopPropagation();
-    window.speechSynthesis.cancel();
-
-    // 1. 標準化處理
-    let processedText = text.normalize('NFC').trim();
-    processedText = convertNumbersToThaiText(processedText);
-
-    // 2. 【核心修復】針對「Am 模式」的所有編碼組合進行攔截
-    // 這裡處理：子音 + (聲調/圓圈/母音A) 的所有亂序組合
-    // 捕捉 น + (ํ 或 า 或 ้) 的各種排列，全部強制轉為發音穩定的「นั้ม」
+    // 【核心修復】針對所有編碼組合的 Nam (น้ำ) 進行攔截
+    // 這裡處理各種可能的 Unicode 組合排序
     processedText = processedText.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
 
-    // 3. 通用 Am 音 (ำ) 的深度修復
-    // 解決所有子音加上 Am 且帶聲調會拆開唸的問題
-    // 原理：將 ำ 拆解為 ั + ม 讓 TTS 引擎以「閉口音」邏輯發音
+    // 通用 Am 音 (ำ) 的深度修復
     processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
         let finalTone = tone ? tone : "";
         return con + "ั" + finalTone + "ม";
     });
 
-    // 4. 處理重複符號 ๆ
     processedText = processedText.replace(/([ก-๙]{1,6})ๆ/gu, '$1, $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
-    
-    // 5. 語音包設定
     const voices = window.speechSynthesis.getVoices();
     const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
                     || voices.find(v => v.lang.includes('th'));
@@ -846,9 +826,40 @@ function speak(text, btnElement, e) {
     
     window.speechSynthesis.speak(msg);
 }
-        initAllData();
-        
-  window.onscroll = function() {
+
+// 登入驗證函式
+function checkPasscode() {
+    const input = document.getElementById('passcode').value;
+    const encodedPass = 'NTgzNDU4MzRhYUFB'; // 妳的 Base64 密碼
+
+    if (btoa(input) === encodedPass) {
+        document.getElementById('login-overlay').style.display = 'none';
+        localStorage.setItem('thai_auth', 'true');
+        localStorage.setItem('auth_time', new Date().getTime());
+    } else {
+        const errorMsg = document.getElementById('error-msg');
+        errorMsg.style.display = 'block';
+        document.getElementById('passcode').value = '';
+    }
+}
+
+// 頁面載入時的總初始化
+window.addEventListener('load', () => {
+    // 1. 執行密碼檢查
+    const isAuth = localStorage.getItem('thai_auth');
+    const authTime = localStorage.getItem('auth_time');
+    const now = new Date().getTime();
+    
+    if (isAuth === 'true' && (now - authTime < 86400000)) {
+        document.getElementById('login-overlay').style.display = 'none';
+    }
+
+    // 2. 啟動資料抓取
+    initAllData();
+});
+
+// 置頂按鈕邏輯
+window.onscroll = function() {
     const btn = document.getElementById("back-to-top");
     if (document.documentElement.scrollTop > 300) btn.style.display = "block";
     else btn.style.display = "none";
@@ -857,9 +868,8 @@ function speak(text, btnElement, e) {
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-    </script>
+</script>
 
-    <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-        style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
+    <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
 </body>
 </html>
