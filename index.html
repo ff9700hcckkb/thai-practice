@@ -293,6 +293,10 @@
     <div class="modal-content">
         </div>
 </div>
+        <div id="rule-page" class="modal-page">
+    <div class="modal-content">
+        </div>
+</div>
 
     <div id="settings-page" class="modal-page">
         <div class="modal-content">
@@ -534,6 +538,68 @@ async function initAllData() {
     }
 }
 
+// 新增：抓取「額外補充」分頁資料
+const RULE_GID = '1909951115'; // 妳指定的分頁 GID
+
+async function openRulePage() {
+    const modal = document.getElementById('rule-page');
+    const container = modal.querySelector('.modal-content');
+    
+    // 1. 先顯示讀取中，讓使用者知道程式有在跑
+    container.innerHTML = '<div style="text-align:center; padding:20px;">📖 正在翻閱泰文秘笈...</div>';
+    modal.style.display = 'flex'; // 打開彈窗
+
+    try {
+        // 2. 抓取資料 (base_url 是妳原本就有的變數)
+        const url = `${base_url}&gid=${RULE_GID}`;
+        const response = await fetch(url);
+        const csvText = await response.text();
+        
+        // 3. 解析 CSV 內容 (跳過第一行標題)
+        const rows = csvText.split('\n').slice(1); 
+        let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">⚡ 泰文規則惡補</h2>`;
+        
+        let hasData = false;
+        rows.forEach(row => {
+            // 處理 CSV 欄位（考慮到內容可能有逗號，使用正規表達式）
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (cols.length >= 2) {
+                const title = cols[0].replace(/"/g, '').trim();
+                const content = cols[1].replace(/"/g, '').trim();
+                
+                if (title && content) {
+                    hasData = true;
+                    // 這裡的 HTML 樣式會讓它呈現得像「關於本站」一樣精美
+                    html += `
+                        <div style="background:var(--card-bg); padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid var(--search-border); text-align:left;">
+                            <div style="font-weight:bold; color:var(--accent-color); font-size:1.1rem; margin-bottom:8px;">■ ${title}</div>
+                            <div style="font-size:0.95rem; line-height:1.6; white-space: pre-wrap; color:var(--text-color);">${content}</div>
+                        </div>
+                    `;
+                }
+            }
+        });
+
+        if (!hasData) html += '<p style="text-align:center;">目前秘笈裡還沒有內容喔！</p>';
+
+        // 4. 加入與「關於本站」風格一致的關閉按鈕
+        html += `<button class="close-btn" onclick="closeModal('rule-page')" style="margin-top:10px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer; font-weight:bold;">看完收工</button>`;
+        
+        container.innerHTML = html;
+        
+    } catch (error) {
+        console.error('Error fetching rules:', error);
+        container.innerHTML = `
+            <div style="color:var(--danger-color); text-align:center; padding:20px;">
+                抓不到秘笈，請檢查：<br>
+                1. 網路連線<br>
+                2. 試算表分頁 ${RULE_GID} 是否已發佈<br>
+                <button onclick="closeModal('rule-page')" style="margin-top:15px;">關閉</button>
+            </div>`;
+    }
+}
+
+        
 async function initExternalLinks() {
     try {
         const response = await fetch(`${base_url}&gid=${LINKS_GID}&t=${Date.now()}`);
