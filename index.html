@@ -565,9 +565,11 @@ async function openRulePage() {
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
             if (cols.length >= 2) {
                 const title = cols[0].replace(/"/g, '').trim();
-                const content = cols[1].replace(/"/g, '').trim();
-                
-                if (title && content) {
+                let content = cols[1].replace(/"/g, '').trim();
+// 新增這行：把妳在試算表打的 \n 變成網頁的換行
+content = content.replace(/\\n/g, '<br>'); 
+
+if (title && content) {
                     hasData = true;
                     // 這裡的 HTML 樣式會讓它呈現得像「關於本站」一樣精美
                     html += `
