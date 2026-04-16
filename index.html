@@ -904,12 +904,16 @@ function speak(text, btnElement, e) {
     window.speechSynthesis.speak(msg);
 }
 
-// 登入驗證函式
 function checkPasscode() {
     const input = document.getElementById('passcode').value;
-    const encodedPass = 'NTgzNDU4MzRhYUFB'; // 妳的 Base64 密碼
+    // 這裡放妳所有允許的 Base64 密碼陣列
+    const authorizedPass = [
+        'NTgzNDU4MzRhYUFB', // 第一組
+        'MTIzNDQzMjE='      // 12344321
+    ];
 
-    if (btoa(input) === encodedPass) {
+    // 改成用 .includes 檢查「輸入的密碼轉碼後」是否在陣列名單中
+    if (authorizedPass.includes(btoa(input))) {
         document.getElementById('login-overlay').style.display = 'none';
         localStorage.setItem('thai_auth', 'true');
         localStorage.setItem('auth_time', new Date().getTime());
