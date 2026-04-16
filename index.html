@@ -572,11 +572,16 @@ content = content.replace(/\\n/g, '<br>');
 if (title && content) {
                     hasData = true;
                    // 這裡的樣式加大了字體
+// 這裡加入了左側色柱與標題背景，讓層次更明顯
 html += `
-    <div style="background:var(--card-bg); padding:20px; border-radius:12px; margin-bottom:15px; border:1px solid var(--search-border); text-align:left;">
-        <div style="font-weight:bold; color:var(--accent-color); font-size:1.3rem; margin-bottom:12px;">■ ${title}</div>
+    <div style="background:var(--card-bg); padding:0; border-radius:12px; margin-bottom:20px; border:1px solid var(--search-border); text-align:left; overflow:hidden;">
+        <div style="background: rgba(230, 126, 34, 0.1); padding:12px 20px; border-left: 6px solid var(--accent-color); font-weight:bold; color:var(--accent-color); font-size:1.3rem;">
+            ■ ${title}
+        </div>
         
-        <div style="font-size:1.15rem; line-height:1.7; white-space: pre-wrap; color:var(--text-color);">${content}</div>
+        <div style="padding:20px; font-size:1.15rem; line-height:1.8; white-space: pre-wrap; color:var(--text-color);">
+            ${content}
+        </div>
     </div>
 `;
                 }
