@@ -875,6 +875,10 @@ function speak(text, btnElement, e) {
     window.speechSynthesis.cancel();
 
     let processedText = text.normalize('NFC').trim();
+    // 【針對性修正】在進入妳的邏輯前，先將「組合式 Sara Am」轉為「標準式」
+    // 這樣後面妳的正則表達式 (con, tone, am, a) 才能正確抓到它
+    processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
+    
     processedText = convertNumbersToThaiText(processedText);
 
     // 【核心修復】針對所有編碼組合的 Nam (น้ำ) 進行攔截
