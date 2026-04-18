@@ -279,6 +279,7 @@
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
+    <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
         <div class="sidebar-section">
             <span class="sidebar-label">系統與說明</span>
@@ -296,6 +297,13 @@
         <div id="rule-page" class="modal-page">
     <div class="modal-content">
         </div>
+</div>
+
+<div id="essay-page" class="modal-page">
+    <div class="modal-content" style="max-width: 800px;">
+        <div id="essay-dynamic-content">
+            </div>
+    </div>
 </div>
 
     <div id="settings-page" class="modal-page">
@@ -602,6 +610,84 @@ html += `
     }
 }
 
+const ESSAY_GID = '893893675';
+let essayData = []; // 用來暫存抓下來的短文資料
+
+// 1. 開啟短文清單頁
+async function openEssayListPage() {
+    const modal = document.getElementById('essay-page');
+    const container = document.getElementById('essay-dynamic-content');
+    
+    container.innerHTML = '<div style="text-align:center; padding:20px;">✍️ 正在載入短文清單...</div>';
+    modal.style.display = 'flex';
+
+    try {
+        const url = `${base_url}&gid=${ESSAY_GID}`;
+        const response = await fetch(url);
+        const csvText = await response.text();
+        const rows = csvText.split('\n').slice(1);
+        
+        essayData = []; // 清空舊資料
+        let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">📝 短文閱讀清單</h2>`;
+        
+        rows.forEach((row, index) => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (cols.length >= 2) {
+                const title = cols[0].replace(/"/g, '').trim();
+                const content = cols[1].replace(/"/g, '').trim();
+                const spotifyUrl = cols[2] ? cols[2].replace(/"/g, '').trim() : ''; // 假設 C 欄是 Spotify 連結
+
+                if (title && content) {
+                    essayData.push({ title, content, spotifyUrl });
+                    // 呈現標題按鈕
+                    html += `
+                        <div onclick="showEssayDetail(${index})" style="background:var(--card-bg); padding:18px; border-radius:10px; margin-bottom:12px; border:1px solid var(--search-border); cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition: 0.3s;">
+                            <span style="font-size:1.2rem; font-weight:bold; color:var(--text-color);">■ ${title}</span>
+                            <span style="color:var(--accent-color);">閱讀更多 ❯</span>
+                        </div>`;
+                }
+            }
+        });
+
+        html += `<button class="close-btn" onclick="closeModal('essay-page')" style="margin-top:20px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer;">離開</button>`;
+        container.innerHTML = html;
+        
+    } catch (error) {
+        container.innerHTML = '<div style="text-align:center; padding:20px;">載入失敗，請檢查網路。</div>';
+    }
+}
+
+// 2. 顯示單篇短文內容
+function showEssayDetail(index) {
+    const container = document.getElementById('essay-dynamic-content');
+    const essay = essayData[index];
+    const formattedContent = essay.content.replace(/\\n/g, '<br>');
+
+    let html = `
+        <div style="display:flex; align-items:center; margin-bottom:20px;">
+            <button onclick="openEssayListPage()" style="background:none; border:none; color:var(--accent-color); cursor:pointer; font-size:1.1rem; padding:0;">❮ 返回清單</button>
+        </div>
+        
+        <h2 style="color:var(--accent-color); margin-bottom:15px; border-left:6px solid var(--accent-color); padding-left:15px;">${essay.title}</h2>
+        
+        <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px; display:flex; gap:10px; align-items:center;">
+            <span style="font-size:0.9rem; color:var(--sub-text);">語音工具：</span>
+            <button onclick="speak('${essay.content.replace(/\\n/g, ' ')}', this)" style="padding:5px 12px; border-radius:5px; background:var(--accent-color); color:white; border:none; cursor:pointer;">AI 朗讀</button>
+            
+            ${essay.spotifyUrl ? `
+                <a href="${essay.spotifyUrl}" target="_blank" style="text-decoration:none; padding:5px 12px; border-radius:5px; background:#1DB954; color:white; border:none; cursor:pointer; font-size:0.9rem; font-weight:bold;">🎧 Spotify 原音</a>
+            ` : ''}
+        </div>
+
+        <div style="font-size:1.25rem; line-height:2.2; color:var(--text-color); white-space: pre-wrap; text-align:left; background:var(--card-bg); padding:20px; border-radius:12px; border:1px solid var(--search-border);">
+            ${formattedContent}
+        </div>
+
+        <button class="close-btn" onclick="closeModal('essay-page')" style="margin-top:25px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer;">關閉閱讀</button>
+    `;
+    
+    container.innerHTML = html;
+}
         
 async function initExternalLinks() {
     try {
