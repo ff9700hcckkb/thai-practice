@@ -1101,8 +1101,10 @@ const vowelData = [
 function showAlphabetMenuInMain() {
     const mainContent = document.getElementById('main-content');
     
-    // 如果是手機版，點擊後自動收起側邊欄 (假設妳有這個 function)
-    if (typeof closeSidebar === "function") closeSidebar();
+    // 如果有側邊欄收合函式請執行
+    if (window.innerWidth < 768 && typeof toggleSidebar === "function") {
+        toggleSidebar(); 
+    }
 
     mainContent.innerHTML = `
         <div style="padding: 20px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.5s;">
@@ -1121,14 +1123,13 @@ function showAlphabetMenuInMain() {
             </div>
         </div>
     `;
-    
-    // 讓頁面捲動回到頂部
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // 2. 在主畫面顯示詳細列表
 function renderAlphabetListInMain(type) {
     const mainContent = document.getElementById('main-content');
+    // 確保妳程式碼中有定義好 alphabetData 和 vowelData 陣列
     const data = (type === 'consonant') ? alphabetData : vowelData;
     const title = (type === 'consonant') ? '泰文子音表' : '泰文母音表';
 
@@ -1137,7 +1138,8 @@ function renderAlphabetListInMain(type) {
             <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:20px;">
                 <button onclick="showAlphabetMenuInMain()" style="background:var(--card-bg); border:1px solid var(--search-border); color:var(--accent-color); cursor:pointer; padding:8px 15px; border-radius:20px;">❮ 返回分類</button>
                 <h2 style="color:var(--accent-color); font-size:1.4rem; margin:0;">${title}</h2>
-                <div style="width:80px;"></div> </div>
+                <div style="width:80px;"></div> 
+            </div>
             
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px;">
     `;
@@ -1151,7 +1153,6 @@ function renderAlphabetListInMain(type) {
     `).join('');
 
     html += `</div></div>`;
-
     mainContent.innerHTML = html;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
