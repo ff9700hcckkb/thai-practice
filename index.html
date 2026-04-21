@@ -1110,23 +1110,23 @@ function openAlphabetCategory() {
     const container = document.getElementById('alphabet-dynamic-content');
     
     container.innerHTML = `
-        <h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px; font-size:1.4rem;">🇹🇭 請選擇類別</h2>
+        <h2 style="text-align:center; color:var(--accent-color); margin-bottom:25px; font-size:1.4rem;">🇹🇭 請選擇類別</h2>
         
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; width: 100%;">
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%;">
             
-            <button onclick="renderAlphabetList('consonant')" style="padding:25px 10px; border-radius:12px; background:var(--card-bg); color:var(--accent-color); border:1.5px solid var(--accent-color); cursor:pointer; font-size:1.2rem; font-weight:bold; width: 100%;">
-                子音<br>
-                <span style="font-size:0.8rem; font-weight:normal; color:var(--sub-text);">Consonants</span>
+            <button onclick="renderAlphabetList('consonant')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border-radius: 12px; background: var(--card-bg); color: var(--accent-color); border: 1.5px solid var(--accent-color); cursor: pointer; width: 100%;">
+                <span style="font-size: 1.4rem; font-weight: bold;">子音</span>
+                <span style="font-size: 0.9rem; font-weight: normal; color: var(--sub-text); margin-top: 4px;">Consonants</span>
             </button>
             
-            <button onclick="renderAlphabetList('vowel')" style="padding:25px 10px; border-radius:12px; background:var(--card-bg); color:var(--accent-color); border:1.5px solid var(--accent-color); cursor:pointer; font-size:1.2rem; font-weight:bold; width: 100%;">
-                母音<br>
-                <span style="font-size:0.8rem; font-weight:normal; color:var(--sub-text);">Vowels</span>
+            <button onclick="renderAlphabetList('vowel')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border-radius: 12px; background: var(--card-bg); color: var(--accent-color); border: 1.5px solid var(--accent-color); cursor: pointer; width: 100%;">
+                <span style="font-size: 1.4rem; font-weight: bold;">母音</span>
+                <span style="font-size: 0.9rem; font-weight: normal; color: var(--sub-text); margin-top: 4px;">Vowels</span>
             </button>
             
         </div>
         
-        <button class="close-btn" onclick="closeModal('alphabet-page')" style="width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer;">關閉</button>
+        <button class="close-btn" onclick="closeModal('alphabet-page')" style="width: 100%; padding: 12px; border-radius: 8px; background: var(--btn-inactive); color: white; border: none; cursor: pointer; font-size: 1rem;">關閉</button>
     `;
     modal.style.display = 'flex';
 }
