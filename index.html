@@ -278,7 +278,7 @@
         </div>
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
-    <button id="btn-alphabet" class="side-full-btn" onclick="openAlphabetCategory()">🇹🇭 子音母音</button>
+    <button id="btn-alphabet" class="side-full-btn" onclick="showAlphabetMenuInMain()">🇹🇭 子音母音表</button>
 
 <div id="alphabet-page" class="modal-page">
     <div class="modal-content" style="max-width: 900px;">
@@ -1104,60 +1104,63 @@ const vowelData = [
 
 
 
-// 1. 顯示分類選擇頁面
-function openAlphabetCategory() {
-    const modal = document.getElementById('alphabet-page');
-    const container = document.getElementById('alphabet-dynamic-content');
+// 1. 在主畫面顯示「子音 / 母音」大按鈕
+function showAlphabetMenuInMain() {
+    const mainContent = document.getElementById('main-content');
     
-    container.innerHTML = `
-        <h2 style="text-align:center; color:var(--accent-color); margin-bottom:25px; font-size:1.4rem;">🇹🇭 請選擇類別</h2>
-        
-        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; width: 100%;">
+    // 如果是手機版，點擊後自動收起側邊欄 (假設妳有這個 function)
+    if (typeof closeSidebar === "function") closeSidebar();
+
+    mainContent.innerHTML = `
+        <div style="padding: 20px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.5s;">
+            <h2 style="text-align:center; color:var(--accent-color); margin-bottom:30px; font-size:1.6rem;">🇹🇭 請選擇類別</h2>
             
-            <button onclick="renderAlphabetList('consonant')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border-radius: 12px; background: var(--card-bg); color: var(--accent-color); border: 1.5px solid var(--accent-color); cursor: pointer; width: 100%;">
-                <span style="font-size: 1.4rem; font-weight: bold;">子音</span>
-                <span style="font-size: 0.9rem; font-weight: normal; color: var(--sub-text); margin-top: 4px;">Consonants</span>
-            </button>
-            
-            <button onclick="renderAlphabetList('vowel')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; border-radius: 12px; background: var(--card-bg); color: var(--accent-color); border: 1.5px solid var(--accent-color); cursor: pointer; width: 100%;">
-                <span style="font-size: 1.4rem; font-weight: bold;">母音</span>
-                <span style="font-size: 0.9rem; font-weight: normal; color: var(--sub-text); margin-top: 4px;">Vowels</span>
-            </button>
-            
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <button onclick="renderAlphabetListInMain('consonant')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%; transition: 0.3s;">
+                    <span style="font-size: 1.8rem; font-weight: bold;">子音</span>
+                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Consonants (44)</span>
+                </button>
+                
+                <button onclick="renderAlphabetListInMain('vowel')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%; transition: 0.3s;">
+                    <span style="font-size: 1.8rem; font-weight: bold;">母音</span>
+                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Vowels (28)</span>
+                </button>
+            </div>
         </div>
-        
-        <button class="close-btn" onclick="closeModal('alphabet-page')" style="width: 100%; padding: 12px; border-radius: 8px; background: var(--btn-inactive); color: white; border: none; cursor: pointer; font-size: 1rem;">關閉</button>
     `;
-    modal.style.display = 'flex';
+    
+    // 讓頁面捲動回到頂部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 2. 根據選擇渲染列表
-function renderAlphabetList(type) {
-    const container = document.getElementById('alphabet-dynamic-content');
+// 2. 在主畫面顯示詳細列表
+function renderAlphabetListInMain(type) {
+    const mainContent = document.getElementById('main-content');
     const data = (type === 'consonant') ? alphabetData : vowelData;
-    const title = (type === 'consonant') ? '子音表' : '母音表';
+    const title = (type === 'consonant') ? '泰文子音表' : '泰文母音表';
 
     let html = `
-        <div style="display:flex; align-items:center; margin-bottom:20px;">
-            <button onclick="openAlphabetCategory()" style="background:none; border:none; color:var(--accent-color); cursor:pointer; font-size:1.1rem; padding:0;">❮ 返回分類</button>
-        </div>
-        <h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">${title}</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; max-height: 60vh; overflow-y: auto; padding: 5px;">
+        <div style="padding: 10px; animation: fadeIn 0.5s;">
+            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:20px;">
+                <button onclick="showAlphabetMenuInMain()" style="background:var(--card-bg); border:1px solid var(--search-border); color:var(--accent-color); cursor:pointer; padding:8px 15px; border-radius:20px;">❮ 返回分類</button>
+                <h2 style="color:var(--accent-color); font-size:1.4rem; margin:0;">${title}</h2>
+                <div style="width:80px;"></div> </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px;">
     `;
 
     html += data.map(item => `
-        <div onclick="speak('${item.char}', this)" style="background:var(--card-bg); padding:15px; border-radius:12px; text-align:center; cursor:pointer; border:1px solid var(--search-border); position:relative;">
+        <div onclick="speak('${item.char}', this)" style="background:var(--card-bg); padding:15px 10px; border-radius:12px; text-align:center; cursor:pointer; border:1px solid var(--search-border); position:relative; transition: 0.2s;">
             <div style="font-family:'Noto Sans Thai', sans-serif; font-size:2.2rem; color:var(--accent-color); font-weight:600; margin-bottom:5px;">${item.char}</div>
-            <div style="font-size:0.85rem; color:var(--sub-text); line-height:1.2;">${item.roman}</div>
-            ${item.type ? `<span style="position:absolute; top:5px; right:5px; font-size:0.6rem; background:rgba(0,0,0,0.1); padding:2px 4px; border-radius:4px;">${item.type}</span>` : ''}
+            <div style="font-size:0.8rem; color:var(--sub-text); line-height:1.2; word-break: break-word;">${item.roman}</div>
+            ${item.type ? `<span style="position:absolute; top:4px; right:4px; font-size:0.6rem; background:rgba(255,255,255,0.1); padding:1px 3px; border-radius:3px; color:var(--sub-text);">${item.type}</span>` : ''}
         </div>
     `).join('');
 
-    html += `</div>
-        <button class="close-btn" onclick="closeModal('alphabet-page')" style="margin-top:20px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer;">離開</button>
-    `;
+    html += `</div></div>`;
 
-    container.innerHTML = html;
+    mainContent.innerHTML = html;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 </script>
