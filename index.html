@@ -237,11 +237,9 @@
             </div>
             <div id="search-info"></div>
         </div>
-        <div id="main-content"> <div class="search-container">
-        <input type="text" id="searchInput" placeholder="搜尋泰文或中文..." oninput="filterWords()">
-    </div>
-    <div id="wordList" class="word-grid"></div> 
-</div>
+        <div class="search-container">
+            <input type="text" id="search-input" maxlength="50" autocomplete="off" placeholder="輸入泰文或中文搜尋....." oninput="handleSearch()">
+        </div>
 <div class="action-row">
     <div class="left-actions">
         <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 遮蔽</button>
@@ -280,7 +278,6 @@
         </div>
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
-    <button id="btn-alphabet" class="side-full-btn" onclick="showAlphabetMenuInMain()">🇹🇭 子音母音表</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
@@ -306,17 +303,6 @@
     <div class="modal-content" style="max-width: 800px;">
         <div id="essay-dynamic-content">
             </div>
-    </div>
-</div>
-
-<div id="alphabet-page" class="modal-page">
-    <div class="modal-content" style="max-width: 900px;">
-        <h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">🇹🇭 泰文 44 子音表</h2>
-        
-        <div id="alphabetGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px;">
-            </div>
-
-        <button class="close-btn" onclick="closeModal('alphabet-page')" style="margin-top:25px; width:100%; padding:15px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer;">關閉</button>
     </div>
 </div>
 
@@ -1053,121 +1039,6 @@ window.onscroll = function() {
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
-
-
-
-// 1. 在主畫面顯示「子音 / 母音」大按鈕
-function showAlphabetMenuInMain() {
-    const mainContent = document.getElementById('main-content');
-    const sidebar = document.getElementById('sidebar');
-
-    // 1. 自動收起側邊欄 (根據妳檔案裡的邏輯)
-    if (sidebar && sidebar.classList.contains('active')) {
-        sidebar.classList.remove('active');
-    }
-
-    // 2. 檢查有沒有找到我們剛剛加的 main-content
-    if (!mainContent) {
-        alert("找不到顯示區域！請確認妳有在 HTML 加上 <div id='main-content'>");
-        return;
-    }
-
-    // 3. 渲染選單
-    mainContent.innerHTML = `
-        <div style="padding: 20px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.5s;">
-            <h2 style="text-align:center; color:var(--accent-color); margin-bottom:30px; font-size:1.6rem;">🇹🇭 請選擇類別</h2>
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <button onclick="renderAlphabetListInMain('consonant')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%;">
-                    <span style="font-size: 1.8rem; font-weight: bold;">子音</span>
-                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Consonants (44)</span>
-                </button>
-                <button onclick="renderAlphabetListInMain('vowel')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%;">
-                    <span style="font-size: 1.8rem; font-weight: bold;">母音</span>
-                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Vowels (28)</span>
-                </button>
-            </div>
-        </div>
-    `;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-
-// 泰文字母資料 (從妳提供的 HTML 提取)
-const alphabetData = [
-    { char: 'ก', roman: 'k (gaw gai)' }, { char: 'ข', roman: 'kh (khaw khai)' },
-    { char: 'ค', roman: 'kh (khaw khwai)' }, { char: 'ง', roman: 'ng (ngaw nguu)' },
-    { char: 'จ', roman: 'j (jaw jaan)' }, { char: 'ฉ', roman: 'ch (chaw ching)' },
-    { char: 'ช', roman: 'ch (chaw chaang)' }, { char: 'ซ', roman: 's (saw soh)' },
-    { char: 'ฌ', roman: 'ch (chaw chəə)' }, { char: 'ญ', roman: 'y (yaw ying)' },
-    { char: 'ฎ', roman: 'd (daw chadaa)' }, { char: 'ฏ', roman: 't (taw padak)' },
-    { char: 'ฐ', roman: 'th (thaw thaan)' }, { char: 'ฑ', roman: 'th (thaw thong)' },
-    { char: 'ฒ', roman: 'th (thaw phuuthao)' }, { char: 'ณ', roman: 'n (naw neen)' },
-    { char: 'ด', roman: 'd (daw dek)' }, { char: 'ต', roman: 't (taw tao)' },
-    { char: 'ถ', roman: 'th (thaw thung)' }, { char: 'ท', roman: 'th (thaw thahaan)' },
-    { char: 'ธ', roman: 'th (thaw thong)' }, { char: 'น', roman: 'n (naw nuu)' },
-    { char: 'บ', roman: 'b (baw baimai)' }, { char: 'ป', roman: 'p (paw plaa)' },
-    { char: 'ผ', roman: 'ph (phaw phưng)' }, { char: 'ฝ', roman: 'f (faw faa)' },
-    { char: 'พ', roman: 'ph (phaw phaan)' }, { char: 'ฟ', roman: 'f (faw fan)' },
-    { char: 'ภ', roman: 'ph (phaw samphao)' }, { char: 'ม', roman: 'm (maw maa)' },
-    { char: 'ย', roman: 'y (yaw yak)' }, { char: 'ร', roman: 'r (raw rưa)' },
-    { char: 'ล', roman: 'l (law ling)' }, { char: 'ว', roman: 'w (waw wɛɛn)' },
-    { char: 'ศ', roman: 's (saw salaa)' }, { char: 'ษ', roman: 's (saw rưsi)' },
-    { char: 'ส', roman: 's (saw sưa)' }, { char: 'ห', roman: 'h (haw hìip)' },
-    { char: 'ฬ', roman: 'l (law julaa)' }, { char: 'อ', roman: 'aw aang' },
-    { char: 'ฮ', roman: 'h (haw nokhûuk)' }
-];
-
-// 母音資料 (包含短音與長音)
-const vowelData = [
-    { char: 'ะ', roman: 'a (短音)', type: '短' }, { char: 'า', roman: 'aa (長音)', type: '長' },
-    { char: 'ิ', roman: 'i (短音)', type: '短' }, { char: 'ี', roman: 'ii (長音)', type: '長' },
-    { char: 'ึ', roman: 'ue (短音)', type: '短' }, { char: 'ื', roman: 'uee (長音)', type: '長' },
-    { char: 'ุ', roman: 'u (短音)', type: '短' }, { char: 'ู', roman: 'uu (長音)', type: '長' },
-    { char: 'เ-ะ', roman: 'e (短音)', type: '短' }, { char: 'เ-', roman: 'ee (長音)', type: '長' },
-    { char: 'แ-ะ', roman: 'ae (短音)', type: '短' }, { char: 'แ-', roman: 'aee (長音)', type: '長' },
-    { char: 'โ-ะ', roman: 'o (短音)', type: '短' }, { char: 'โ-', roman: 'oo (長音)', type: '長' },
-    { char: 'เ-าะ', roman: 'aw (短音)', type: '短' }, { char: 'อ', roman: 'aaaw (長音)', type: '長' },
-    { char: 'เ-อะ', roman: 'oe (短音)', type: '短' }, { char: 'เ-อ', roman: 'oee (長音)', type: '長' },
-    { char: 'เ-ียะ', roman: 'ia (短音)', type: '短' }, { char: 'เ-ีย', roman: 'iaa (長音)', type: '長' },
-    { char: 'เ-ือะ', roman: 'uea (短音)', type: '短' }, { char: 'เ-ือ', roman: 'ueaa (長音)', type: '長' },
-    { char: 'ัวะ', roman: 'ua (短音)', type: '短' }, { char: 'ัว', roman: 'uaa (長音)', type: '長' },
-    { char: 'อำ', roman: 'am', type: '特殊' }, { char: 'ใ-', roman: 'ai (mual)', type: '特殊' },
-    { char: 'ไ-', roman: 'ai (malay)', type: '特殊' }, { char: 'เ-า', roman: 'ao', type: '特殊' }
-];
-
-// 2. 在主畫面顯示詳細列表
-function renderAlphabetListInMain(type) {
-    console.log("當前按下的類型是:", type); // 加這行
-    const mainContent = document.getElementById('main-content');
-    // 確保妳程式碼中有定義好 alphabetData 和 vowelData 陣列
-    const data = (type === 'consonant') ? alphabetData : vowelData;
-    const title = (type === 'consonant') ? '泰文子音表' : '泰文母音表';
-
-    let html = `
-        <div style="padding: 10px; animation: fadeIn 0.5s;">
-            <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom:20px;">
-                <button onclick="showAlphabetMenuInMain()" style="background:var(--card-bg); border:1px solid var(--search-border); color:var(--accent-color); cursor:pointer; padding:8px 15px; border-radius:20px;">❮ 返回分類</button>
-                <h2 style="color:var(--accent-color); font-size:1.4rem; margin:0;">${title}</h2>
-                <div style="width:80px;"></div> 
-            </div>
-            
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px;">
-    `;
-
-    html += data.map(item => `
-        <div onclick="speak('${item.char}', this)" style="background:var(--card-bg); padding:15px 10px; border-radius:12px; text-align:center; cursor:pointer; border:1px solid var(--search-border); position:relative; transition: 0.2s;">
-            <div style="font-family:'Noto Sans Thai', sans-serif; font-size:2.2rem; color:var(--accent-color); font-weight:600; margin-bottom:5px;">${item.char}</div>
-            <div style="font-size:0.8rem; color:var(--sub-text); line-height:1.2; word-break: break-word;">${item.roman}</div>
-            ${item.type ? `<span style="position:absolute; top:4px; right:4px; font-size:0.6rem; background:rgba(255,255,255,0.1); padding:1px 3px; border-radius:3px; color:var(--sub-text);">${item.type}</span>` : ''}
-        </div>
-    `).join('');
-
-    html += `</div></div>`;
-    mainContent.innerHTML = html;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
 </script>
 
     <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
