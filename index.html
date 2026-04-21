@@ -278,7 +278,7 @@
         </div>
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
-    <button id="btn-alphabet" class="side-full-btn" onclick="showAlphabetMenuInMain()">🇹🇭 子音母音</button>
+    <button id="btn-alphabet" class="side-full-btn" onclick="showAlphabetMenuInMain()">🇹🇭 子音母音表</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
@@ -1052,6 +1052,39 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+
+
+
+// 1. 在主畫面顯示「子音 / 母音」大按鈕
+function showAlphabetMenuInMain() {
+    const mainContent = document.getElementById('main-content');
+    
+    // 如果有側邊欄收合函式請執行
+    if (window.innerWidth < 768 && typeof toggleSidebar === "function") {
+        toggleSidebar(); 
+    }
+
+    mainContent.innerHTML = `
+        <div style="padding: 20px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.5s;">
+            <h2 style="text-align:center; color:var(--accent-color); margin-bottom:30px; font-size:1.6rem;">🇹🇭 請選擇類別</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <button onclick="renderAlphabetListInMain('consonant')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%; transition: 0.3s;">
+                    <span style="font-size: 1.8rem; font-weight: bold;">子音</span>
+                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Consonants (44)</span>
+                </button>
+                
+                <button onclick="renderAlphabetListInMain('vowel')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%; transition: 0.3s;">
+                    <span style="font-size: 1.8rem; font-weight: bold;">母音</span>
+                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Vowels (28)</span>
+                </button>
+            </div>
+        </div>
+    `;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+
 // 泰文字母資料 (從妳提供的 HTML 提取)
 const alphabetData = [
     { char: 'ก', roman: 'k (gaw gai)' }, { char: 'ข', roman: 'kh (khaw khai)' },
@@ -1095,39 +1128,9 @@ const vowelData = [
     { char: 'ไ-', roman: 'ai (malay)', type: '特殊' }, { char: 'เ-า', roman: 'ao', type: '特殊' }
 ];
 
-
-
-// 1. 在主畫面顯示「子音 / 母音」大按鈕
-function showAlphabetMenuInMain() {
-    const mainContent = document.getElementById('main-content');
-    
-    // 如果有側邊欄收合函式請執行
-    if (window.innerWidth < 768 && typeof toggleSidebar === "function") {
-        toggleSidebar(); 
-    }
-
-    mainContent.innerHTML = `
-        <div style="padding: 20px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.5s;">
-            <h2 style="text-align:center; color:var(--accent-color); margin-bottom:30px; font-size:1.6rem;">🇹🇭 請選擇類別</h2>
-            
-            <div style="display: flex; flex-direction: column; gap: 20px;">
-                <button onclick="renderAlphabetListInMain('consonant')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%; transition: 0.3s;">
-                    <span style="font-size: 1.8rem; font-weight: bold;">子音</span>
-                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Consonants (44)</span>
-                </button>
-                
-                <button onclick="renderAlphabetListInMain('vowel')" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; border-radius: 15px; background: var(--card-bg); color: var(--accent-color); border: 2px solid var(--accent-color); cursor: pointer; width: 100%; transition: 0.3s;">
-                    <span style="font-size: 1.8rem; font-weight: bold;">母音</span>
-                    <span style="font-size: 1rem; color: var(--sub-text); margin-top: 8px;">Vowels (28)</span>
-                </button>
-            </div>
-        </div>
-    `;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
 // 2. 在主畫面顯示詳細列表
 function renderAlphabetListInMain(type) {
+    console.log("當前按下的類型是:", type); // 加這行
     const mainContent = document.getElementById('main-content');
     // 確保妳程式碼中有定義好 alphabetData 和 vowelData 陣列
     const data = (type === 'consonant') ? alphabetData : vowelData;
