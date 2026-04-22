@@ -226,7 +226,7 @@
     <p id="error-msg" style="color: red; margin-top: 10px; display: none;">PasswordFail</p>
 </div>
     <div class="header">
-        <div class="app-title">泰難了</div>
+        <div class="app-title">泰難了เรียนภาษาไทย</div>
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
     </div>
 
@@ -278,6 +278,7 @@
         </div>
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
+    <button id="btn-phonetics" class="side-full-btn" onclick="openPhoneticsPage()">🔤 子音母音</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
@@ -297,6 +298,15 @@
         <div id="rule-page" class="modal-page">
     <div class="modal-content">
         </div>
+</div>
+
+<div id="phonetics-page" class="modal-page">
+    <div class="modal-content">
+        <h2 style="text-align:center">🔤 子音母音</h2>
+        <button class="side-full-btn" onclick="openConsonantsPage()">🗣️ 子音</button>
+        <button class="side-full-btn" onclick="openVowelsPage()">🎵 母音</button>
+        <button class="close-btn" onclick="closeModal('phonetics-page')">返回</button>
+    </div>
 </div>
 
 <div id="essay-page" class="modal-page">
@@ -360,10 +370,18 @@
             
         };
 
+        const RULE_GID = '1909951115';
+        const ESSAY_GID = '893893675';
         const LINKS_GID = "370151406";
         const ABOUT_GID = "1687106860";
+        const CONSONANTS_GID = "1406847314";
+        const VOWELS_GID = "164151544";
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
-        
+        let consonantsData = []; // 用來存放子音資料
+        let vowelsData = []; // 用來存放母音資料
+            { char: 'ข', roman: 'kh (khaw khai)' },
+            { char: 'ค', roman: 'kh (khaw khwai)' },
+            { char: 'ง', roman: 'ng (ngaw nguu)' },
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         let currentMode = 'random';
@@ -468,6 +486,21 @@ function toggleArtFont() {
     container.innerHTML = html;
 }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        function openPhoneticsPage() {
+            document.getElementById('phonetics-page').style.display = 'flex';
+            if(window.innerWidth < 600) toggleSidebar();
+        }
+
+        function openConsonantsPage() {
+            displayConsonants();
+            closeModal('phonetics-page');
+        }
+
+        function openVowelsPage() {
+            displayVowels();
+            closeModal('phonetics-page');
+        }
         
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
@@ -786,8 +819,6 @@ function convertNumbersToThaiText(text) {
             container.innerHTML = list.length === 0 ? '<div style="margin-top:30px;color:#666;text-align:center;">無相關詞庫</div>' : '';
             container.className = isQuizMode ? 'quiz-mode' : '';
 
-
-            
             list.forEach((item, index) => {
                 const isFav = favorites.includes(item.id);
                 const div = document.createElement('div');
@@ -797,15 +828,22 @@ function convertNumbersToThaiText(text) {
               
                 div.id = `card-${index}`;
                 div.onclick = function(e) { if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); };
+                
+                // 檢查是否為字母數據（有char和roman字段）
+                const isPhonetic = item.char && item.roman;
+                const thaiText = isPhonetic ? item.char : item.thai;
+                const chineseText = isPhonetic ? item.roman : item.chinese;
+                const sourceText = isPhonetic ? '字母' : item.source;
+                
                 div.innerHTML = `
-                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.id}', this, event)">★</button>
+                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.id || item.char}', this, event)">★</button>
                     <div class="card-content">
-                        <div class="thai" lang="th">${item.thai}</div>
-                        <div class="chinese">${item.chinese}</div>
+                        <div class="thai" lang="th">${thaiText}</div>
+                        <div class="chinese">${chineseText}</div>
                     </div>
                     <div class="card-action">
-                        <button class="btn-speak" onclick="speak('${item.thai}', this, event)">🔊</button>
-                        <div class="source-tag">${item.source}</div>
+                        <button class="btn-speak" onclick="speak('${thaiText}', this, event)">🔊</button>
+                        <div class="source-tag">${sourceText}</div>
                     </div>
                 `;
                 container.appendChild(div);
@@ -836,6 +874,8 @@ function convertNumbersToThaiText(text) {
             quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
             if (currentMode === 'random') displayRandom();
             else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
+            else if (currentMode === 'consonants') displayConsonants();
+            else if (currentMode === 'vowels') displayVowels();
             else switchSource(currentMode, null);
         }
 
@@ -864,6 +904,65 @@ function convertNumbersToThaiText(text) {
             document.getElementById('btn-random').classList.add('active');
             displayRandom();
             toggleSidebar();
+        }
+
+        async function displayConsonants() {
+            if (consonantsData.length === 0) {
+                // 如果還沒抓取過資料，先抓取
+                await fetchPhoneticData('consonants');
+            }
+            currentMode = 'consonants';
+            renderList(consonantsData);
+            document.getElementById('search-info').innerText = `子音字母 ${consonantsData.length} 個`;
+        }
+
+        async function displayVowels() {
+            if (vowelsData.length === 0) {
+                // 如果還沒抓取過資料，先抓取
+                await fetchPhoneticData('vowels');
+            }
+            currentMode = 'vowels';
+            renderList(vowelsData);
+            document.getElementById('search-info').innerText = `母音字母 ${vowelsData.length} 個`;
+        }
+
+        async function fetchPhoneticData(type) {
+            const gid = type === 'consonants' ? CONSONANTS_GID : VOWELS_GID;
+            const targetArray = type === 'consonants' ? consonantsData : vowelsData;
+            
+            try {
+                const response = await fetch(`${base_url}&gid=${gid}&t=${Date.now()}`);
+                const csvText = await response.text();
+                const rows = csvText.split(/\r?\n/).slice(1); // 跳過標題行
+                
+                targetArray.length = 0; // 清空舊資料
+                rows.forEach(row => {
+                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    if (cols.length >= 2) {
+                        const char = cols[0].replace(/"/g, '').trim();
+                        const roman = cols[1].replace(/"/g, '').trim();
+                        if (char && roman) {
+                            targetArray.push({ char, roman });
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error(`Error fetching ${type}:`, error);
+                // 如果抓取失敗，使用預設資料
+                if (type === 'consonants') {
+                    consonantsData.push(
+                        { char: 'ก', roman: 'k (gaw gai)' },
+                        { char: 'ข', roman: 'kh (khaw khai)' },
+                        { char: 'ค', roman: 'kh (khaw khwai)' }
+                    );
+                } else {
+                    vowelsData.push(
+                        { char: 'ะ', roman: 'a (短音)' },
+                        { char: 'า', roman: 'aa (長音)' },
+                        { char: 'ิ', roman: 'i (短音)' }
+                    );
+                }
+            }
         }
 
         function showFavorites(btn) {
