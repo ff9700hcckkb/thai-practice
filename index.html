@@ -865,9 +865,9 @@ function convertNumbersToThaiText(text) {
                 const filterHtml = `
                     <div class="filter-container">
                         <button class="filter-btn ${currentConsonantFilter === 'all' ? 'active' : ''}" onclick="displayConsonants('all')">📚 全部</button>
-                        <button class="filter-btn ${currentConsonantFilter === '中' ? 'active' : ''}" onclick="displayConsonants('中')">🔸 中子音</button>
-                        <button class="filter-btn ${currentConsonantFilter === '高' ? 'active' : ''}" onclick="displayConsonants('高')">🔺 高子音</button>
-                        <button class="filter-btn ${currentConsonantFilter === '低' ? 'active' : ''}" onclick="displayConsonants('低')">🔻 低子音</button>
+                        <button class="filter-btn ${currentConsonantFilter === '中' ? 'active' : ''}" onclick="displayConsonants('中')">🔸 中</button>
+                        <button class="filter-btn ${currentConsonantFilter === '高' ? 'active' : ''}" onclick="displayConsonants('高')">🔺 高</button>
+                        <button class="filter-btn ${currentConsonantFilter === '低' ? 'active' : ''}" onclick="displayConsonants('低')">🔻 低</button>
                     </div>
                 `;
                 container.innerHTML = filterHtml;
