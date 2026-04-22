@@ -193,6 +193,28 @@
 }
         .btn-fav.active { color: var(--star-color); text-shadow: 0 0 5px rgba(241, 196, 15, 0.5); }
 
+        .filter-btn {
+            padding: 10px 16px;
+            border: 2px solid var(--search-border);
+            background: var(--card-bg);
+            color: var(--text-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 100px;
+        }
+        .filter-btn:hover {
+            background: var(--nav-bg);
+            border-color: var(--text-color);
+        }
+        .filter-btn.active {
+            background: var(--text-color);
+            color: var(--card-bg);
+            border-color: var(--text-color);
+        }
+
         .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: var(--bg-color); box-shadow: -5px 0 15px rgba(0,0,0,0.3); transition: 0.3s ease; z-index: 2000; padding: 25px; overflow-y: auto; box-sizing: border-box; }
         .sidebar.open { right: 0; }
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1999; }
@@ -278,7 +300,7 @@
         </div>
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
-    <button id="btn-phonetics" class="side-full-btn" onclick="openPhoneticsPage()">🔤 子音母音</button>
+    <button id="btn-phonetics" class="side-full-btn" onclick="openPhoneticsPage()">🔤 子音</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
@@ -300,22 +322,7 @@
         </div>
 </div>
 
-<div id="phonetics-page" class="modal-page">
-    <div class="modal-content">
-        <h2 style="text-align:center">🔤 子音母音</h2>
-        <div style="margin-bottom: 20px;">
-            <h3 style="text-align:center; margin-bottom: 15px;">🗣️ 子音</h3>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="side-full-btn" onclick="displayConsonants('all')">📚 全部子音</button>
-                <button class="side-full-btn" onclick="displayConsonants('中')">🔸 中子音</button>
-                <button class="side-full-btn" onclick="displayConsonants('高')">🔺 高子音</button>
-                <button class="side-full-btn" onclick="displayConsonants('低')">🔻 低子音</button>
-            </div>
-        </div>
-        <button class="side-full-btn" onclick="openVowelsPage()">🎵 母音</button>
-        <button class="close-btn" onclick="closeModal('phonetics-page')">返回</button>
-    </div>
-</div>
+
 
 <div id="essay-page" class="modal-page">
     <div class="modal-content" style="max-width: 800px;">
@@ -383,10 +390,8 @@
         const LINKS_GID = "370151406";
         const ABOUT_GID = "1687106860";
         const CONSONANTS_GID = "1406847314";
-        const VOWELS_GID = "164151544";
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
         let consonantsData = []; // 用來存放子音資料
-        let vowelsData = []; // 用來存放母音資料
         let currentConsonantFilter = 'all'; // 當前子音篩選狀態
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
@@ -494,8 +499,7 @@ function toggleArtFont() {
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
         function openPhoneticsPage() {
-            document.getElementById('phonetics-page').style.display = 'flex';
-            if(window.innerWidth < 600) toggleSidebar();
+            displayConsonants();
         }
 
         function openConsonantsPage() {
@@ -503,10 +507,7 @@ function toggleArtFont() {
             closeModal('phonetics-page');
         }
 
-        function openVowelsPage() {
-            displayVowels();
-            closeModal('phonetics-page');
-        }
+
         
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
@@ -820,8 +821,25 @@ function convertNumbersToThaiText(text) {
         function renderList(list) {
             currentDisplayedList = list;
             const container = document.getElementById('app');
-            container.innerHTML = list.length === 0 ? '<div style="margin-top:30px;color:#666;text-align:center;">無相關詞庫</div>' : '';
-            container.className = isQuizMode ? 'quiz-mode' : '';
+            
+            // 如果是子音模式，添加篩選器
+            if (currentMode === 'consonants') {
+                const filterHtml = `
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="filter-btn ${currentConsonantFilter === 'all' ? 'active' : ''}" onclick="displayConsonants('all')">📚 全部子音</button>
+                        <button class="filter-btn ${currentConsonantFilter === '中' ? 'active' : ''}" onclick="displayConsonants('中')">🔸 中子音</button>
+                        <button class="filter-btn ${currentConsonantFilter === '高' ? 'active' : ''}" onclick="displayConsonants('高')">🔺 高子音</button>
+                        <button class="filter-btn ${currentConsonantFilter === '低' ? 'active' : ''}" onclick="displayConsonants('低')">🔻 低子音</button>
+                    </div>
+                `;
+                container.innerHTML = filterHtml;
+            } else {
+                container.innerHTML = '';
+            }
+            
+            if (list.length === 0) {
+                container.innerHTML += '<div style="margin-top:30px;color:#666;text-align:center;">無相關詞庫</div>';
+            }
 
             list.forEach((item, index) => {
                 const isFav = favorites.includes(item.id);
@@ -914,7 +932,7 @@ function convertNumbersToThaiText(text) {
         async function displayConsonants(filter = 'all') {
             if (consonantsData.length === 0) {
                 // 如果還沒抓取過資料，先抓取
-                await fetchPhoneticData('consonants');
+                await fetchPhoneticData();
             }
             currentMode = 'consonants';
             currentConsonantFilter = filter; // 儲存篩選狀態
@@ -927,76 +945,18 @@ function convertNumbersToThaiText(text) {
             document.getElementById('search-info').innerText = `${filterText}子音字母 ${filteredData.length} 個`;
         }
 
-        async function displayVowels() {
-            if (vowelsData.length === 0) {
-                // 如果還沒抓取過資料，先抓取
-                await fetchPhoneticData('vowels');
-            }
-            currentMode = 'vowels';
-            renderList(vowelsData);
-            document.getElementById('search-info').innerText = `母音字母 ${vowelsData.length} 個`;
-        }
 
-        async function fetchPhoneticData(type) {
-            const gid = type === 'consonants' ? CONSONANTS_GID : VOWELS_GID;
-            const targetArray = type === 'consonants' ? consonantsData : vowelsData;
-            
-            // 母音使用手動定義的資料，避免編碼問題
-            if (type === 'vowels') {
-                vowelsData.length = 0;
-                // 單母音 (9個)
-                vowelsData.push(
-                    { char: 'ะ', roman: 'a (短音)', category: '' },
-                    { char: 'า', roman: 'aa (長音)', category: '' },
-                    { char: 'ิ', roman: 'i (短音)', category: '' },
-                    { char: 'ี', roman: 'ii (長音)', category: '' },
-                    { char: 'ึ', roman: 'ue (短音)', category: '' },
-                    { char: 'ื', roman: 'uee (長音)', category: '' },
-                    { char: 'ุ', roman: 'u (短音)', category: '' },
-                    { char: 'ู', roman: 'uu (長音)', category: '' },
-                    { char: 'อ', roman: 'o (長音)', category: '' }
-                );
-                // 複合母音 (9個)
-                vowelsData.push(
-                    { char: 'เ-ะ', roman: 'e (短音)', category: '' },
-                    { char: 'เ-', roman: 'ee (長音)', category: '' },
-                    { char: 'แ-ะ', roman: 'ae (短音)', category: '' },
-                    { char: 'แ-', roman: 'aee (長音)', category: '' },
-                    { char: 'โ-ะ', roman: 'o (短音)', category: '' },
-                    { char: 'โ-', roman: 'oo (長音)', category: '' },
-                    { char: 'เ-าะ', roman: 'oe (短音)', category: '' },
-                    { char: 'เ-อ', roman: 'oe (長音)', category: '' },
-                    { char: 'เ-อะ', roman: 'oe (短音)', category: '' }
-                );
-                // 特殊母音 (14個)
-                vowelsData.push(
-                    { char: 'ไ-', roman: 'ai (長音)', category: '' },
-                    { char: 'ใ-', roman: 'ai (長音)', category: '' },
-                    { char: 'ไ-ย', roman: 'ai (長音)', category: '' },
-                    { char: 'ั-', roman: 'a (短音)', category: '' },
-                    { char: 'ำ', roman: 'am (長音)', category: '' },
-                    { char: 'ฤ', roman: 'rue (短音)', category: '' },
-                    { char: 'ฤๅ', roman: 'ruee (長音)', category: '' },
-                    { char: 'ฦ', roman: 'lue (短音)', category: '' },
-                    { char: 'ฦๅ', roman: 'luee (長音)', category: '' },
-                    { char: 'เ-าะ', roman: 'oe (短音)', category: '' },
-                    { char: 'เ-อ', roman: 'oe (長音)', category: '' },
-                    { char: 'เ-ีย', roman: 'ia (長音)', category: '' },
-                    { char: 'เ-ือ', roman: 'uea (長音)', category: '' },
-                    { char: 'เ-อะ', roman: 'a (短音)', category: '' }
-                );
-                return;
-            }
-            
+
+        async function fetchPhoneticData() {
             try {
-                const response = await fetch(`${base_url}&gid=${gid}&t=${Date.now()}`);
+                const response = await fetch(`${base_url}&gid=${CONSONANTS_GID}&t=${Date.now()}`);
                 let csvText = await response.text();
-                
+
                 // 處理編碼問題：移除BOM並確保UTF-8
                 if (csvText.charCodeAt(0) === 0xFEFF) {
                     csvText = csvText.slice(1); // 移除BOM
                 }
-                
+
                 // 如果仍有編碼問題，嘗試手動修復常見的編碼錯誤
                 if (csvText.includes('�') || csvText.match(/[åæ¯]/)) {
                     console.warn('Detected encoding issues, attempting to fix');
@@ -1014,134 +974,78 @@ function convertNumbersToThaiText(text) {
                         .replace(/à¹-/g, 'ไ')
                         .replace(/à¹-à¸²/g, 'ao');
                 }
-                
-                console.log(`CSV text for ${type}:`, csvText);
+
+                console.log('CSV text for consonants:', csvText);
                 const rows = csvText.split(/\r?\n/).slice(1); // 跳過標題行
-                console.log(`Rows for ${type}:`, rows);
-                
-                targetArray.length = 0; // 清空舊資料
+                console.log('Rows for consonants:', rows);
+
+                consonantsData.length = 0; // 清空舊資料
                 rows.forEach(row => {
                     const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     console.log(`Row: "${row}" -> cols:`, cols);
-                    if (cols.length >= 2) {
+                    if (cols.length >= 3) {
                         const char = cols[0].replace(/"/g, '').trim();
                         const roman = cols[1].replace(/"/g, '').trim();
-                        let category = '';
-                        
-                        if (type === 'consonants' && cols.length >= 3) {
-                            // 子音有分類欄位
-                            category = cols[2].replace(/"/g, '').trim();
-                        }
-                        
+                        const category = cols[2].replace(/"/g, '').trim();
+
                         if (char && roman) {
-                            targetArray.push({ char, roman, category });
-                            console.log(`Added ${type} item:`, { char, roman, category });
+                            consonantsData.push({ char, roman, category });
+                            console.log('Added consonant item:', { char, roman, category });
                         }
                     }
                 });
-                console.log(`Final ${type} data:`, targetArray);
+                console.log('Final consonants data:', consonantsData);
             } catch (error) {
-                console.error(`Error fetching ${type}:`, error);
+                console.error('Error fetching consonants:', error);
                 // 如果抓取失敗，使用預設資料
-                if (type === 'consonants') {
-                    const defaultConsonants = [
-                        { char: 'ก', roman: 'k (gaw gai)', category: '中' },
-                        { char: 'ข', roman: 'kh (khaw khai)', category: '高' },
-                        { char: 'ค', roman: 'kh (khaw khwai)', category: '低' },
-                        { char: 'ง', roman: 'ng (ngaw nguu)', category: '低' },
-                        { char: 'จ', roman: 'j (jaw jaan)', category: '中' },
-                        { char: 'ฉ', roman: 'ch (chaw ching)', category: '高' },
-                        { char: 'ช', roman: 'ch (chaw chaang)', category: '低' },
-                        { char: 'ซ', roman: 's (saw soh)', category: '低' },
-                        { char: 'ฌ', roman: 'ch (chaw chəə)', category: '低' },
-                        { char: 'ญ', roman: 'y (yaw ying)', category: '低' },
-                        { char: 'ฎ', roman: 'd (daw chadaa)', category: '中' },
-                        { char: 'ฏ', roman: 't (taw padak)', category: '中' },
-                        { char: 'ฐ', roman: 'th (thaw thaan)', category: '高' },
-                        { char: 'ฑ', roman: 'th (thaw thong)', category: '低' },
-                        { char: 'ฒ', roman: 'th (thaw phuuthao)', category: '低' },
-                        { char: 'ณ', roman: 'n (naw neen)', category: '低' },
-                        { char: 'ด', roman: 'd (daw dek)', category: '中' },
-                        { char: 'ต', roman: 't (taw tao)', category: '中' },
-                        { char: 'ถ', roman: 'th (thaw thung)', category: '高' },
-                        { char: 'ท', roman: 'th (thaw thahaan)', category: '低' },
-                        { char: 'ธ', roman: 'th (thaw thong)', category: '低' },
-                        { char: 'น', roman: 'n (naw nuu)', category: '低' },
-                        { char: 'บ', roman: 'b (baw baimai)', category: '中' },
-                        { char: 'ป', roman: 'p (paw plaa)', category: '中' },
-                        { char: 'ผ', roman: 'ph (phaw phưng)', category: '高' },
-                        { char: 'ฝ', roman: 'f (faw faa)', category: '高' },
-                        { char: 'พ', roman: 'ph (phaw phaan)', category: '低' },
-                        { char: 'ฟ', roman: 'f (faw fan)', category: '低' },
-                        { char: 'ภ', roman: 'ph (phaw samphao)', category: '低' },
-                        { char: 'ม', roman: 'm (maw maa)', category: '低' },
-                        { char: 'ย', roman: 'y (yaw yak)', category: '低' },
-                        { char: 'ร', roman: 'r (raw rưa)', category: '低' },
-                        { char: 'ล', roman: 'l (law ling)', category: '低' },
-                        { char: 'ว', roman: 'w (waw wɛɛn)', category: '低' },
-                        { char: 'ศ', roman: 's (saw salaa)', category: '高' },
-                        { char: 'ษ', roman: 's (saw rưsi)', category: '高' },
-                        { char: 'ส', roman: 's (saw sưa)', category: '高' },
-                        { char: 'ห', roman: 'h (haw hìip)', category: '高' },
-                        { char: 'ฬ', roman: 'l (law julaa)', category: '低' },
-                        { char: 'อ', roman: 'aw aang', category: '中' },
-                        { char: 'ฮ', roman: 'h (haw nokhûuk)', category: '高' }
-                    ];
-                    consonantsData.push(...defaultConsonants);
-                } else {
-                    vowelsData.push(
-                        { char: 'ะ', roman: 'a (短音)', category: '' },
-                        { char: 'า', roman: 'aa (長音)', category: '' },
-                        { char: 'ิ', roman: 'i (短音)', category: '' }
-                    );
-                }
+                const defaultConsonants = [
+                    { char: 'ก', roman: 'k (gaw gai)', category: '中' },
+                    { char: 'ข', roman: 'kh (khaw khai)', category: '高' },
+                    { char: 'ค', roman: 'kh (khaw khwai)', category: '低' },
+                    { char: 'ง', roman: 'ng (ngaw nguu)', category: '低' },
+                    { char: 'จ', roman: 'j (jaw jaan)', category: '中' },
+                    { char: 'ฉ', roman: 'ch (chaw ching)', category: '高' },
+                    { char: 'ช', roman: 'ch (chaw chaang)', category: '低' },
+                    { char: 'ซ', roman: 's (saw soh)', category: '低' },
+                    { char: 'ฌ', roman: 'ch (chaw chəə)', category: '低' },
+                    { char: 'ญ', roman: 'y (yaw ying)', category: '低' },
+                    { char: 'ฎ', roman: 'd (daw chadaa)', category: '中' },
+                    { char: 'ฏ', roman: 't (taw padak)', category: '中' },
+                    { char: 'ฐ', roman: 'th (thaw thaan)', category: '高' },
+                    { char: 'ฑ', roman: 'th (thaw thong)', category: '低' },
+                    { char: 'ฒ', roman: 'th (thaw phuuthao)', category: '低' },
+                    { char: 'ณ', roman: 'n (naw neen)', category: '低' },
+                    { char: 'ด', roman: 'd (daw dek)', category: '中' },
+                    { char: 'ต', roman: 't (taw tao)', category: '中' },
+                    { char: 'ถ', roman: 'th (thaw thung)', category: '高' },
+                    { char: 'ท', roman: 'th (thaw thahaan)', category: '低' },
+                    { char: 'ธ', roman: 'th (thaw thong)', category: '低' },
+                    { char: 'น', roman: 'n (naw nuu)', category: '低' },
+                    { char: 'บ', roman: 'b (baw baimai)', category: '中' },
+                    { char: 'ป', roman: 'p (paw plaa)', category: '中' },
+                    { char: 'ผ', roman: 'ph (phaw phưng)', category: '高' },
+                    { char: 'ฝ', roman: 'f (faw faa)', category: '高' },
+                    { char: 'พ', roman: 'ph (phaw phaan)', category: '低' },
+                    { char: 'ฟ', roman: 'f (faw fan)', category: '低' },
+                    { char: 'ภ', roman: 'ph (phaw samphao)', category: '低' },
+                    { char: 'ม', roman: 'm (maw maa)', category: '低' },
+                    { char: 'ย', roman: 'y (yaw yak)', category: '低' },
+                    { char: 'ร', roman: 'r (raw rưa)', category: '低' },
+                    { char: 'ล', roman: 'l (law ling)', category: '低' },
+                    { char: 'ว', roman: 'w (waw wɛɛn)', category: '低' },
+                    { char: 'ศ', roman: 's (saw salaa)', category: '高' },
+                    { char: 'ษ', roman: 's (saw rưsi)', category: '高' },
+                    { char: 'ส', roman: 's (saw sưa)', category: '高' },
+                    { char: 'ห', roman: 'h (haw hìip)', category: '高' },
+                    { char: 'ฬ', roman: 'l (law julaa)', category: '低' },
+                    { char: 'อ', roman: 'aw aang', category: '中' },
+                    { char: 'ฮ', roman: 'h (haw nokhûuk)', category: '高' }
+                ];
+                consonantsData.push(...defaultConsonants);
             }
         }
 
-        // 備用函數：使用Google Sheets JSON API處理編碼問題
-        async function fetchPhoneticDataJSON(type) {
-            const gid = type === 'consonants' ? CONSONANTS_GID : VOWELS_GID;
-            const targetArray = type === 'consonants' ? consonantsData : vowelsData;
-            
-            try {
-                // 使用Google Sheets的JSON feed API
-                const spreadsheetId = '1RuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu';
-                const worksheetId = type === 'consonants' ? '0' : '164151544'; // 需要手動映射gid到worksheet id
-                
-                const jsonUrl = `https://spreadsheets.google.com/feeds/list/${spreadsheetId}/${worksheetId}/public/values?alt=json`;
-                const response = await fetch(jsonUrl);
-                const data = await response.json();
-                
-                targetArray.length = 0;
-                data.feed.entry.forEach(entry => {
-                    const char = entry.gsx$char ? entry.gsx$char.$t : '';
-                    const roman = entry.gsx$roman ? entry.gsx$roman.$t : '';
-                    const category = type === 'consonants' && entry.gsx$category ? entry.gsx$category.$t : '';
-                    
-                    if (char && roman) {
-                        targetArray.push({ char, roman, category });
-                    }
-                });
-                
-                console.log(`JSON API loaded ${targetArray.length} ${type} items`);
-            } catch (error) {
-                console.error(`JSON API failed for ${type}:`, error);
-                // 如果JSON API也失敗，使用預設資料
-                if (type === 'consonants') {
-                    consonantsData.push(
-                        { char: 'ก', roman: 'k (kaw kai)', category: '中' },
-                        { char: 'ข', roman: 'kh (khaw khai)', category: '高' },
-                        { char: 'ค', roman: 'kh (khaw khuat)', category: '低' }
-                    );
-                } else {
-                    vowelsData.push(
-                        { char: 'ะ', roman: 'a (短音)', category: '' },
-                        { char: 'า', roman: 'aa (長音)', category: '' },
-                        { char: 'ิ', roman: 'i (短音)', category: '' }
-                    );
-                }
-            }
-        }
+
 
         function showFavorites(btn) {
             currentMode = 'fav';
