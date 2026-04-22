@@ -838,7 +838,7 @@ function convertNumbersToThaiText(text) {
                 const thaiText = isPhonetic ? item.char : item.thai;
                 const chineseText = isPhonetic ? item.roman : item.chinese;
                 const sourceText = isPhonetic ? '字母' : item.source;
-                const speakText = isPhonetic ? `${thaiText} ${item.roman}` : thaiText;
+                const speakText = thaiText;
                 
                 div.innerHTML = `
                     <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.id || item.char}', this, event)">★</button>
@@ -1120,60 +1120,30 @@ function speak(text, btnElement, e) {
 
     let processedText = text.normalize('NFC').trim();
     
-    // 檢查是否包含羅馬拼音（字母模式）
-    const hasRoman = processedText.includes(' (');
-    let thaiPart = processedText;
-    let romanPart = '';
-    
-    if (hasRoman) {
-        // 分離泰文和羅馬拼音部分
-        const parts = processedText.split(' (');
-        thaiPart = parts[0];
-        romanPart = '(' + parts[1];
-    }
-
-    // 處理泰文部分
-    thaiPart = thaiPart.replace(/\u0e4d\u0e32/g, "\u0e33");
-    thaiPart = thaiPart.replace(/จำนวน/g, "จัม-นวน");
-    thaiPart = convertNumbersToThaiText(thaiPart);
-    thaiPart = thaiPart.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
-    thaiPart = thaiPart.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
+    // 處理泰文發音
+    processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
+    processedText = processedText.replace(/จำนวน/g, "จัม-นวน");
+    processedText = convertNumbersToThaiText(processedText);
+    processedText = processedText.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
+    processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
         let finalTone = tone ? tone : "";
         return con + "ั" + finalTone + "ม";
     });
-    thaiPart = thaiPart.replace(/([ก-๙]{1,6})ๆ/gu, '$1, $1');
+    processedText = processedText.replace(/([ก-๙]{1,6})ๆ/gu, '$1, $1');
 
-    // 如果有羅馬拼音，只念泰文部分
-    if (hasRoman) {
-        // 只念泰文部分
-        const thaiMsg = new SpeechSynthesisUtterance(thaiPart);
-        const voices = window.speechSynthesis.getVoices();
-        const thaiVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
-                        || voices.find(v => v.lang.includes('th'));
-        if (thaiVoice) thaiMsg.voice = thaiVoice;
-        thaiMsg.lang = 'th-TH';
-        thaiMsg.rate = 1.0;
+    const msg = new SpeechSynthesisUtterance(processedText);
+    const voices = window.speechSynthesis.getVoices();
+    const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
+                    || voices.find(v => v.lang.includes('th'));
 
-        if (btnElement) btnElement.classList.add('playing');
-        thaiMsg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
-        
-        window.speechSynthesis.speak(thaiMsg);
-    } else {
-        // 普通模式，只念泰文
-        const msg = new SpeechSynthesisUtterance(thaiPart);
-        const voices = window.speechSynthesis.getVoices();
-        const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
-                        || voices.find(v => v.lang.includes('th'));
+    if (bestVoice) msg.voice = bestVoice;
+    msg.lang = 'th-TH';
+    msg.rate = 1.0; 
 
-        if (bestVoice) msg.voice = bestVoice;
-        msg.lang = 'th-TH';
-        msg.rate = 1.0; 
-
-        if (btnElement) btnElement.classList.add('playing');
-        msg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
-        
-        window.speechSynthesis.speak(msg);
-    }
+    if (btnElement) btnElement.classList.add('playing');
+    msg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
+    
+    window.speechSynthesis.speak(msg);
 }
 
 function checkPasscode() {
