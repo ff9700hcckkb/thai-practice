@@ -379,9 +379,6 @@
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
         let consonantsData = []; // 用來存放子音資料
         let vowelsData = []; // 用來存放母音資料
-            { char: 'ข', roman: 'kh (khaw khai)' },
-            { char: 'ค', roman: 'kh (khaw khwai)' },
-            { char: 'ง', roman: 'ng (ngaw nguu)' },
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         let currentMode = 'random';
@@ -580,7 +577,6 @@ async function initAllData() {
 }
 
 // 新增：抓取「額外補充」分頁資料
-const RULE_GID = '1909951115'; // 妳指定的分頁 GID
 
 async function openRulePage() {
     const modal = document.getElementById('rule-page');
@@ -643,7 +639,6 @@ html += `
     }
 }
 
-const ESSAY_GID = '893893675';
 let essayData = []; // 用來暫存抓下來的短文資料
 
 // 1. 開啟短文清單頁
