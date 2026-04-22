@@ -944,6 +944,7 @@ function convertNumbersToThaiText(text) {
             // 母音使用手動定義的資料，避免編碼問題
             if (type === 'vowels') {
                 vowelsData.length = 0;
+                // 單母音 (9個)
                 vowelsData.push(
                     { char: 'ะ', roman: 'a (短音)', category: '' },
                     { char: 'า', roman: 'aa (長音)', category: '' },
@@ -953,19 +954,36 @@ function convertNumbersToThaiText(text) {
                     { char: 'ื', roman: 'uee (長音)', category: '' },
                     { char: 'ุ', roman: 'u (短音)', category: '' },
                     { char: 'ู', roman: 'uu (長音)', category: '' },
-                    { char: 'เ', roman: 'e (短音)', category: '' },
-                    { char: 'แ', roman: 'ae (短音)', category: '' },
-                    { char: 'โ', roman: 'o (長音)', category: '' },
-                    { char: 'ใ', roman: 'ai (長音)', category: '' },
-                    { char: 'ไ', roman: 'ai (長音)', category: '' },
-                    { char: 'ๅ', roman: 'o (短音)', category: '' },
+                    { char: 'อ', roman: 'o (長音)', category: '' }
+                );
+                // 複合母音 (9個)
+                vowelsData.push(
+                    { char: 'เ-ะ', roman: 'e (短音)', category: '' },
+                    { char: 'เ-', roman: 'ee (長音)', category: '' },
+                    { char: 'แ-ะ', roman: 'ae (短音)', category: '' },
+                    { char: 'แ-', roman: 'aee (長音)', category: '' },
+                    { char: 'โ-ะ', roman: 'o (短音)', category: '' },
+                    { char: 'โ-', roman: 'oo (長音)', category: '' },
+                    { char: 'เ-าะ', roman: 'oe (短音)', category: '' },
+                    { char: 'เ-อ', roman: 'oe (長音)', category: '' },
+                    { char: 'เ-อะ', roman: 'oe (短音)', category: '' }
+                );
+                // 特殊母音 (14個)
+                vowelsData.push(
+                    { char: 'ไ-', roman: 'ai (長音)', category: '' },
+                    { char: 'ใ-', roman: 'ai (長音)', category: '' },
+                    { char: 'ไ-ย', roman: 'ai (長音)', category: '' },
+                    { char: 'ั-', roman: 'a (短音)', category: '' },
+                    { char: 'ำ', roman: 'am (長音)', category: '' },
                     { char: 'ฤ', roman: 'rue (短音)', category: '' },
                     { char: 'ฤๅ', roman: 'ruee (長音)', category: '' },
                     { char: 'ฦ', roman: 'lue (短音)', category: '' },
                     { char: 'ฦๅ', roman: 'luee (長音)', category: '' },
-                    { char: 'ำ', roman: 'am (長音)', category: '' },
-                    { char: 'ไอ', roman: 'ai (長音)', category: '' },
-                    { char: 'เอา', roman: 'ao (長音)', category: '' }
+                    { char: 'เ-าะ', roman: 'oe (短音)', category: '' },
+                    { char: 'เ-อ', roman: 'oe (長音)', category: '' },
+                    { char: 'เ-ีย', roman: 'ia (長音)', category: '' },
+                    { char: 'เ-ือ', roman: 'uea (長音)', category: '' },
+                    { char: 'เ-อะ', roman: 'a (短音)', category: '' }
                 );
                 return;
             }
