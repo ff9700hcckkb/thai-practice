@@ -949,21 +949,11 @@ function convertNumbersToThaiText(text) {
                 targetArray.length = 0; // 清空舊資料
                 rows.forEach(row => {
                     const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                    if (cols.length >= 2) {
+                    if (cols.length >= 3) {
                         const char = cols[0].replace(/"/g, '').trim();
                         const roman = cols[1].replace(/"/g, '').trim();
+                        const category = cols[2].replace(/"/g, '').trim();
                         if (char && roman) {
-                            let category = '';
-                            if (type === 'consonants') {
-                                // 泰文子音分類
-                                const middleConsonants = ['ก', 'จ', 'ฎ', 'ฏ', 'ด', 'ต', 'บ', 'ป', 'อ'];
-                                const highConsonants = ['ข', 'ฉ', 'ถ', 'ผ', 'ฝ', 'ศ', 'ษ', 'ส', 'ห', 'ฮ'];
-                                const lowConsonants = ['ค', 'ช', 'ซ', 'ฌ', 'ญ', 'ฑ', 'ฒ', 'ณ', 'ท', 'ธ', 'น', 'พ', 'ฟ', 'ภ', 'ม', 'ย', 'ร', 'ล', 'ว', 'ฬ'];
-                                
-                                if (middleConsonants.includes(char)) category = '中';
-                                else if (highConsonants.includes(char)) category = '高';
-                                else if (lowConsonants.includes(char)) category = '低';
-                            }
                             targetArray.push({ char, roman, category });
                         }
                     }
