@@ -303,7 +303,15 @@
 <div id="phonetics-page" class="modal-page">
     <div class="modal-content">
         <h2 style="text-align:center">🔤 子音母音</h2>
-        <button class="side-full-btn" onclick="openConsonantsPage()">🗣️ 子音</button>
+        <div style="margin-bottom: 20px;">
+            <h3 style="text-align:center; margin-bottom: 15px;">🗣️ 子音</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <button class="side-full-btn" onclick="displayConsonants('all')">📚 全部子音</button>
+                <button class="side-full-btn" onclick="displayConsonants('中')">🔸 中子音</button>
+                <button class="side-full-btn" onclick="displayConsonants('高')">🔺 高子音</button>
+                <button class="side-full-btn" onclick="displayConsonants('低')">🔻 低子音</button>
+            </div>
+        </div>
         <button class="side-full-btn" onclick="openVowelsPage()">🎵 母音</button>
         <button class="close-btn" onclick="closeModal('phonetics-page')">返回</button>
     </div>
@@ -379,6 +387,7 @@
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
         let consonantsData = []; // 用來存放子音資料
         let vowelsData = []; // 用來存放母音資料
+        let currentConsonantFilter = 'all'; // 當前子音篩選狀態
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
         let currentMode = 'random';
@@ -870,7 +879,7 @@ function convertNumbersToThaiText(text) {
             quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
             if (currentMode === 'random') displayRandom();
             else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
-            else if (currentMode === 'consonants') displayConsonants();
+            else if (currentMode === 'consonants') displayConsonants(currentConsonantFilter);
             else if (currentMode === 'vowels') displayVowels();
             else switchSource(currentMode, null);
         }
@@ -902,14 +911,20 @@ function convertNumbersToThaiText(text) {
             toggleSidebar();
         }
 
-        async function displayConsonants() {
+        async function displayConsonants(filter = 'all') {
             if (consonantsData.length === 0) {
                 // 如果還沒抓取過資料，先抓取
                 await fetchPhoneticData('consonants');
             }
             currentMode = 'consonants';
-            renderList(consonantsData);
-            document.getElementById('search-info').innerText = `子音字母 ${consonantsData.length} 個`;
+            currentConsonantFilter = filter; // 儲存篩選狀態
+            let filteredData = consonantsData;
+            if (filter !== 'all') {
+                filteredData = consonantsData.filter(item => item.category === filter);
+            }
+            renderList(filteredData);
+            const filterText = filter === 'all' ? '' : `${filter}子音 `;
+            document.getElementById('search-info').innerText = `${filterText}子音字母 ${filteredData.length} 個`;
         }
 
         async function displayVowels() {
@@ -938,7 +953,18 @@ function convertNumbersToThaiText(text) {
                         const char = cols[0].replace(/"/g, '').trim();
                         const roman = cols[1].replace(/"/g, '').trim();
                         if (char && roman) {
-                            targetArray.push({ char, roman });
+                            let category = '';
+                            if (type === 'consonants') {
+                                // 泰文子音分類
+                                const middleConsonants = ['ก', 'จ', 'ฎ', 'ฏ', 'ด', 'ต', 'บ', 'ป', 'อ'];
+                                const highConsonants = ['ข', 'ฉ', 'ถ', 'ผ', 'ฝ', 'ศ', 'ษ', 'ส', 'ห', 'ฮ'];
+                                const lowConsonants = ['ค', 'ช', 'ซ', 'ฌ', 'ญ', 'ฑ', 'ฒ', 'ณ', 'ท', 'ธ', 'น', 'พ', 'ฟ', 'ภ', 'ม', 'ย', 'ร', 'ล', 'ว', 'ฬ'];
+                                
+                                if (middleConsonants.includes(char)) category = '中';
+                                else if (highConsonants.includes(char)) category = '高';
+                                else if (lowConsonants.includes(char)) category = '低';
+                            }
+                            targetArray.push({ char, roman, category });
                         }
                     }
                 });
@@ -946,11 +972,50 @@ function convertNumbersToThaiText(text) {
                 console.error(`Error fetching ${type}:`, error);
                 // 如果抓取失敗，使用預設資料
                 if (type === 'consonants') {
-                    consonantsData.push(
-                        { char: 'ก', roman: 'k (gaw gai)' },
-                        { char: 'ข', roman: 'kh (khaw khai)' },
-                        { char: 'ค', roman: 'kh (khaw khwai)' }
-                    );
+                    const defaultConsonants = [
+                        { char: 'ก', roman: 'k (gaw gai)', category: '中' },
+                        { char: 'ข', roman: 'kh (khaw khai)', category: '高' },
+                        { char: 'ค', roman: 'kh (khaw khwai)', category: '低' },
+                        { char: 'ง', roman: 'ng (ngaw nguu)', category: '低' },
+                        { char: 'จ', roman: 'j (jaw jaan)', category: '中' },
+                        { char: 'ฉ', roman: 'ch (chaw ching)', category: '高' },
+                        { char: 'ช', roman: 'ch (chaw chaang)', category: '低' },
+                        { char: 'ซ', roman: 's (saw soh)', category: '低' },
+                        { char: 'ฌ', roman: 'ch (chaw chəə)', category: '低' },
+                        { char: 'ญ', roman: 'y (yaw ying)', category: '低' },
+                        { char: 'ฎ', roman: 'd (daw chadaa)', category: '中' },
+                        { char: 'ฏ', roman: 't (taw padak)', category: '中' },
+                        { char: 'ฐ', roman: 'th (thaw thaan)', category: '高' },
+                        { char: 'ฑ', roman: 'th (thaw thong)', category: '低' },
+                        { char: 'ฒ', roman: 'th (thaw phuuthao)', category: '低' },
+                        { char: 'ณ', roman: 'n (naw neen)', category: '低' },
+                        { char: 'ด', roman: 'd (daw dek)', category: '中' },
+                        { char: 'ต', roman: 't (taw tao)', category: '中' },
+                        { char: 'ถ', roman: 'th (thaw thung)', category: '高' },
+                        { char: 'ท', roman: 'th (thaw thahaan)', category: '低' },
+                        { char: 'ธ', roman: 'th (thaw thong)', category: '低' },
+                        { char: 'น', roman: 'n (naw nuu)', category: '低' },
+                        { char: 'บ', roman: 'b (baw baimai)', category: '中' },
+                        { char: 'ป', roman: 'p (paw plaa)', category: '中' },
+                        { char: 'ผ', roman: 'ph (phaw phưng)', category: '高' },
+                        { char: 'ฝ', roman: 'f (faw faa)', category: '高' },
+                        { char: 'พ', roman: 'ph (phaw phaan)', category: '低' },
+                        { char: 'ฟ', roman: 'f (faw fan)', category: '低' },
+                        { char: 'ภ', roman: 'ph (phaw samphao)', category: '低' },
+                        { char: 'ม', roman: 'm (maw maa)', category: '低' },
+                        { char: 'ย', roman: 'y (yaw yak)', category: '低' },
+                        { char: 'ร', roman: 'r (raw rưa)', category: '低' },
+                        { char: 'ล', roman: 'l (law ling)', category: '低' },
+                        { char: 'ว', roman: 'w (waw wɛɛn)', category: '低' },
+                        { char: 'ศ', roman: 's (saw salaa)', category: '高' },
+                        { char: 'ษ', roman: 's (saw rưsi)', category: '高' },
+                        { char: 'ส', roman: 's (saw sưa)', category: '高' },
+                        { char: 'ห', roman: 'h (haw hìip)', category: '高' },
+                        { char: 'ฬ', roman: 'l (law julaa)', category: '低' },
+                        { char: 'อ', roman: 'aw aang', category: '中' },
+                        { char: 'ฮ', roman: 'h (haw nokhûuk)', category: '高' }
+                    ];
+                    consonantsData.push(...defaultConsonants);
                 } else {
                     vowelsData.push(
                         { char: 'ะ', roman: 'a (短音)' },
@@ -1078,9 +1143,9 @@ function speak(text, btnElement, e) {
     });
     thaiPart = thaiPart.replace(/([ก-๙]{1,6})ๆ/gu, '$1, $1');
 
-    // 如果有羅馬拼音，創建兩個語音訊息
+    // 如果有羅馬拼音，只念泰文部分
     if (hasRoman) {
-        // 先念泰文
+        // 只念泰文部分
         const thaiMsg = new SpeechSynthesisUtterance(thaiPart);
         const voices = window.speechSynthesis.getVoices();
         const thaiVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
@@ -1089,27 +1154,8 @@ function speak(text, btnElement, e) {
         thaiMsg.lang = 'th-TH';
         thaiMsg.rate = 1.0;
 
-        // 再念羅馬拼音（用英文發音）
-        const romanMsg = new SpeechSynthesisUtterance(romanPart);
-        const englishVoice = voices.find(v => v.lang.includes('en') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
-                          || voices.find(v => v.lang.includes('en'))
-                          || voices.find(v => v.lang.includes('en-US'));
-        if (englishVoice) romanMsg.voice = englishVoice;
-        romanMsg.lang = 'en-US';
-        romanMsg.rate = 0.8; // 英文部分念慢一點
-
         if (btnElement) btnElement.classList.add('playing');
-        
-        // 連續播放兩個訊息
-        thaiMsg.onend = () => {
-            setTimeout(() => {
-                window.speechSynthesis.speak(romanMsg);
-            }, 200); // 短暂停顿
-        };
-        
-        romanMsg.onend = () => { 
-            if (btnElement) btnElement.classList.remove('playing'); 
-        };
+        thaiMsg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
         
         window.speechSynthesis.speak(thaiMsg);
     } else {
