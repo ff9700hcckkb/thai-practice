@@ -297,12 +297,9 @@
             </div>
             <div id="search-info"></div>
         </div>
-
         <div class="search-container">
-    <input type="text" id="searchInput" placeholder="搜尋泰文或中文..." oninput="debounceSearch()">
-    <div id="search-stats" style="color: var(--sub-text); font-size: 0.8rem; margin-top: 8px; text-align: right; padding-right: 10px;"></div>
-</div>
-        
+            <input type="text" id="search-input" maxlength="50" autocomplete="off" placeholder="輸入泰文或中文搜尋....." oninput="handleSearch()">
+        </div>
 <div class="action-row">
     <div class="left-actions">
         <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 遮蔽</button>
@@ -487,39 +484,6 @@ window.addEventListener('load', () => {
     // 2. 啟動資料抓取
     initAllData();
 });
-
-let searchTimeout;
-
-// 1. 防抖函式：使用者停止打字 300ms 後才會真正執行搜尋
-function debounceSearch() {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        filterWords();
-    }, 300);
-}
-
-// 2. 修改原本的 filterWords，加入數量統計
-function filterWords() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const statsElement = document.getElementById('search-stats');
-    
-    // 根據搜尋詞過濾
-    const filtered = allWords.filter(word => 
-        word.thai.toLowerCase().includes(searchTerm) || 
-        word.chinese.toLowerCase().includes(searchTerm) ||
-        word.roman.toLowerCase().includes(searchTerm)
-    );
-
-    // 更新介面
-    renderWords(filtered);
-
-    // 顯示結果數量
-    if (searchTerm === "") {
-        statsElement.innerText = ""; // 沒搜尋時不顯示
-    } else {
-        statsElement.innerText = `找到 ${filtered.length} 個匹配結果`;
-    }
-}
         
 let isArtFont = false;
 
