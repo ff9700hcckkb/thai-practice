@@ -411,6 +411,7 @@
 </div>
 
     <script>
+
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
         
         const gids = { 
@@ -1184,23 +1185,42 @@ function convertNumbersToThaiText(text) {
 
 // --- 請替換從 function speak 開始到結尾的內容 ---
 
+// 1. 先在函式外部定義好對照表，方便管理
+const vowelCorrection = {
+    // 短母音
+    '-ะ': 'อะ', 'ิ': 'อิ', 'ึ': 'อึ', 'ุ': 'อุ',
+    'เ-ะ': 'เอะ', 'แ-ะ': 'แอะ', 'โ-ะ': 'โอะ', 'เ-าะ': 'เอาะ', 'เ-อะ': 'เออะ',
+    // 長母音
+    '-า': 'อา', 'ี': 'อี', 'ื': 'อือ', 'ู': 'อู',
+    'เ-': 'เอ', 'แ-': 'แอ', 'โ-': 'โอ', '-อ': 'ออ', 'เ-อ': 'เออ',
+    // 特殊/複合母音
+    'เ-ียะ': 'เอียะ', 'เ-ีย': 'เอีย', 'เ-ือะ': 'เอือะ', 'เ-ือ': 'เอือ',
+    'ัวะ': 'อัวะ', 'ัว': 'อัว', 'ำ': 'อำ', 'ใ-': 'ใอ', 'ไ-': 'ไอ', 'เ-า': 'เอา'
+};
+
 function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
     window.speechSynthesis.cancel();
 
     let processedText = text.normalize('NFC').trim();
     
-    // 處理泰文發音
-    processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
-    processedText = processedText.replace(/จำนวน/g, "จัม-นวน");
-    processedText = convertNumbersToThaiText(processedText);
-    processedText = processedText.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
-    processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
-        let finalTone = tone ? tone : "";
-        return con + "ั" + finalTone + "ม";
-    });
-    // 修正：ๆ 只重複前面的詞，不重複整個句子
-    processedText = processedText.replace(/([\u0e00-\u0e7f]+)ๆ/g, '$1 $1');
+    // --- 【新增功能】母音修正邏輯 ---
+    // 如果傳進來的文字完全符合對照表中的 Key，代表是在練習單個母音
+    if (vowelCorrection[processedText]) {
+        processedText = vowelCorrection[processedText];
+    } else {
+        // --- 【原有機制】原本的發音處理邏輯 ---
+        processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
+        processedText = processedText.replace(/จำนวน/g, "จัม-นวน");
+        processedText = convertNumbersToThaiText(processedText);
+        processedText = processedText.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
+        processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
+            let finalTone = tone ? tone : "";
+            return con + "ั" + finalTone + "ม";
+        });
+        processedText = processedText.replace(/([\u0e00-\u0e7f]+)ๆ/g, '$1 $1');
+    }
+    // ----------------------------------
 
     const msg = new SpeechSynthesisUtterance(processedText);
     const voices = window.speechSynthesis.getVoices();
@@ -1209,7 +1229,9 @@ function speak(text, btnElement, e) {
 
     if (bestVoice) msg.voice = bestVoice;
     msg.lang = 'th-TH';
-    msg.rate = currentSpeed; 
+    
+    // 這裡使用妳原本定義的變數 currentSpeed
+    msg.rate = typeof currentSpeed !== 'undefined' ? currentSpeed : 1.0; 
 
     if (btnElement) btnElement.classList.add('playing');
     msg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
