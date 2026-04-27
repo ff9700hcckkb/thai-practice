@@ -339,7 +339,6 @@
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
     <button id="btn-phonetics" class="side-full-btn" onclick="openPhoneticsPage()">🔤 子音</button>
-        <button id="btn-vowels" class="side-full-btn" onclick="displayVowels()">🅰️ 母音</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
@@ -429,10 +428,6 @@
         const LINKS_GID = "370151406";
         const ABOUT_GID = "1687106860";
         const CONSONANTS_GID = "1406847314";
-       const VOWELS_GID = '989034555';
-    let vowelsData = []; // 用於暫存母音資料
-    let currentVowelFilter = 'all'; // 記錄當前母音篩選狀態
-        
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
         let consonantsData = []; // 用來存放子音資料
         let currentConsonantFilter = 'all'; // 當前子音篩選狀態
@@ -550,61 +545,9 @@ function toggleArtFont() {
 }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         
-  async function openPhoneticsPage(filter = 'all') {
-    // 1. 如果資料還沒抓過，先抓取
-    if (phoneticsData.length === 0) {
-        await displayConsonants(filter);
-    }
-    
-    currentMode = 'phonetics';
-    currentPhoneticFilter = filter;
-    
-    const container = document.getElementById('app');
-    const filteredPhonetics = filter === 'all' 
-        ? phoneticsData 
-        : phoneticsData.filter(p => p.category === filter);
-    
-    // 2. 產生分類按鈕 (這部分保留您原本的邏輯)
-    const categories = ['all', '高子音', '中子音', '低子音'];
-    let filterHtml = '<div class="filter-container">';
-    categories.forEach(cat => {
-        const label = cat === 'all' ? '📚 全部' : cat;
-        filterHtml += `<button class="filter-btn ${currentPhoneticFilter === cat ? 'active' : ''}" onclick="openPhoneticsPage('${cat}')">${label}</button>`;
-    });
-    filterHtml += '</div>';
-    
-    container.innerHTML = filterHtml;
-    document.getElementById('search-info').innerText = `${filter === 'all' ? '' : filter}子音字母 ${filteredPhonetics.length} 個`;
-
-    // 3. 產生卡片邏輯 (在這裡加入 audioUrl)
-    filteredPhonetics.forEach((item, index) => {
-        const isFav = favorites.includes(item.char);
-        const div = document.createElement('div');
-        div.className = 'card' + (isArtFont ? ' art-font' : '');
-        div.id = `card-phonetic-${index}`;
-        div.onclick = function(e) { 
-            if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); 
-        };
-        
-        div.innerHTML = `
-            <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.char}', this, event)">★</button>
-            <div class="card-content">
-                <div class="thai" lang="th">${item.char}</div>
-                <div class="chinese">${item.roman}</div>
-            </div>
-            <div class="card-action">
-                <button class="btn-speak" onclick="speak('${item.char}', this, event, '${item.audioUrl || ''}')">🔊</button>
-                <div class="source-tag">${item.category}</div>
-            </div>
-        `;
-        container.appendChild(div);
-    });
-
-    // 關閉側邊欄
-    if (document.getElementById('sidebar').classList.contains('active')) {
-        toggleSidebar();
-    }
-}
+        function openPhoneticsPage() {
+            displayConsonants();
+        }
 
         function openConsonantsPage() {
             displayConsonants();
@@ -977,97 +920,6 @@ function convertNumbersToThaiText(text) {
             });
         }
 
-async function displayVowels(filter = 'all') {
-    if (vowelsData.length === 0) {
-        await fetchVowelData();
-    }
-    currentMode = 'vowels';
-    currentVowelFilter = filter;
-    
-    let filteredData = vowelsData;
-    if (filter !== 'all') {
-        filteredData = vowelsData.filter(item => item.category === filter);
-    }
-
-    // 渲染清單（包含分類按鈕）
-    renderVowelList(filteredData);
-    
-    const filterText = filter === 'all' ? '' : `${filter} `;
-    document.getElementById('search-info').innerText = `${filterText}母音字母 ${filteredData.length} 個`;
-}
-
-async function fetchVowelData() {
-    try {
-        const url = `${base_url}&gid=${VOWELS_GID}&t=${Date.now()}`;
-        const response = await fetch(url);
-        let csvText = await response.text();
-        if (csvText.charCodeAt(0) === 0xFEFF) csvText = csvText.slice(1);
-
-        const rows = csvText.split(/\r?\n/).slice(1);
-        vowelsData = [];
-        rows.forEach(row => {
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (cols.length >= 2) {
-                const char = cols[0].replace(/"/g, '').trim();
-                const roman = cols[1].replace(/"/g, '').trim();
-                const category = cols[2] ? cols[2].replace(/"/g, '').trim() : '母音';
-                // --- 新增：讀取第四欄音檔連結 ---
-                const audioUrl = cols[3] ? cols[3].replace(/"/g, '').trim() : null; 
-
-                if (char && roman) {
-                    vowelsData.push({ char, roman, category, audioUrl }); // 存入資料物件
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Error fetching vowels:', error);
-    }
-}
-
-// 專屬母音的渲染函式，用來放分類按鈕
-function renderVowelList(list) {
-    const container = document.getElementById('app');
-    
-    // 產生母音分類按鈕（這部分會動態抓取資料中所有的 category）
-    const categories = ['all', ...new Set(vowelsData.map(item => item.category))];
-    
-    let filterHtml = '<div class="filter-container">';
-    categories.forEach(cat => {
-        const label = cat === 'all' ? '📚 全部' : cat;
-        filterHtml += `<button class="filter-btn ${currentVowelFilter === cat ? 'active' : ''}" onclick="displayVowels('${cat}')">${label}</button>`;
-    });
-    filterHtml += '</div>';
-    
-    container.innerHTML = filterHtml;
-
-    if (list.length === 0) {
-        container.innerHTML += '<div style="margin-top:30px;color:#666;text-align:center;">無相關資料</div>';
-    }
-
-    // 沿用原本的卡片生成邏輯
-    list.forEach((item, index) => {
-        const isFav = favorites.includes(item.char);
-        const div = document.createElement('div');
-        div.className = 'card' + (isArtFont ? ' art-font' : '');
-        div.id = `card-${index}`;
-        div.onclick = function(e) { if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); };
-        
-      // 在 renderVowelList 函式內的卡片 HTML 部分
-div.innerHTML = `
-    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.char}', this, event)">★</button>
-    <div class="card-content">
-        <div class="thai" lang="th">${item.char}</div>
-        <div class="chinese">${item.roman}</div>
-    </div>
-    <div class="card-action">
-        <button class="btn-speak" onclick="speak('${item.char}', this, event, '${item.audioUrl || ''}')">🔊</button>
-        <div class="source-tag">${item.category}</div>
-    </div>
-`;
-        container.appendChild(div);
-    });
-}
-        
         function toggleFav(id, btn, e) {
             e.stopPropagation();
             if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
@@ -1094,8 +946,6 @@ div.innerHTML = `
             else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
             else if (currentMode === 'consonants') displayConsonants(currentConsonantFilter);
             else if (currentMode === 'vowels') displayVowels();
-                // 在 handleRefresh 函式內尋找並修改
-            else if (currentMode === 'vowels') displayVowels(currentVowelFilter);
             else switchSource(currentMode, null);
         }
 
@@ -1126,41 +976,21 @@ div.innerHTML = `
             toggleSidebar();
         }
 
-      async function displayConsonants(filter = 'all') {
-    if (phoneticsData.length === 0) {
-        try {
-            const url = `${base_url}&gid=${PHONETICS_GID}&t=${Date.now()}`;
-            const response = await fetch(url);
-            let csvText = await response.text();
-            if (csvText.charCodeAt(0) === 0xFEFF) csvText = csvText.slice(1);
-
-            const rows = csvText.split(/\r?\n/).slice(1);
-            phoneticsData = [];
-            rows.forEach(row => {
-                const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-                if (cols.length >= 2) {
-                    const char = cols[0].replace(/"/g, '').trim();
-                    const roman = cols[1].replace(/"/g, '').trim();
-                    const category = cols[2] ? cols[2].replace(/"/g, '').trim() : '未知';
-                    // --- 關鍵修改：讀取第四欄 D 欄 ---
-                    const audioUrl = cols[3] ? cols[3].replace(/"/g, '').trim() : null;
-
-                    if (char && roman) {
-                        phoneticsData.push({ char, roman, category, audioUrl });
-                    }
-                }
-            });
-        } catch (error) {
-            console.error('抓取子音失敗:', error);
+        async function displayConsonants(filter = 'all') {
+            if (consonantsData.length === 0) {
+                // 如果還沒抓取過資料，先抓取
+                await fetchPhoneticData();
+            }
+            currentMode = 'consonants';
+            currentConsonantFilter = filter; // 儲存篩選狀態
+            let filteredData = consonantsData;
+            if (filter !== 'all') {
+                filteredData = consonantsData.filter(item => item.category === filter);
+            }
+            renderList(filteredData);
+            const filterText = filter === 'all' ? '' : `${filter}子音 `;
+            document.getElementById('search-info').innerText = `${filterText}子音字母 ${filteredData.length} 個`;
         }
-    }
-    currentMode = 'phonetics';
-    currentPhoneticFilter = filter;
-    renderPhoneticsPage();
-    if (document.getElementById('sidebar').classList.contains('active')) {
-        toggleSidebar();
-    }
-}
 
 
 
@@ -1354,47 +1184,22 @@ div.innerHTML = `
 
 // --- 請替換從 function speak 開始到結尾的內容 ---
 
-function speak(text, btnElement, e, externalAudioUrl = null) {
+function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
     window.speechSynthesis.cancel();
 
-    // --- 優先權 1：檢查是否有外部音檔 ---
-    if (externalAudioUrl && externalAudioUrl !== 'null' && externalAudioUrl !== '') {
-        const audio = new Audio(externalAudioUrl);
-        
-        if (btnElement) btnElement.classList.add('playing');
-        
-        audio.play().then(() => {
-            // 監聽音檔播放結束，移除動畫
-            audio.onended = () => {
-                if (btnElement) btnElement.classList.remove('playing');
-            };
-        }).catch(err => {
-            console.error("外部音檔播放失敗，切換回系統語音:", err);
-            if (btnElement) btnElement.classList.remove('playing');
-            runSystemTTS(text, btnElement); // 失敗時跑原本的 TTS
-        });
-    } else {
-        // --- 優先權 2：無音檔時，執行原本的系統 TTS ---
-        runSystemTTS(text, btnElement);
-    }
-}
-
-// 將原本複雜的系統語音邏輯獨立出來
-function runSystemTTS(text, btnElement) {
     let processedText = text.normalize('NFC').trim();
     
-    // 這裡保留你原本所有的發音修正邏輯
+    // 處理泰文發音
     processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
     processedText = processedText.replace(/จำนวน/g, "จัม-นวน");
-    if (typeof convertNumbersToThaiText === "function") {
-        processedText = convertNumbersToThaiText(processedText);
-    }
+    processedText = convertNumbersToThaiText(processedText);
     processedText = processedText.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
     processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
         let finalTone = tone ? tone : "";
         return con + "ั" + finalTone + "ม";
     });
+    // 修正：ๆ 只重複前面的詞，不重複整個句子
     processedText = processedText.replace(/([\u0e00-\u0e7f]+)ๆ/g, '$1 $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
