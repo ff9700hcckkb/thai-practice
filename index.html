@@ -339,6 +339,7 @@
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
     <button id="btn-phonetics" class="side-full-btn" onclick="openPhoneticsPage()">🔤 子音</button>
+        <button id="btn-vowels" class="side-full-btn" onclick="displayVowels()">🅰️ 母音</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
@@ -428,6 +429,8 @@
         const LINKS_GID = "370151406";
         const ABOUT_GID = "1687106860";
         const CONSONANTS_GID = "1406847314";
+        const VOWELS_GID = '989034555'; // 您指定的母音 GID
+        let vowelsData = []; // 用來存放母音資料
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
         let consonantsData = []; // 用來存放子音資料
         let currentConsonantFilter = 'all'; // 當前子音篩選狀態
@@ -920,6 +923,44 @@ function convertNumbersToThaiText(text) {
             });
         }
 
+async function displayVowels() {
+    if (vowelsData.length === 0) {
+        await fetchVowelData();
+    }
+    currentMode = 'vowels';
+    renderList(vowelsData);
+    document.getElementById('search-info').innerText = `母音字母 ${vowelsData.length} 個`;
+    toggleSidebar(); // 點擊後關閉側邊欄
+}
+
+async function fetchVowelData() {
+    try {
+        const url = `${base_url}&gid=${VOWELS_GID}&t=${Date.now()}`;
+        const response = await fetch(url);
+        let csvText = await response.text();
+        
+        if (csvText.charCodeAt(0) === 0xFEFF) csvText = csvText.slice(1);
+
+        const rows = csvText.split(/\r?\n/).slice(1);
+        vowelsData = []; 
+        rows.forEach(row => {
+            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            if (cols.length >= 2) {
+                const char = cols[0].replace(/"/g, '').trim();
+                const roman = cols[1].replace(/"/g, '').trim();
+                const category = cols[2] ? cols[2].replace(/"/g, '').trim() : '母音';
+
+                if (char && roman) {
+                    vowelsData.push({ char, roman, category });
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching vowels:', error);
+        document.getElementById('loading').innerText = '母音資料載入失敗';
+    }
+}
+        
         function toggleFav(id, btn, e) {
             e.stopPropagation();
             if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
