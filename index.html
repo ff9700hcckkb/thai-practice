@@ -339,7 +339,6 @@
     <div class="sidebar-section">
     <span class="sidebar-label">額外補充</span>
     <button id="btn-phonetics" class="side-full-btn" onclick="openPhoneticsPage()">🔤 子音</button>
-        <button id="btn-vowels" class="side-full-btn" onclick="displayVowels()">🌈 母音</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
 </div>
@@ -429,8 +428,6 @@
         const LINKS_GID = "370151406";
         const ABOUT_GID = "1687106860";
         const CONSONANTS_GID = "1406847314";
-        const VOWELS_GID = '989034555'; // 您指定的母音 GID
-        let vowelsData = []; // 存放母音資料
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
         let consonantsData = []; // 用來存放子音資料
         let currentConsonantFilter = 'all'; // 當前子音篩選狀態
@@ -506,47 +503,7 @@ function toggleArtFont() {
     // 3. 提示目前狀態
     document.getElementById('search-info').innerText = isArtFont ? '已切換為藝術字體' : '已恢復標準字體';
 }
-        // --- 母音頁面進入點 ---
-async function displayVowels() {
-    if (vowelsData.length === 0) {
-        await fetchVowelData();
-    }
-    currentMode = 'vowels';
-    renderList(vowelsData);
-    document.getElementById('search-info').innerText = `母音字母 ${vowelsData.length} 個`;
-    toggleSidebar(); // 點擊後關閉選單
-}
-
-// --- 抓取母音 CSV 資料 ---
-async function fetchVowelData() {
-    try {
-        const response = await fetch(`${base_url}&gid=${VOWELS_GID}&t=${Date.now()}`);
-        let csvText = await response.text();
-        const rows = csvText.split(/\r?\n/).slice(1); // 跳過標題行
-
-        vowelsData = [];
-        rows.forEach(row => {
-            // 使用正則拆分 CSV，考慮到引號內的逗號
-            const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            if (cols.length >= 3) {
-                const char = cols[0].replace(/"/g, '').trim(); // A欄: 泰文
-                const roman = cols[1].replace(/"/g, '').trim(); // B欄: 羅馬拼音/中文
-                const audioUrl = cols[3] ? cols[3].replace(/"/g, '').trim() : ''; // D欄: 外部音檔
-
-                if (char && roman) {
-                    vowelsData.push({ 
-                        char, 
-                        roman, 
-                        audioUrl, // 存入外部音檔網址
-                        source: '母音' 
-                    });
-                }
-            }
-        });
-    } catch (error) {
-        console.error('Error fetching vowels:', error);
-    }
-}
+        
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('overlay');
@@ -931,49 +888,38 @@ function convertNumbersToThaiText(text) {
                 container.innerHTML += '<div style="margin-top:30px;color:#666;text-align:center;">無相關詞庫</div>';
             }
 
-          list.forEach((item, index) => {
-    const isFav = favorites.includes(item.id);
-    const div = document.createElement('div');
-    
-    // --- 關鍵修改：生成時判斷是否要加 art-font ---
-    div.className = 'card' + (isArtFont ? ' art-font' : '');
-    // ------------------------------------------
-    
-    div.id = `card-${index}`;
-    div.onclick = function(e) { 
-        if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); 
-    };
-    
-    // 1. 判斷資料類型與顯示文字
-    // 檢查是否為母音或子音數據（通常有 char 欄位）
-    const isPhonetic = !!(item.char && item.roman);
-    const thaiText = isPhonetic ? item.char : item.thai;
-    const chineseText = isPhonetic ? item.roman : item.chinese;
-    
-    // 2. 決定來源標籤顯示內容
-    let sourceText = item.source;
-    if (isPhonetic) {
-        // 如果是母音資料，source 會是 '母音'，否則顯示 '字母' (子音)
-        sourceText = item.source || '字母'; 
-    }
+            list.forEach((item, index) => {
+                const isFav = favorites.includes(item.id);
+                const div = document.createElement('div');
+                // --- 關鍵修改：生成時判斷是否要加 art-font ---
+        div.className = 'card' + (isArtFont ? ' art-font' : '');
+        // ------------------------------------------
+              
+                div.id = `card-${index}`;
+                div.onclick = function(e) { if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); };
+                
+                // 檢查是否為字母數據（有char和roman字段）
+                const isPhonetic = item.char && item.roman;
+                const thaiText = isPhonetic ? item.char : item.thai;
+                const chineseText = isPhonetic ? item.roman : item.chinese;
+                const sourceText = isPhonetic ? '字母' : item.source;
+                const speakText = thaiText;
+                
+                div.innerHTML = `
+                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.id || item.char}', this, event)">★</button>
+                    <div class="card-content">
+                        <div class="thai" lang="th">${thaiText}</div>
+                        <div class="chinese">${chineseText}</div>
+                    </div>
+                    <div class="card-action">
+                        <button class="btn-speak" onclick="speak('${speakText}', this, event)">🔊</button>
+                        <div class="source-tag">${sourceText}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
 
-    // 3. 關鍵修改：決定發音內容
-    // 如果 D 欄有音檔網址 (audioUrl)，優先使用網址傳給 speak 函式
-    const speakValue = item.audioUrl ? item.audioUrl : thaiText;
-    
-    div.innerHTML = `
-        <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.id || item.char}', this, event)">★</button>
-        <div class="card-content">
-            <div class="thai" lang="th">${thaiText}</div>
-            <div class="chinese">${chineseText}</div>
-        </div>
-        <div class="card-action">
-            <button class="btn-speak" onclick="speak('${speakValue}', this, event)">🔊</button>
-            <div class="source-tag">${sourceText}</div>
-        </div>
-    `;
-    container.appendChild(div);
-});
         function toggleFav(id, btn, e) {
             e.stopPropagation();
             if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
@@ -1236,30 +1182,15 @@ function convertNumbersToThaiText(text) {
             });
         }
 
+// --- 請替換從 function speak 開始到結尾的內容 ---
+
 function speak(text, btnElement, e) {
     if(e) e.stopPropagation();
-
-    // --- 檢查是否為外部音檔網址 (D 欄提供的 URL) ---
-    if (text && (text.startsWith('http://') || text.startsWith('https://'))) {
-        if (btnElement) btnElement.classList.add('playing');
-        
-        const audio = new Audio(text);
-        audio.onended = () => { if (btnElement) btnElement.classList.remove('playing'); };
-        audio.onerror = () => { 
-            if (btnElement) btnElement.classList.remove('playing');
-            console.error("外部音檔讀取失敗，嘗試切換系統語音...");
-            // 如果音檔失敗，可以選擇備案發音，這裡示範彈出警告
-            alert("音檔無法播放");
-        };
-        audio.play();
-        return; // 直接結束，不執行下方的 Web Speech API
-    }
-
-    // --- 原本的 Web Speech API 泰文語音邏輯 ---
     window.speechSynthesis.cancel();
+
     let processedText = text.normalize('NFC').trim();
     
-    // 您的泰文特殊發音修正邏輯
+    // 處理泰文發音
     processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
     processedText = processedText.replace(/จำนวน/g, "จัม-นวน");
     processedText = convertNumbersToThaiText(processedText);
@@ -1268,14 +1199,21 @@ function speak(text, btnElement, e) {
         let finalTone = tone ? tone : "";
         return con + "ั" + finalTone + "ม";
     });
+    // 修正：ๆ 只重複前面的詞，不重複整個句子
     processedText = processedText.replace(/([\u0e00-\u0e7f]+)ๆ/g, '$1 $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
+    const voices = window.speechSynthesis.getVoices();
+    const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
+                    || voices.find(v => v.lang.includes('th'));
+
+    if (bestVoice) msg.voice = bestVoice;
     msg.lang = 'th-TH';
     msg.rate = currentSpeed; 
 
     if (btnElement) btnElement.classList.add('playing');
     msg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
+    
     window.speechSynthesis.speak(msg);
 }
 
