@@ -1,525 +1,244 @@
 <!DOCTYPE html>
-
 <html lang="zh-TW">
-
 <head>
-
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X7B1H72720"></script>
-
     <script>
-
       window.dataLayer = window.dataLayer || [];
-
       function gtag(){dataLayer.push(arguments);}
-
       gtag('js', new Date());
-
       gtag('config', 'G-X7B1H72720');
-
     </script>
-
     
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>泰難了</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap" rel="stylesheet">
-
     <style>
-
         :root {
-
             --bg-color: #1a1a1a;
-
             --card-bg: #2d2d2d;
-
             --text-color: #f0f0f0;
-
             --sub-text: #b0b0b0;
-
             --btn-inactive: #3a3a3a;
-
             --search-bg: #333;
-
             --search-border: #444;
-
             --nav-bg: #252525;
-
             --accent-color: #e67e22;
-
             --btn-active: #3498db;
-
             --link-color: #2ecc71;
-
             --danger-color: #e74c3c;
-
             --star-color: #f1c40f;
-
             --thai-size: 32px;
-
             --zh-size: 19.2px;
-
         }
-
-
 
         [data-theme="light"] {
-
             --bg-color: #f5f5f5;
-
             --card-bg: #ffffff;
-
             --text-color: #2c3e50;
-
             --sub-text: #7f8c8d;
-
             --btn-inactive: #e0e0e0;
-
             --search-bg: #ffffff;
-
             --search-border: #bdc3c7;
-
             --nav-bg: #ecf0f1;
-
         }
-
-
-
 
 
 /* 當啟動藝術字體模式時，套用 Noto Sans Thai */
-
 .card.art-font .thai {
-
     font-family: 'Noto Sans Thai', sans-serif !important;
-
     font-weight: 700; /* Noto Sans Thai 的粗體效果很好看 */
-
     letter-spacing: 0px;
-
 }
-
 /* 按鈕啟動時的顏色（跟測驗模式一樣用橘色） */
-
 .quiz-toggle.art-active {
-
     background: var(--accent-color);
-
     color: white;
-
     border-color: var(--accent-color);
-
 }
-
         
-
         body { 
-
     
-
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-
             background: var(--bg-color); color: var(--text-color);
-
             padding: 20px 15px 60px 15px; margin: 0;
-
             display: flex; flex-direction: column; align-items: center;
-
             min-height: 100vh; transition: background 0.3s, color 0.3s;
-
             overflow-x: hidden;
-
         }
-
-
 
         .header {
-
             width: 100%; max-width: 480px; display: flex;
-
             justify-content: space-between; align-items: center;
-
             margin-bottom: 20px;
-
         }
-
         .app-title { font-size: 1.4rem; font-weight: bold; color: var(--btn-active); letter-spacing: 1px; }
-
         .menu-toggle {
-
             background: var(--nav-bg); border: 1px solid var(--search-border);
-
             color: var(--text-color); font-size: 1.5rem; padding: 8px 12px;
-
             border-radius: 10px; cursor: pointer; z-index: 1001;
-
         }
-
-
 
         .control-area {
-
             width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px;
-
         }
-
         .search-container { width: 100%; }
-
         #search-input {
-
             width: 100%; padding: 14px 18px; border-radius: 12px;
-
             border: 2px solid var(--search-border); background: var(--search-bg);
-
             color: var(--text-color); font-size: 1rem; box-sizing: border-box; outline: none;
-
         }
-
         
-
         .action-row {
-
             display: flex; align-items: center; width: 100%; gap: 8px;
-
         }
-
       /* 確保按鈕容器不換行，並平分空間或緊湊排列 */
-
 .left-actions {
-
     display: flex;
-
     gap: 4px; 
-
     flex: 1; /* 佔滿剩餘空間 */
-
 }
-
-
 
 /* 統一所有控制按鈕的基礎樣式 */
-
 .quiz-toggle, .refresh-btn {
-
     background: var(--btn-inactive); /* 統一底色 */
-
     color: var(--text-color);
-
     border: 1px solid var(--search-border);
-
     border-radius: 8px;
-
     padding: 8px 4px; 
-
     cursor: pointer;
-
     font-size: 0.8rem;
-
     font-weight: bold;
-
     display: flex;
-
     align-items: center;
-
     justify-content: center;
-
     gap: 2px;
-
     transition: all 0.2s;
-
     box-sizing: border-box;
-
 }
-
-
 
 /* 移除原本 .refresh-btn 可能存在的特殊背景色設定 */
-
 #refresh-btn-main {
-
     background: var(--btn-inactive) !important; 
-
     flex: 0 0 auto; /* 讓更新按鈕維持適當寬度 */
-
     width: auto;
-
     padding: 8px 12px;
-
 }
-
-
 
 /* 當按鈕被啟動時（測驗ON、輪播ON、藝術ON）的顏色 */
-
 .quiz-toggle.active, 
-
 .quiz-toggle.art-active {
-
     background: var(--accent-color) !important;
-
     color: white !important;
-
     border-color: var(--accent-color);
-
 }
-
         .card { 
-
             background: var(--card-bg); 
-
             border-radius: 20px; padding: 24px; margin: 12px 0; width: 100%; max-width: 480px; 
-
             display: flex; align-items: center; justify-content: space-between; box-sizing: border-box;
-
             border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-
             position: relative; min-height: 120px; transition: transform 0.1s; cursor: pointer;
-
         }
-
         .card:active { transform: scale(0.98); }
-
         .card-content { flex-grow: 1; padding-right: 15px; }
 
-
-
         .quiz-mode .chinese { opacity: 0; transition: opacity 0.3s; }
-
         .card.revealed .chinese { opacity: 1; color: var(--accent-color); }
 
-
-
         .thai { 
-
             font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
-
             font-size: var(--thai-size); line-height: 1.6; margin-bottom: 10px; 
-
             font-weight: 700; letter-spacing: 0.5px; word-break: break-word; display: block;
-
         }
-
         .chinese { font-size: var(--zh-size); color: var(--sub-text); margin-top: 8px; word-break: break-word; }
-
         
-
         .card-action { 
-
             display: flex; flex-direction: column; align-items: flex-end; 
-
             justify-content: center; gap: 8px; min-width: 70px;
-
         }
-
         .btn-speak { 
-
     position: absolute; 
-
     bottom: 8px;        /* 稍微往右下角退，拉開與上方星號的距離 */
-
     right: 8px;         /* 同上 */
-
     border: none; 
-
     background: transparent; 
-
     color: var(--accent-color); 
-
     font-size: 1.8rem;  /* 圖示視覺變小，增加中間空白處 */
-
     padding: 15px;      /* 增加內距，確保小圖示依然有足夠的感應範圍 */
-
     cursor: pointer; 
-
     transition: all 0.2s; 
-
     z-index: 6; 
-
 }
-
         .btn-speak.playing { transform: scale(1.3); color: var(--btn-active); filter: drop-shadow(0 0 5px var(--btn-active)); }
 
-
-
         .source-tag {
-
             font-size: 0.7rem; color: var(--sub-text);
-
             background: rgba(128, 128, 128, 0.1); padding: 2px 6px;
-
             border-radius: 4px; border: 1px solid rgba(128, 128, 128, 0.2);
-
             white-space: nowrap;
-
         }
-
-
 
        .btn-fav { 
-
     position: absolute; 
-
     top: 8px;           /* 往右上角退，遠離下方的喇叭 */
-
     right: 8px; 
-
     background: transparent; 
-
     border: none; 
-
     font-size: 1.4rem; 
-
     cursor: pointer; 
-
     color: #555; 
-
     transition: 0.2s; 
-
     padding: 12px;      /* 適中的感應範圍 */
-
     z-index: 5;
-
 }
-
         .btn-fav.active { color: var(--star-color); text-shadow: 0 0 5px rgba(241, 196, 15, 0.5); }
 
-
-
         .filter-btn {
-
             padding: 10px 16px;
-
             border: 2px solid var(--search-border);
-
             background: var(--card-bg);
-
             color: var(--text-color);
-
             border-radius: 8px;
-
             cursor: pointer;
-
             font-size: 0.9rem;
-
             font-weight: 500;
-
             transition: all 0.2s ease;
-
             min-width: 80px;
-
             flex: 1;
-
             max-width: 120px;
-
         }
-
         .filter-btn:hover {
-
             background: var(--nav-bg);
-
             border-color: var(--text-color);
-
         }
-
         .filter-btn.active {
-
             background: var(--text-color);
-
             color: var(--card-bg);
-
             border-color: var(--text-color);
-
         }
-
-
 
         .filter-container {
-
             display: flex;
-
             justify-content: center;
-
             gap: 8px;
-
             margin-bottom: 20px;
-
             flex-wrap: nowrap;
-
             overflow-x: auto;
-
             padding: 0 10px;
-
         }
-
         .filter-container::-webkit-scrollbar {
-
             height: 4px;
-
         }
-
         .filter-container::-webkit-scrollbar-track {
-
             background: var(--nav-bg);
-
             border-radius: 2px;
-
         }
-
         .filter-container::-webkit-scrollbar-thumb {
-
             background: var(--search-border);
-
             border-radius: 2px;
-
         }
-
         .filter-container::-webkit-scrollbar-thumb:hover {
             background: var(--text-color);
-        }
-        .filter-container.vowel-filters {
-            gap: 6px;
-            overflow-x: hidden;
-        }
-        .filter-container.vowel-filters .filter-btn {
-            min-width: 0;
-            max-width: none;
-            flex: 1 1 0;
-            padding: 8px 4px;
-            font-size: 0.82rem;
-            white-space: nowrap;
-        }
-        .vowel-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 8px;
-        }
-        .vowel-box {
-            background: var(--card-bg);
-            border: 1px solid var(--search-border);
-            border-radius: 12px;
-            padding: 10px 8px;
-            text-align: center;
-            cursor: pointer;
-            color: var(--text-color);
-            min-height: 96px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        .vowel-box-main {
-            font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
-            font-size: calc(var(--thai-size) * 0.75);
-            font-weight: 700;
-            line-height: 1.4;
-        }
-        .vowel-box-sub {
-            font-size: calc(var(--zh-size) * 0.95);
-            color: var(--sub-text);
-            margin-top: 4px;
         }
 
         @media (max-width: 600px) {
@@ -532,605 +251,302 @@
                 gap: 6px;
                 padding: 0 5px;
             }
-            .filter-container.vowel-filters .filter-btn {
-                font-size: 0.76rem;
-                padding: 8px 2px;
-            }
         }
 
-
         .sidebar { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: var(--bg-color); box-shadow: -5px 0 15px rgba(0,0,0,0.3); transition: 0.3s ease; z-index: 2000; padding: 25px; overflow-y: auto; box-sizing: border-box; }
-
         .sidebar.open { right: 0; }
-
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1999; }
-
         .sidebar-section { margin-bottom: 25px; }
-
         .sidebar-label { color: var(--sub-text); font-size: 1rem; font-weight: bold; margin-bottom: 12px; display: block; border-bottom: 1px solid var(--search-border); padding-bottom: 8px; }
-
         .grid-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-
         .source-btn { padding: 14px 2px; border-radius: 10px; border: none; background: var(--btn-inactive); color: var(--sub-text); font-weight: 600; font-size: 1rem; cursor: pointer; }
-
         .source-btn.active, .side-full-btn.active { background: var(--btn-active) !important; color: white !important; }
-
         .side-full-btn { width: 100%; padding: 16px; border-radius: 10px; border: none; background: var(--nav-bg); color: var(--text-color); margin-bottom: 10px; text-align: left; cursor: pointer; font-weight: bold; font-size: 1.1rem; }
-
         
-
         .modal-page { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 3000; display: none; flex-direction: column; align-items: center; padding: 30px 20px; box-sizing: border-box; overflow-y: auto; }
-
         .modal-content { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; }
-
         .setting-group { background: var(--card-bg); padding: 15px 20px; border-radius: 15px; border: 1px solid var(--search-border); margin-bottom: 10px; }
-
         .info-text { font-size: 0.95rem; line-height: 1.6; color: var(--text-color); margin-bottom: 5px; }
-
         .desc-text { font-size: 0.8rem; color: var(--sub-text); margin-top: 5px; }
-
         .close-btn { background: var(--danger-color); color: white; padding: 16px; border-radius: 12px; border: none; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
-
         
-
         #loading { margin-top: 50px; color: var(--sub-text); }
-
         #search-info { color: var(--sub-text); margin-bottom: 0; font-size: 0.85rem; text-align: right; }
-
         input[type="number"] { background: var(--search-bg); color: var(--text-color); border: 1px solid var(--search-border); font-size: 1rem; }
-
     </style>
-
 </head>
-
 <body>
-
 <div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f4f4; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-
     <h2 style="margin-bottom: 20px; font-family: sans-serif; color: #333;">🇹🇭 JustForFun</h2>
-
     
-
     <input type="password" id="passcode" placeholder="EnterPassword" style="padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; width: 200px; text-align: center; color: #000; background: #fff;">
-
     
-
     <button onclick="checkPasscode()" style="margin-top: 15px; padding: 10px 30px; background: #007AFF; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Enter</button>
-
     
-
     <p id="error-msg" style="color: red; margin-top: 10px; display: none;">PasswordFail</p>
-
 </div>
-
     <div class="header">
-
         <div class="app-title">泰難了เรียนภาษาไทย</div>
-
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-
     </div>
-
-
 
     <div class="control-area">
-
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 5px; margin-bottom: -5px;">
-
             <div onclick="openModal('about-page')" style="cursor: pointer; color: var(--btn-active); font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 4px;">
-
                 ⚠️點我點我我叫你點
-
             </div>
-
             <div id="search-info"></div>
-
         </div>
-
         <div class="search-container">
-
             <input type="text" id="search-input" maxlength="50" autocomplete="off" placeholder="輸入泰文或中文搜尋....." oninput="handleSearch()">
-
         </div>
-
 <div class="action-row">
-
     <div class="left-actions">
-
         <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 遮蔽</button>
-
         <button id="autoplay-btn" class="quiz-toggle" onclick="toggleAutoplay()">📢 輪播</button>
-
         <button id="art-font-btn" class="quiz-toggle" onclick="toggleArtFont()">🎨 藝術</button>
-
     </div>
-
     <div id="refresh-btn-main" class="refresh-btn" style="flex: 0 0 auto; width: auto; padding: 8px 12px;" onclick="handleRefresh()">
-
         <span>🔄 更新</span>
-
     </div>
-
 </div>
-
          
-
        
-
     
 
-
-
     <div id="loading">同步雲端資料中...</div>
-
     <div id="app"></div>
-
-
 
     <div id="overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-
-
 <div id="sidebar" class="sidebar">
-
         <div class="sidebar-section">
-
             <span class="sidebar-label">主要模式</span>
-
             <button id="btn-random" class="side-full-btn active" onclick="switchMode('random')">🎲 隨機字卡</button>
-
             <button id="btn-fav" class="side-full-btn" style="color:var(--star-color);" onclick="showFavorites(this)">⭐ 已加星號</button>
-
         </div>
-
         <div class="sidebar-section">
-
             <span class="sidebar-label">分類詞庫</span>
-
             <div class="grid-selector">
-
                 <button class="source-btn" onclick="switchSource('custom', this)">網抓</button>
-
                 <button class="source-btn" onclick="switchSource('thai2', this)">時時泰</button>
-
                 <button class="source-btn" onclick="switchSource('calendar', this)">月份星期</button>
-
                 <button class="source-btn" onclick="switchSource('anki', this)">Anki</button>
-
                 <button class="source-btn" onclick="switchSource('line', this)">KruCho</button>
-
                 <button class="source-btn" onclick="switchSource('self', this)">自建</button>
-
             </div>
-
         </div>
-
     <div class="sidebar-section">
-
     <span class="sidebar-label">額外補充</span>
-
     <button id="btn-phonetics" class="side-full-btn" onclick="openPhoneticsPage()">🔤 子音</button>
-    <button id="btn-vowels" class="side-full-btn" onclick="openVowelsPage()">🔡 母音</button>
     <button id="btn-rules" class="side-full-btn" onclick="openRulePage()">📖 惡補一下</button>
-
     <button id="btn-essays" class="side-full-btn" onclick="openEssayListPage()">📝 閱讀短文</button>
-
 </div>
-
         <div class="sidebar-section">
-
             <span class="sidebar-label">系統與說明</span>
-
             <button class="side-full-btn" onclick="openModal('about-page')">ℹ️ 關於本站</button>
-
             <button class="side-full-btn" onclick="openModal('settings-page')">⚙️ 偏好設定</button>
-
             <button class="side-full-btn" onclick="openModal('links-page')">🔗 外部資源</button>
-
             </div>
-
         <button class="close-btn" style="background: var(--nav-bg); color: var(--sub-text); font-size: 1rem;" onclick="toggleSidebar()">關閉選單</button>
-
     </div>
 
-
-
  <div id="about-page" class="modal-page">
-
     <div class="modal-content">
-
         </div>
-
 </div>
-
         <div id="rule-page" class="modal-page">
-
     <div class="modal-content">
-
         </div>
-
 </div>
-
-
-
-
 
 
 
 <div id="essay-page" class="modal-page">
-
     <div class="modal-content" style="max-width: 800px;">
-
         <div id="essay-dynamic-content">
-
             </div>
-
     </div>
-
 </div>
-
-
 
     <div id="settings-page" class="modal-page">
-
         <div class="modal-content">
-
             <h2 style="text-align:center">⚙️ 偏好設定</h2>
-
             <div class="setting-group">
-
                 <span class="sidebar-label">🌓 主題切換</span>
-
                 <p class="info-text">更換介面配色</p>
-
                 <button id="theme-toggle" class="side-full-btn" style="text-align:center; background:var(--btn-active); color:white;" onclick="toggleTheme()">切換模式</button>
-
             </div>
-
             <div class="setting-group">
-
                 <span class="sidebar-label">🔊 語音語速</span>
-
                 <p class="info-text">調整發音語速</p>
-
                 <input type="range" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)" style="width:100%">
-
                 <div class="desc-text" style="text-align:center">目前語速：<span id="speed-val">1.0</span>x</div>
-
             </div>
-
             <div class="setting-group">
-
                 <span class="sidebar-label">📏 字體大小</span>
-
                 <p class="info-text">調整字卡的文字大小</p>
-
                 <input type="range" id="font-slider" min="24" max="42" step="1" value="30" oninput="updateFontSize(this.value)" style="width:100%">
-
                 <div class="desc-text" style="text-align:center">目前大小：<span id="font-val">30</span>px</div>
-
             </div>
-
             <div class="setting-group">
-
                 <span class="sidebar-label">📝 練習題數</span>
-
                 <p class="info-text">設定每次隨機抽選的字卡數量 (10-30)</p>
-
                 <input type="number" id="quiz-count-input" min="10" max="30" value="10" onchange="updateQuizCount(this.value)" style="width:100%; padding: 12px; border-radius: 8px; box-sizing: border-box;">
-
                 <p class="desc-text">※ 更改後返回首頁按「🔄 更新」才會生效</p>
-
             </div>
-
             <button class="close-btn" onclick="closeModal('settings-page')">儲存並返回</button>
-
         </div>
-
     </div>
-
-
 
 <div id="links-page" class="modal-page">
-
     <div class="modal-content" style="align-items: center;"> <h2 style="text-align:center">🔗 外部資源</h2>
-
         
-
         <div id="external-links-container" style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-
             <p style="text-align: center; color: var(--sub-text);">正在同步資源...</p>
-
         </div>
-
-
 
         <button class="close-btn" onclick="closeModal('links-page')" style="width: 100%; margin-top: 20px;">返回</button>
-
     </div>
-
 </div>
 
-
-
     <script>
-
-
-
         const base_url = `https://docs.google.com/spreadsheets/d/e/2PACX-1vRuB_ZzZBKNqiEJW_7pXVNJFyjnORS8bBz24b65lJ4zMfAlrNsEDEyhi2VW-nzC5K8_2gNsbnH7ITFu/pub?output=csv`;
-
         
-
         const gids = { 
-
             custom: { name: "網抓", id: "538865502" }, 
-
             thai2: { name: "時時泰", id: "2121125782" }, 
-
             calendar: { name: "月份星期", id: "1685596903" }, 
-
             anki: { name: "Anki", id: "248374266" }, 
-
             line: { name: "KruCho", id: "1404447959" },
-
             self: { name: "自建", id: "1725449061" }
-
             
-
         };
 
-
-
         const RULE_GID = '1909951115';
-
         const ESSAY_GID = '893893675';
-
         const LINKS_GID = "370151406";
-
         const ABOUT_GID = "1687106860";
-
         const CONSONANTS_GID = "1406847314";
-        const VOWELS_GID = "989034555";
         let aboutData = []; // 用來存放從試算表抓回來的關於內容
-
         let consonantsData = []; // 用來存放子音資料
-
         let currentConsonantFilter = 'all'; // 當前子音篩選狀態
-        let vowelsData = [];
-        let currentVowelFilter = 'all';
         let allData = [];
         let favorites = JSON.parse(localStorage.getItem('thai_favs')) || [];
-
         let currentMode = 'random';
-
         let isQuizMode = false;
-
         let isAutoplay = false;
-
         let searchTimer;
-
         let currentSpeed = parseFloat(localStorage.getItem('thai_speed')) || 1.0;
-
         let quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
-
         let currentDisplayedList = [];
-
         let isDataLoaded = false; // 標記數據是否已載入
-
         let dataCache = new Map(); // 數據快取
-
         let renderCache = new WeakMap(); // DOM渲染快取
-
         let searchDebounceTimer; // 搜尋防抖計時器
-
         let virtualScrollTop = 0;
-
         let virtualScrollHeight = 0;
-
         let cardHeight = 144; // 預估卡片高度
-
         let visibleCards = 10; // 可見卡片數量
 
-
-
 function checkPasscode() {
-
     const input = document.getElementById('passcode').value;
-
     // 將所有允許的密碼 Base64 放在陣列中
-
     const authorizedPass = [
-
         'NTgzNDU4MzRhYUFB', 
-
         'MTIzNDQzMjE=',   
-
         'dGVzdA=='  // 新增測試密碼 'test'
-
     ];
 
-
-
     // 檢查輸入的編碼是否符合陣列中的任何一組
-
     if (authorizedPass.includes(btoa(input))) {
-
         document.getElementById('login-overlay').style.display = 'none';
-
         localStorage.setItem('thai_auth', 'true');
-
         localStorage.setItem('auth_time', new Date().getTime());
-
     } else {
-
         const errorMsg = document.getElementById('error-msg');
-
         errorMsg.style.display = 'block';
-
         document.getElementById('passcode').value = '';
-
     }
-
 }
-
-
 
 // 頁面載入時的總初始化
-
 window.addEventListener('load', () => {
-
     // 1. 執行密碼檢查
-
     const isAuth = localStorage.getItem('thai_auth');
-
     const authTime = localStorage.getItem('auth_time');
-
     const now = new Date().getTime();
-
     
-
     if (isAuth === 'true' && (now - authTime < 86400000)) {
-
         document.getElementById('login-overlay').style.display = 'none';
-
     }
-
-
 
     // 2. 啟動資料抓取
-
     initAllData();
-
 });
-
         
-
 let isArtFont = false;
 
-
-
 function toggleArtFont() {
-
     isArtFont = !isArtFont;
-
     const btn = document.getElementById('art-font-btn');
-
     
-
     // 1. 切換按鈕顏色
-
     btn.classList.toggle('art-active');
-
     
-
     // 2. 針對目前畫面上所有的卡片切換字體
-
     const cards = document.querySelectorAll('.card');
-
     cards.forEach(card => {
-
         card.classList.toggle('art-font');
-
     });
-
     
-
     // 3. 提示目前狀態
-
     document.getElementById('search-info').innerText = isArtFont ? '已切換為藝術字體' : '已恢復標準字體';
-
 }
-
         
-
         function toggleSidebar() {
-
             const sb = document.getElementById('sidebar');
-
             const ov = document.getElementById('overlay');
-
             const isOpen = sb.classList.contains('open');
-
             sb.classList.toggle('open');
-
             ov.style.display = isOpen ? 'none' : 'block';
-
         }
-
       function openModal(id) {
-
     if (id === 'about-page') {
-
         renderAboutContent(); // 打開時動態產生內容
-
     }
-
     document.getElementById(id).style.display = 'flex';
-
     if(window.innerWidth < 600) toggleSidebar();
-
 }
-
         function renderAboutContent() {
-
     const container = document.querySelector('#about-page .modal-content');
-
     let html = `<h2 style="text-align:center">ℹ️ 關於本站</h2>`;
-
     
-
     // 從 aboutData 產生區塊
-
     aboutData.forEach(item => {
-
         html += `
-
             <div class="setting-group">
-
                 <span class="sidebar-label">${item.title}</span>
-
                 <p class="info-text">${item.content}</p>
-
             </div>
-
         `;
-
     });
-
-
 
     // 保留底部的統計資訊與關閉按鈕
-
     html += `
-
         <div style="margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--sub-text); font-size: 0.85rem; color: var(--sub-text); line-height: 1.8;">
-
             <div id="stat-total-count">詞庫總筆數：<strong style="color:var(--btn-active)">${allData.length}</strong> 筆</div>
-
             <div id="stat-last-update">最後更新時間：${new Date().toLocaleDateString()}</div>
-
         </div>
-
         <button class="close-btn" onclick="closeModal('about-page')">返回</button>
-
     `;
-
     
-
     container.innerHTML = html;
-
 }
-
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
         
-
         function openPhoneticsPage() {
             displayConsonants();
-        }
-
-        function openVowelsPage() {
-            displayVowels();
         }
 
         function openConsonantsPage() {
@@ -1139,734 +555,364 @@ function toggleArtFont() {
         }
 
 
-
-
         
-
         function setTheme(theme) {
-
             document.documentElement.setAttribute('data-theme', theme);
-
             localStorage.setItem('thai_theme', theme);
-
             const btn = document.getElementById('theme-toggle');
-
             if(btn) btn.innerText = theme === 'light' ? '切換至深色模式' : '切換至淺色模式';
-
         }
-
         setTheme(localStorage.getItem('thai_theme') || 'dark');
-
         function toggleTheme() { setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light'); }
-
         
-
         function updateSpeed(val) { currentSpeed = parseFloat(val); localStorage.setItem('thai_speed', val); document.getElementById('speed-val').innerText = val; }
-
         function updateQuizCount(val) { 
-
             quizCount = Math.min(Math.max(parseInt(val) || 10, 10), 30); 
-
             localStorage.setItem('thai_quiz_count', quizCount); 
-
             document.getElementById('quiz-count-input').value = quizCount; 
-
         }
-
         function updateFontSize(val) {
-
             const size = parseFloat(val);
-
             document.documentElement.style.setProperty('--thai-size', size + 'px');
-
             document.documentElement.style.setProperty('--zh-size', (size * 0.6) + 'px');
-
             localStorage.setItem('thai_font_size', size);
-
             document.getElementById('font-val').innerText = size;
-
             document.getElementById('font-slider').value = size;
-
         }
-
         updateFontSize(localStorage.getItem('thai_font_size') || 30);
 
-
-
 async function initAllData() {
-
     try {
-
         // 1. 準備抓取詞庫的 Promises
-
         const fetchPromises = Object.keys(gids).map(async (key) => {
-
             const response = await fetch(`${base_url}&gid=${gids[key].id}&t=${Date.now()}`);
-
             const csvText = await response.text();
-
             const rows = csvText.split(/\r?\n/).slice(1);
-
             return rows.map(row => {
-
                 const cols = row.split(',');
-
                 let t = (cols.length > 2 ? cols[1] : cols[0])?.trim();
-
                 let c = (cols.length > 2 ? cols[2] : cols[1])?.trim();
-
                 return { id: btoa(unescape(encodeURIComponent(t))), thai: t, chinese: c, source: gids[key].name };
-
             }).filter(item => item.thai);
-
         });
 
-
-
         // 2. 準備抓取「關於本站」的 Promise
-
         const fetchAboutPromise = (async () => {
-
             const response = await fetch(`${base_url}&gid=${ABOUT_GID}&t=${Date.now()}`);
-
             const csvText = await response.text();
-
             const rows = csvText.split(/\r?\n/).slice(1);
-
             return rows.map(row => {
-
                 const cols = row.split(',');
-
                 // 假設：第一欄是標題(title)，第二欄是內容(content)
-
                 return { 
-
                     title: cols[0]?.trim(), 
-
                     content: cols[1]?.trim() ? cols[1].trim().replace(/\\n/g, '<br>') : "" 
-
                 };
-
             }).filter(item => item.title);
-
         })();
 
-
-
         // 3. 同時啟動所有抓取任務
-
         const [詞庫結果, 關於結果] = await Promise.all([
-
             Promise.all(fetchPromises),
-
             fetchAboutPromise
-
         ]);
 
-
-
         // 4. 分配資料
-
         allData = 詞庫結果.flat();
-
         aboutData = 關於結果;
 
-
-
         // 5. 隱藏載入中並初始化頁面
-
         document.getElementById('loading').style.display = 'none';
-
         displayRandom();
-
         refreshSiteStats();
-
         initExternalLinks(); 
-
         
-
     } catch (e) { 
-
         console.error(e);
-
         document.getElementById('loading').innerText = '資料同步失敗'; 
-
     }
-
 }
-
-
 
 // 新增：抓取「額外補充」分頁資料
 
-
-
 async function openRulePage() {
-
     const modal = document.getElementById('rule-page');
-
     const container = modal.querySelector('.modal-content');
-
     
-
     // 1. 先顯示讀取中，讓使用者知道程式有在跑
-
     container.innerHTML = '<div style="text-align:center; padding:20px;">📖 正在讀取...</div>';
-
     modal.style.display = 'flex'; // 打開彈窗
 
-
-
     try {
-
         // 2. 抓取資料 (base_url 是妳原本就有的變數)
-
         const url = `${base_url}&gid=${RULE_GID}`;
-
         const response = await fetch(url);
-
         const csvText = await response.text();
-
         
-
         // 3. 解析 CSV 內容 (跳過第一行標題)
-
         const rows = csvText.split('\n').slice(1); 
-
         let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">⚡ 規則惡補</h2>`;
-
         
-
         let hasData = false;
-
         rows.forEach(row => {
-
             // 處理 CSV 欄位（考慮到內容可能有逗號，使用正規表達式）
-
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-
             if (cols.length >= 2) {
-
                 const title = cols[0].replace(/"/g, '').trim();
-
                 let content = cols[1].replace(/"/g, '').trim();
-
 // 新增這行：把妳在試算表打的 \n 變成網頁的換行
-
 content = content.replace(/\\n/g, '<br>'); 
 
-
-
 if (title && content) {
-
                     hasData = true;
-
                    // 這裡的樣式加大了字體
-
 html += `
-
     <div style="background:var(--card-bg); padding:20px; border-radius:12px; margin-bottom:15px; border:1px solid var(--search-border); text-align:left;">
-
         <div style="font-weight:bold; color:var(--accent-color); font-size:1.3rem; margin-bottom:12px;">■ ${title}</div>
-
         
-
         <div style="font-size:1.15rem; line-height:1.7; white-space: pre-wrap; color:var(--text-color);">${content}</div>
-
     </div>
-
 `;
-
                 }
-
             }
-
         });
-
-
 
         if (!hasData) html += '<p style="text-align:center;">目前這裡還沒有內容！</p>';
 
-
-
         // 4. 加入與「關於本站」風格一致的關閉按鈕
-
         html += `<button class="close-btn" onclick="closeModal('rule-page')" style="margin-top:10px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer; font-weight:bold;">返回</button>`;
-
         
-
         container.innerHTML = html;
-
         
-
     } catch (error) {
-
         console.error('Error fetching rules:', error);
-
         container.innerHTML = `
-
             <div style="color:var(--danger-color); text-align:center; padding:20px;">
-
                 抓不到資料，請檢查：<br>
-
                 1. 網路連線<br>
-
                 2. 試算表分頁 ${RULE_GID} 是否已發佈<br>
-
                 <button onclick="closeModal('rule-page')" style="margin-top:15px;">關閉</button>
-
             </div>`;
-
     }
-
 }
-
-
 
 let essayData = []; // 用來暫存抓下來的短文資料
 
-
-
 // 1. 開啟短文清單頁
-
 async function openEssayListPage() {
-
     const modal = document.getElementById('essay-page');
-
     const container = document.getElementById('essay-dynamic-content');
-
     
-
     container.innerHTML = '<div style="text-align:center; padding:20px;">✍️ 正在載入短文清單...</div>';
-
     modal.style.display = 'flex';
 
-
-
     try {
-
         const url = `${base_url}&gid=${ESSAY_GID}`;
-
         const response = await fetch(url);
-
         const csvText = await response.text();
-
         const rows = csvText.split('\n').slice(1);
-
         
-
         essayData = []; // 清空舊資料
-
         let html = `<h2 style="text-align:center; color:var(--accent-color); margin-bottom:20px;">📝 短文閱讀清單</h2>`;
-
         
-
         rows.forEach((row, index) => {
-
             const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-
             if (cols.length >= 2) {
-
                 const title = cols[0].replace(/"/g, '').trim();
-
                 const content = cols[1].replace(/"/g, '').trim();
-
                 const spotifyUrl = cols[2] ? cols[2].replace(/"/g, '').trim() : ''; // 假設 C 欄是 Spotify 連結
 
-
-
                 if (title && content) {
-
                     essayData.push({ title, content, spotifyUrl });
-
                     // 呈現標題按鈕
-
                     html += `
-
                         <div onclick="showEssayDetail(${index})" style="background:var(--card-bg); padding:18px; border-radius:10px; margin-bottom:12px; border:1px solid var(--search-border); cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition: 0.3s;">
-
                             <span style="font-size:1.6rem; font-weight:bold; color:var(--text-color);">■ ${title}</span>
-
                             <span style="color:var(--accent-color);">閱讀更多 ❯</span>
-
                         </div>`;
-
                 }
-
             }
-
         });
-
-
 
         html += `<button class="close-btn" onclick="closeModal('essay-page')" style="margin-top:20px; width:100%; padding:12px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer;">離開</button>`;
-
         container.innerHTML = html;
-
         
-
     } catch (error) {
-
         container.innerHTML = '<div style="text-align:center; padding:20px;">載入失敗，請檢查網路。</div>';
-
     }
-
 }
-
-
 
 // 2. 顯示單篇短文內容
-
 function showEssayDetail(index) {
-
     const container = document.getElementById('essay-dynamic-content');
-
     const essay = essayData[index];
-
     
-
     // 修正縮進問題：先 trim() 掉開頭空格與隱藏換行，再處理內文換行
-
     const formattedContent = essay.content.trim().replace(/\\n/g, '<br>');
 
-
-
     let html = `
-
         <div style="display:flex; align-items:center; margin-bottom:20px;">
-
             <button onclick="openEssayListPage()" style="background:none; border:none; color:var(--accent-color); cursor:pointer; font-size:1.1rem; padding:0;">❮ 返回清單</button>
-
         </div>
-
         
-
         <h2 style="color:var(--accent-color); margin-bottom:15px; border-left:6px solid var(--accent-color); padding-left:15px; font-size:1.5rem;">${essay.title}</h2>
-
         
-
         <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; margin-bottom:20px; display:flex; gap:10px; align-items:center;">
-
             <span style="font-size:1rem; color:var(--sub-text);">語音工具：</span>
-
             <button onclick="speak('${essay.content.replace(/\\n/g, ' ')}', this)" style="padding:6px 14px; border-radius:5px; background:var(--accent-color); color:white; border:none; cursor:pointer; font-size:1rem;">🔊 朗讀短文</button>
-
         </div>
-
-
 
         <div style="font-size:1.4rem; line-height:2.3; color:var(--text-color); white-space: pre-wrap; text-align:left; background:var(--card-bg); padding:25px; border-radius:12px; border:1px solid var(--search-border); letter-spacing: 0.8px;">
-
             ${formattedContent}
-
         </div>
 
-
-
         <button class="close-btn" onclick="closeModal('essay-page')" style="margin-top:25px; width:100%; padding:15px; border-radius:8px; background:var(--btn-inactive); color:white; border:none; cursor:pointer; font-size:1.1rem;">關閉閱讀</button>
-
     `;
-
     
-
     container.innerHTML = html;
-
 }
-
         
-
 async function initExternalLinks() {
-
     try {
-
         const response = await fetch(`${base_url}&gid=${LINKS_GID}&t=${Date.now()}`);
-
         const csvText = await response.text();
-
         const rows = csvText.split(/\r?\n/).slice(1);
-
         const container = document.getElementById('external-links-container');
-
         container.innerHTML = ''; 
 
-
-
         rows.forEach(row => {
-
             const cols = row.split(',');
-
             if(cols.length >= 2) {
-
                 const url = cols[0].trim();
-
                 const name = cols[1].trim();
-
                 if(url && name) {
-
                     const a = document.createElement('a');
-
                     a.href = url;
-
                     a.target = "_blank";
-
                     // 關鍵修改：強制寬度 100% 並統一 Padding
-
                     a.className = "side-full-btn";
-
                     a.style.display = "block";
-
                     a.style.width = "100%";
-
                     a.style.boxSizing = "border-box";
-
                     a.style.textDecoration = "none";
-
                     a.style.textAlign = "center";
-
                     a.style.color = "var(--link-color)";
-
                     a.style.border = "1px solid var(--search-border)"; // 增加邊框感讓長度更顯眼
-
                     a.innerText = name;
-
                     container.appendChild(a);
-
                 }
-
             }
-
         });
-
     } catch (e) {
-
         document.getElementById('external-links-container').innerHTML = '<p style="color:red; text-align:center;">外部資源載入失敗</p>';
-
     }
-
 }
-
-
 
         function refreshSiteStats() {
-
             const countElem = document.getElementById('stat-total-count');
-
             if (countElem) countElem.innerHTML = `詞庫總筆數：<strong style="color:var(--btn-active)">${allData.length}</strong> 筆`;
-
             const timeElem = document.getElementById('stat-last-update');
-
             if (timeElem) {
-
                 const today = new Date();
-
                 timeElem.innerText = `最後更新時間：${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
             }
-
         }
-
-
 
 function convertNumbersToThaiText(text) {
-
     if (!text) return "";
 
-
-
     // 檢查字串中是否包含任何 阿拉伯數字 (0-9) 或 泰文數字 (๐-๙)
-
     // 如果完全沒有數字，直接回傳原始文字，不做任何處理，確保泰文編碼完整
-
     if (!/[0-9๐-๙]/.test(text)) {
-
         return text;
-
     }
 
-
-
     const thaiNumbers = ['ศูนย์', 'หนึ่ง', 'สอง', 'สาม', 'สี่', 'ห้า', 'หก', 'เจ็ด', 'แปด', 'เก้า'];
-
     const units = ['', 'สิบ', 'ร้อย', 'พัน', 'หมื่น', 'แสน', 'ล้าน'];
 
-
-
     // 先處理泰文數字轉阿拉伯數字
-
     let processed = text.replace(/[๐-๙]/g, d => "๐๑๒๓๔๕๖๗๘๙".indexOf(d));
 
-
-
     // 執行數字轉泰文文字
-
     return processed.replace(/\d+/g, (match) => {
-
         let n = parseInt(match);
-
         if (n === 0) return thaiNumbers[0];
-
         
-
         let str = '';
-
         let numStr = match;
-
         let len = numStr.length;
 
-
-
         for (let i = 0; i < len; i++) {
-
             let digit = parseInt(numStr[i]);
-
             let position = (len - i - 1) % 6;
-
             
-
             if (digit !== 0) {
-
                 if (position === 0 && digit === 1 && len > 1) {
-
                     str += 'เอ็ด';
-
                 } else if (position === 1 && digit === 2) {
-
                     str += 'ยี่สิบ';
-
                 } else if (position === 1 && digit === 1) {
-
                     str += 'สิบ';
-
                 } else {
-
                     str += thaiNumbers[digit] + units[position];
-
                 }
-
             }
-
             if (i < len - 1 && (len - i - 1) % 6 === 0) {
-
                 str += 'ล้าน';
-
             }
-
         }
-
         return str;
-
     });
-
 }
-
-        function getVowelSpeakText(text) {
-            const key = (text || '').normalize('NFC').trim();
-            const map = {
-                '\u0e34': '\u0e2d\u0e34', // ิ -> อิ
-                '\u0e35': '\u0e2d\u0e35', // ี -> อี
-                '-\u0e30': '\u0e2d\u0e30',
-                '\u0e30': '\u0e2d\u0e30',
-                '-\u0e32': '\u0e2d\u0e32',
-                '\u0e32': '\u0e2d\u0e32',
-                '\u0e36': '\u0e2d\u0e36',
-                '\u0e37': '\u0e2d\u0e37\u0e2d',
-                '\u0e38': '\u0e2d\u0e38',
-                '\u0e39': '\u0e2d\u0e39',
-                '\u0e40-': '\u0e40\u0e2d',
-                '\u0e41-': '\u0e41\u0e2d',
-                '\u0e42-': '\u0e42\u0e2d',
-                '-\u0e2d': '\u0e2d\u0e2d',
-                '\u0e40-\u0e2d': '\u0e40\u0e2d\u0e2d',
-                '\u0e33': '\u0e2d\u0e33',
-                '\u0e43-': '\u0e43\u0e2d',
-                '\u0e44-': '\u0e44\u0e2d',
-                '\u0e40-\u0e35\u0e22': '\u0e40\u0e2d\u0e35\u0e22',
-                '\u0e40-\u0e37\u0e2d': '\u0e40\u0e2d\u0e37\u0e2d'
-            };
-            return map[key] || key;
-        }
-
-        function renderVowelGridLayout(container, list) {
-            if (list.length === 0) {
-                container.innerHTML += '<div style="margin-top:30px;color:#666;text-align:center;">\u627e\u4e0d\u5230\u7b26\u5408\u8cc7\u6599</div>';
-                return;
-            }
-            const grid = document.createElement('div');
-            grid.className = 'vowel-grid';
-
-            list.forEach(item => {
-                const box = document.createElement('button');
-                box.type = 'button';
-                box.className = 'vowel-box';
-                box.onclick = (e) => speak(getVowelSpeakText(item.char), null, e);
-                box.innerHTML = `
-                    <div class="vowel-box-main" lang="th">${item.char}</div>
-                    <div class="vowel-box-sub">${item.roman}</div>
-                `;
-                grid.appendChild(box);
-            });
-
-            container.appendChild(grid);
-        }
-
+        
         function renderList(list) {
             currentDisplayedList = list;
             const container = document.getElementById('app');
-
+            
+            // 如果是子音模式，添加篩選器
             if (currentMode === 'consonants') {
                 const filterHtml = `
                     <div class="filter-container">
-                        <button class="filter-btn ${currentConsonantFilter === 'all' ? 'active' : ''}" onclick="displayConsonants('all')">\ud83d\udcda \u5168\u90e8</button>
-                        <button class="filter-btn ${currentConsonantFilter === '\u4e2d' ? 'active' : ''}" onclick="displayConsonants('\u4e2d')">\ud83d\udd38 \u4e2d</button>
-                        <button class="filter-btn ${currentConsonantFilter === '\u9ad8' ? 'active' : ''}" onclick="displayConsonants('\u9ad8')">\ud83d\udd3a \u9ad8</button>
-                        <button class="filter-btn ${currentConsonantFilter === '\u4f4e' ? 'active' : ''}" onclick="displayConsonants('\u4f4e')">\ud83d\udd3b \u4f4e</button>
-                    </div>
-                `;
-                container.innerHTML = filterHtml;
-            } else if (currentMode === 'vowels') {
-                const filterHtml = `
-                    <div class="filter-container vowel-filters">
-                        <button class="filter-btn ${currentVowelFilter === 'all' ? 'active' : ''}" onclick="displayVowels('all')">\u5168</button>
-                        <button class="filter-btn ${currentVowelFilter === 'short' ? 'active' : ''}" onclick="displayVowels('short')">\u77ed</button>
-                        <button class="filter-btn ${currentVowelFilter === 'long' ? 'active' : ''}" onclick="displayVowels('long')">\u9577</button>
-                        <button class="filter-btn ${currentVowelFilter === 'special' ? 'active' : ''}" onclick="displayVowels('special')">\u7279</button>
+                        <button class="filter-btn ${currentConsonantFilter === 'all' ? 'active' : ''}" onclick="displayConsonants('all')">📚 全部</button>
+                        <button class="filter-btn ${currentConsonantFilter === '中' ? 'active' : ''}" onclick="displayConsonants('中')">🔸 中</button>
+                        <button class="filter-btn ${currentConsonantFilter === '高' ? 'active' : ''}" onclick="displayConsonants('高')">🔺 高</button>
+                        <button class="filter-btn ${currentConsonantFilter === '低' ? 'active' : ''}" onclick="displayConsonants('低')">🔻 低</button>
                     </div>
                 `;
                 container.innerHTML = filterHtml;
             } else {
                 container.innerHTML = '';
             }
-
-            if (currentMode === 'vowels' && currentVowelFilter !== 'special') {
-                renderVowelGridLayout(container, list);
-                return;
-            }
-
+            
             if (list.length === 0) {
-                container.innerHTML += '<div style="margin-top:30px;color:#666;text-align:center;">\u627e\u4e0d\u5230\u7b26\u5408\u8cc7\u6599</div>';
+                container.innerHTML += '<div style="margin-top:30px;color:#666;text-align:center;">無相關詞庫</div>';
             }
 
             list.forEach((item, index) => {
                 const isFav = favorites.includes(item.id);
                 const div = document.createElement('div');
-                div.className = 'card' + (isArtFont ? ' art-font' : '');
+                // --- 關鍵修改：生成時判斷是否要加 art-font ---
+        div.className = 'card' + (isArtFont ? ' art-font' : '');
+        // ------------------------------------------
+              
                 div.id = `card-${index}`;
                 div.onclick = function(e) { if (isQuizMode && !e.target.closest('button')) this.classList.toggle('revealed'); };
-
+                
+                // 檢查是否為字母數據（有char和roman字段）
                 const isPhonetic = item.char && item.roman;
                 const thaiText = isPhonetic ? item.char : item.thai;
                 const chineseText = isPhonetic ? item.roman : item.chinese;
-                const sourceText = isPhonetic ? '\u5b57\u6bcd' : item.source;
-                const speakText = (currentMode === 'vowels') ? getVowelSpeakText(thaiText) : thaiText;
-
+                const sourceText = isPhonetic ? '字母' : item.source;
+                const speakText = thaiText;
+                
                 div.innerHTML = `
-                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.id || item.char}', this, event)">\u2605</button>
+                    <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFav('${item.id || item.char}', this, event)">★</button>
                     <div class="card-content">
                         <div class="thai" lang="th">${thaiText}</div>
                         <div class="chinese">${chineseText}</div>
                     </div>
                     <div class="card-action">
-                        <button class="btn-speak" onclick="speak('${speakText}', this, event)">\ud83d\udd0a</button>
+                        <button class="btn-speak" onclick="speak('${speakText}', this, event)">🔊</button>
                         <div class="source-tag">${sourceText}</div>
                     </div>
                 `;
@@ -1875,797 +921,349 @@ function convertNumbersToThaiText(text) {
         }
 
         function toggleFav(id, btn, e) {
-
             e.stopPropagation();
-
             if (favorites.includes(id)) favorites = favorites.filter(f => f !== id);
-
             else favorites.push(id);
-
             localStorage.setItem('thai_favs', JSON.stringify(favorites));
-
             btn.classList.toggle('active');
-
         }
-
-
 
         function handleSearch() {
-
             clearTimeout(searchTimer);
-
             searchTimer = setTimeout(() => {
-
                 const cleanInput = document.getElementById('search-input').value.trim().toLowerCase();
-
                 if (!cleanInput) { handleRefresh(); return; }
-
                 const results = allData.filter(item => item.thai.toLowerCase().includes(cleanInput) || item.chinese.toLowerCase().includes(cleanInput));
-
                 renderList(results);
-
                 document.getElementById('search-info').innerText = `搜尋結果：${results.length} 筆`;
-
             }, 300);
-
         }
-
-
 
         function handleRefresh() {
-
             stopAutoplay();
-
             quizCount = parseInt(localStorage.getItem('thai_quiz_count')) || 10;
-
             if (currentMode === 'random') displayRandom();
-
             else if (currentMode === 'fav') showFavorites(document.getElementById('btn-fav'));
-
             else if (currentMode === 'consonants') displayConsonants(currentConsonantFilter);
-
-            else if (currentMode === 'vowels') displayVowels(currentVowelFilter);
-
+            else if (currentMode === 'vowels') displayVowels();
             else switchSource(currentMode, null);
-
         }
-
-
 
         function displayRandom() {
-
             currentMode = 'random';
-
             const shuffled = [...allData].sort(() => 0.5 - Math.random()).slice(0, quizCount);
-
             renderList(shuffled);
-
             document.getElementById('search-info').innerText = '';
-
         }
-
-
 
         function switchSource(key, btn) {
-
             currentMode = key;
-
             const filtered = allData.filter(item => item.source === gids[key].name);
-
             const shuffled = [...filtered].sort(() => 0.5 - Math.random()).slice(0, quizCount);
-
             renderList(shuffled);
-
             document.getElementById('search-info').innerText = `${gids[key].name} 抽 ${shuffled.length} 筆`;
-
             if (btn) {
-
                 document.querySelectorAll('.source-btn, .side-full-btn').forEach(b => b.classList.remove('active'));
-
                 btn.classList.add('active');
-
                 toggleSidebar();
-
             }
-
         }
-
-
 
         function switchMode(mode) { 
-
             document.querySelectorAll('.source-btn, .side-full-btn').forEach(b => b.classList.remove('active'));
-
             document.getElementById('btn-random').classList.add('active');
-
             displayRandom();
-
             toggleSidebar();
-
         }
-
-
 
         async function displayConsonants(filter = 'all') {
-
             if (consonantsData.length === 0) {
-
                 // 如果還沒抓取過資料，先抓取
-
                 await fetchPhoneticData();
-
             }
-
             currentMode = 'consonants';
-
             currentConsonantFilter = filter; // 儲存篩選狀態
-
             let filteredData = consonantsData;
-
             if (filter !== 'all') {
-
                 filteredData = consonantsData.filter(item => item.category === filter);
-
             }
-
             renderList(filteredData);
-
             const filterText = filter === 'all' ? '' : `${filter}子音 `;
-
             document.getElementById('search-info').innerText = `${filterText}子音字母 ${filteredData.length} 個`;
-
         }
 
-        function normalizeVowelCategory(rawCategory) {
-            const normalized = (rawCategory || '').replace(/\s+/g, '').toLowerCase();
-            if (!normalized) return 'special';
-            if (normalized.includes('\u77ed\u6bcd\u97f3') || normalized.includes('\u77ed')) return 'short';
-            if (normalized.includes('\u9577\u6bcd\u97f3') || normalized.includes('\u957f\u6bcd\u97f3') || normalized.includes('\u9577') || normalized.includes('\u957f')) return 'long';
-            if (normalized.includes('\u8907\u5408\u6bcd\u97f3') || normalized.includes('\u590d\u5408\u6bcd\u97f3') || normalized.includes('\u8907\u5408') || normalized.includes('\u590d\u5408')) return 'compound';
-            if (normalized.includes('\u7279\u6b8a')) return 'special';
-            return 'special';
-        }
 
-        async function displayVowels(filter = 'all') {
-            if (vowelsData.length === 0) {
-                await fetchVowelData();
-            }
-            currentMode = 'vowels';
-            currentVowelFilter = filter;
-            let filteredData = vowelsData;
-            if (filter !== 'all') {
-                filteredData = vowelsData.filter(item => item.categoryKey === filter);
-            }
-            renderList(filteredData);
-            const filterLabels = {
-                all: '\u5168',
-                short: '\u77ed',
-                long: '\u9577',
-                special: '\u7279'
-            };
-            const filterText = filter === 'all' ? '' : `${filterLabels[filter] || filter} `;
-            document.getElementById('search-info').innerText = `${filterText}\u6bcd\u97f3 ${filteredData.length} \u500b`;
-        }
-
-        async function fetchVowelData() {
-            try {
-                const response = await fetch(`${base_url}&gid=${VOWELS_GID}&t=${Date.now()}`);
-                let csvText = await response.text();
-
-                if (csvText.charCodeAt(0) === 0xFEFF) {
-                    csvText = csvText.slice(1);
-                }
-
-                const rows = csvText.split(/\r?\n/).slice(1);
-                vowelsData.length = 0;
-                rows.forEach(row => {
-                    if (!row || !row.trim()) return;
-                    const cols = row.split(/,(?=(?:(?:[^\"]*\"){2})*[^\"]*$)/);
-                    if (cols.length >= 2) {
-                        const char = (cols[0] || '').replace(/\"/g, '').trim();
-                        const roman = (cols[1] || '').replace(/\"/g, '').trim();
-                        const rawCategory = (cols[2] || '').replace(/\"/g, '').trim();
-                        if (char && roman) {
-                            vowelsData.push({
-                                char,
-                                roman,
-                                category: rawCategory || '\u7279\u6b8a',
-                                categoryKey: normalizeVowelCategory(rawCategory)
-                            });
-                        }
-                    }
-                });
-            } catch (error) {
-                console.error('Error fetching vowels:', error);
-                vowelsData = [];
-            }
-        }
 
         async function fetchPhoneticData() {
-
             try {
-
                 const response = await fetch(`${base_url}&gid=${CONSONANTS_GID}&t=${Date.now()}`);
-
                 let csvText = await response.text();
 
-
-
                 // 處理編碼問題：移除BOM並確保UTF-8
-
                 if (csvText.charCodeAt(0) === 0xFEFF) {
-
                     csvText = csvText.slice(1); // 移除BOM
-
                 }
-
-
 
                 // 如果仍有編碼問題，嘗試手動修復常見的編碼錯誤
-
                 if (csvText.includes('�') || csvText.match(/[åæ¯]/)) {
-
                     console.warn('Detected encoding issues, attempting to fix');
-
                     // 常見的Google Sheets編碼問題修復
-
                     csvText = csvText
-
                         .replace(/åæ¯/g, 'ะ')    // 短音a
-
                         .replace(/æ¼/g, 'า')    // 長音aa
-
                         .replace(/é·é/g, 'ิ')    // 短音i
-
                         .replace(/ç-/g, ' (')
-
                         .replace(/é·é-/g, ' (')
-
                         .replace(/à¸°/g, 'ะ')
-
                         .replace(/à¸²/g, 'า')
-
                         .replace(/à¸µ/g, 'ิ')
-
                         .replace(/à¹\x08/g, 'ไ')
-
                         .replace(/à¹-/g, 'ไ')
-
                         .replace(/à¹-à¸²/g, 'ao');
-
                 }
 
-
-
                 console.log('CSV text for consonants:', csvText);
-
                 const rows = csvText.split(/\r?\n/).slice(1); // 跳過標題行
-
                 console.log('Rows for consonants:', rows);
 
-
-
                 consonantsData.length = 0; // 清空舊資料
-
                 rows.forEach(row => {
-
                     const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-
                     console.log(`Row: "${row}" -> cols:`, cols);
-
                     if (cols.length >= 3) {
-
                         const char = cols[0].replace(/"/g, '').trim();
-
                         const roman = cols[1].replace(/"/g, '').trim();
-
                         const category = cols[2].replace(/"/g, '').trim();
 
-
-
                         if (char && roman) {
-
                             consonantsData.push({ char, roman, category });
-
                             console.log('Added consonant item:', { char, roman, category });
-
                         }
-
                     }
-
                 });
-
                 console.log('Final consonants data:', consonantsData);
-
             } catch (error) {
-
                 console.error('Error fetching consonants:', error);
-
                 // 如果抓取失敗，使用預設資料
-
                 const defaultConsonants = [
-
                     { char: 'ก', roman: 'k (gaw gai)', category: '中' },
-
                     { char: 'ข', roman: 'kh (khaw khai)', category: '高' },
-
                     { char: 'ค', roman: 'kh (khaw khwai)', category: '低' },
-
                     { char: 'ง', roman: 'ng (ngaw nguu)', category: '低' },
-
                     { char: 'จ', roman: 'j (jaw jaan)', category: '中' },
-
                     { char: 'ฉ', roman: 'ch (chaw ching)', category: '高' },
-
                     { char: 'ช', roman: 'ch (chaw chaang)', category: '低' },
-
                     { char: 'ซ', roman: 's (saw soh)', category: '低' },
-
                     { char: 'ฌ', roman: 'ch (chaw chəə)', category: '低' },
-
                     { char: 'ญ', roman: 'y (yaw ying)', category: '低' },
-
                     { char: 'ฎ', roman: 'd (daw chadaa)', category: '中' },
-
                     { char: 'ฏ', roman: 't (taw padak)', category: '中' },
-
                     { char: 'ฐ', roman: 'th (thaw thaan)', category: '高' },
-
                     { char: 'ฑ', roman: 'th (thaw thong)', category: '低' },
-
                     { char: 'ฒ', roman: 'th (thaw phuuthao)', category: '低' },
-
                     { char: 'ณ', roman: 'n (naw neen)', category: '低' },
-
                     { char: 'ด', roman: 'd (daw dek)', category: '中' },
-
                     { char: 'ต', roman: 't (taw tao)', category: '中' },
-
                     { char: 'ถ', roman: 'th (thaw thung)', category: '高' },
-
                     { char: 'ท', roman: 'th (thaw thahaan)', category: '低' },
-
                     { char: 'ธ', roman: 'th (thaw thong)', category: '低' },
-
                     { char: 'น', roman: 'n (naw nuu)', category: '低' },
-
                     { char: 'บ', roman: 'b (baw baimai)', category: '中' },
-
                     { char: 'ป', roman: 'p (paw plaa)', category: '中' },
-
                     { char: 'ผ', roman: 'ph (phaw phưng)', category: '高' },
-
                     { char: 'ฝ', roman: 'f (faw faa)', category: '高' },
-
                     { char: 'พ', roman: 'ph (phaw phaan)', category: '低' },
-
                     { char: 'ฟ', roman: 'f (faw fan)', category: '低' },
-
                     { char: 'ภ', roman: 'ph (phaw samphao)', category: '低' },
-
                     { char: 'ม', roman: 'm (maw maa)', category: '低' },
-
                     { char: 'ย', roman: 'y (yaw yak)', category: '低' },
-
                     { char: 'ร', roman: 'r (raw rưa)', category: '低' },
-
                     { char: 'ล', roman: 'l (law ling)', category: '低' },
-
                     { char: 'ว', roman: 'w (waw wɛɛn)', category: '低' },
-
                     { char: 'ศ', roman: 's (saw salaa)', category: '高' },
-
                     { char: 'ษ', roman: 's (saw rưsi)', category: '高' },
-
                     { char: 'ส', roman: 's (saw sưa)', category: '高' },
-
                     { char: 'ห', roman: 'h (haw hìip)', category: '高' },
-
                     { char: 'ฬ', roman: 'l (law julaa)', category: '低' },
-
                     { char: 'อ', roman: 'aw aang', category: '中' },
-
                     { char: 'ฮ', roman: 'h (haw nokhûuk)', category: '高' }
-
                 ];
-
                 consonantsData.push(...defaultConsonants);
-
             }
-
         }
-
-
-
-
 
 
 
         function showFavorites(btn) {
-
             currentMode = 'fav';
-
             const favItems = allData.filter(item => favorites.includes(item.id));
-
             renderList(favItems);
-
             document.getElementById('search-info').innerText = `已收藏 ${favItems.length} 筆`;
-
             document.querySelectorAll('.source-btn, .side-full-btn').forEach(b => b.classList.remove('active'));
-
             if (btn) btn.classList.add('active');
-
             toggleSidebar();
-
         }
-
-
 
     function toggleQuizMode() {
-
     isQuizMode = !isQuizMode;
-
     const btn = document.getElementById('quiz-btn');
-
     const container = document.getElementById('app'); // 取得字卡容器
-
     
-
     // 1. 切換按鈕樣式與文字
-
     btn.classList.toggle('active');
-
     btn.innerText = isQuizMode ? '🙈 遮蔽：ON' : '👁️ 遮蔽';
-
     
-
     // 2. 關鍵：直接在容器上切換 'quiz-mode' 類別，而不呼叫 handleRefresh()
-
     if (isQuizMode) {
-
         container.classList.add('quiz-mode');
-
     } else {
-
         container.classList.remove('quiz-mode');
-
         // 取消所有卡片的 revealed 狀態，讓下次進入測驗模式時又是遮蔽的
-
         document.querySelectorAll('.card').forEach(c => c.classList.remove('revealed'));
-
     }
-
 }
 
-
-
         function toggleAutoplay() {
-
             if (isAutoplay) { stopAutoplay(); } 
-
             else {
-
                 if (currentDisplayedList.length === 0) return;
-
                 isAutoplay = true;
-
                 const btn = document.getElementById('autoplay-btn');
-
                 btn.classList.add('active');
-
                 btn.innerText = '⏹️ 停止';
-
                 startAutoplayLogic();
-
             }
-
         }
-
-
 
         function stopAutoplay() {
-
             isAutoplay = false;
-
             window.speechSynthesis.cancel();
-
             const btn = document.getElementById('autoplay-btn');
-
             btn.classList.remove('active');
-
             btn.innerText = '📢 輪播';
-
             document.querySelectorAll('.card').forEach(c => c.style.borderColor = 'rgba(0,0,0,0.05)');
-
         }
-
-
 
         async function startAutoplayLogic() {
-
             for (let i = 0; i < currentDisplayedList.length; i++) {
-
                 if (!isAutoplay) break;
-
                 const item = currentDisplayedList[i];
-
                 const card = document.getElementById(`card-${i}`);
-
                 if(card) {
-
                     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
                     card.style.borderColor = 'var(--btn-active)';
-
                 }
-
                 await speakPromise(item.thai);
-
                 if (!isAutoplay) break;
-
                 await new Promise(r => setTimeout(r, 500));
-
                 await speakPromise(item.thai);
-
                 if(card) card.style.borderColor = 'rgba(0,0,0,0.05)';
-
                 await new Promise(r => setTimeout(r, 1000));
-
                 if (i === currentDisplayedList.length - 1) stopAutoplay();
-
             }
-
         }
-
-
 
   // 修改後的輪播播放函式
-
         function speakPromise(text) {
-
             return new Promise((resolve) => {
-
                 window.speechSynthesis.cancel();
-
                 
-
                 // 先將數字轉換成泰文文字
-
                 let processedText = convertNumbersToThaiText(text);
-
                 // 修正：ๆ 只重複前面的詞，不重複整個句子
-
                 processedText = processedText.replace(/([\u0e00-\u0e7f]+)ๆ/g, '$1 $1');
-
                 
-
                 const msg = new SpeechSynthesisUtterance(processedText);
-
                 msg.lang = 'th-TH';
-
                 msg.rate = currentSpeed;
-
                 msg.onend = () => resolve();
-
                 msg.onerror = () => resolve();
-
                 window.speechSynthesis.speak(msg);
-
             });
-
         }
-
-
 
 // --- 請替換從 function speak 開始到結尾的內容 ---
 
-
-
-// 1. 先在函式外部定義好對照表，方便管理
-
-const vowelCorrection = {
-
-    // 短母音
-
-    '-ะ': 'อะ', 'ิ': 'อิ', 'ึ': 'อึ', 'ุ': 'อุ',
-
-    'เ-ะ': 'เอะ', 'แ-ะ': 'แอะ', 'โ-ะ': 'โอะ', 'เ-าะ': 'เอาะ', 'เ-อะ': 'เออะ',
-
-    // 長母音
-
-    '-า': 'อา', 'ี': 'อี', 'ื': 'อือ', 'ู': 'อู',
-
-    'เ-': 'เอ', 'แ-': 'แอ', 'โ-': 'โอ', '-อ': 'ออ', 'เ-อ': 'เออ',
-
-    // 特殊/複合母音
-
-    'เ-ียะ': 'เอียะ', 'เ-ีย': 'เอีย', 'เ-ือะ': 'เอือะ', 'เ-ือ': 'เอือ',
-
-    'ัวะ': 'อัวะ', 'ัว': 'อัว', 'ำ': 'อำ', 'ใ-': 'ใอ', 'ไ-': 'ไอ', 'เ-า': 'เอา'
-
-};
-
-
-
 function speak(text, btnElement, e) {
-
     if(e) e.stopPropagation();
-
     window.speechSynthesis.cancel();
 
-
-
     let processedText = text.normalize('NFC').trim();
-
     
-
-    // --- 【新增功能】母音修正邏輯 ---
-
-    // 如果傳進來的文字完全符合對照表中的 Key，代表是在練習單個母音
-
-    if (vowelCorrection[processedText]) {
-
-        processedText = vowelCorrection[processedText];
-
-    } else {
-
-        // --- 【原有機制】原本的發音處理邏輯 ---
-
-        processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
-
-        processedText = processedText.replace(/จำนวน/g, "จัม-นวน");
-
-        processedText = convertNumbersToThaiText(processedText);
-
-        processedText = processedText.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
-
-        processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
-
-            let finalTone = tone ? tone : "";
-
-            return con + "ั" + finalTone + "ม";
-
-        });
-
-        processedText = processedText.replace(/([\u0e00-\u0e7f]+)ๆ/g, '$1 $1');
-
-    }
-
-    // ----------------------------------
-
-
+    // 處理泰文發音
+    processedText = processedText.replace(/\u0e4d\u0e32/g, "\u0e33");
+    processedText = processedText.replace(/จำนวน/g, "จัม-นวน");
+    processedText = convertNumbersToThaiText(processedText);
+    processedText = processedText.replace(/น[\u0e33\u0e4d\u0e32\u0e49]{2,3}/g, "นั้ม");
+    processedText = processedText.replace(/([ก-๙])([\u0e48-\u0e4b])?([\u0e33\u0e4d])(\u0e32?)/g, (match, con, tone, am, a) => {
+        let finalTone = tone ? tone : "";
+        return con + "ั" + finalTone + "ม";
+    });
+    // 修正：ๆ 只重複前面的詞，不重複整個句子
+    processedText = processedText.replace(/([\u0e00-\u0e7f]+)ๆ/g, '$1 $1');
 
     const msg = new SpeechSynthesisUtterance(processedText);
-
     const voices = window.speechSynthesis.getVoices();
-
     const bestVoice = voices.find(v => v.lang.includes('th') && (v.name.includes('Siri') || v.name.includes('Enhanced')))
-
                     || voices.find(v => v.lang.includes('th'));
 
-
-
     if (bestVoice) msg.voice = bestVoice;
-
     msg.lang = 'th-TH';
-
-    
-
-    // 這裡使用妳原本定義的變數 currentSpeed
-
-    msg.rate = typeof currentSpeed !== 'undefined' ? currentSpeed : 1.0; 
-
-
+    msg.rate = currentSpeed; 
 
     if (btnElement) btnElement.classList.add('playing');
-
     msg.onend = () => { if (btnElement) btnElement.classList.remove('playing'); };
-
     
-
     window.speechSynthesis.speak(msg);
-
 }
-
-
 
 function checkPasscode() {
-
     const input = document.getElementById('passcode').value;
-
     // 這裡放妳所有允許的 Base64 密碼陣列
-
     const authorizedPass = [
-
         'NTgzNDU4MzRhYUFB', // 第一組
-
         'MTIzNDQzMjE='      // 12344321
-
     ];
 
-
-
     // 改成用 .includes 檢查「輸入的密碼轉碼後」是否在陣列名單中
-
     if (authorizedPass.includes(btoa(input))) {
-
         document.getElementById('login-overlay').style.display = 'none';
-
         localStorage.setItem('thai_auth', 'true');
-
         localStorage.setItem('auth_time', new Date().getTime());
-
     } else {
-
         const errorMsg = document.getElementById('error-msg');
-
         errorMsg.style.display = 'block';
-
         document.getElementById('passcode').value = '';
-
     }
-
 }
-
-
 
 // 頁面載入時的總初始化
-
 window.addEventListener('load', () => {
-
     // 1. 執行密碼檢查
-
     const isAuth = localStorage.getItem('thai_auth');
-
     const authTime = localStorage.getItem('auth_time');
-
     const now = new Date().getTime();
-
     
-
     if (isAuth === 'true' && (now - authTime < 86400000)) {
-
         document.getElementById('login-overlay').style.display = 'none';
-
     }
 
-
-
     // 2. 啟動資料抓取
-
     initAllData();
-
 });
 
-
-
 // 置頂按鈕邏輯
-
 window.onscroll = function() {
-
     const btn = document.getElementById("back-to-top");
-
     if (document.documentElement.scrollTop > 300) btn.style.display = "block";
-
     else btn.style.display = "none";
-
 };
 
-
-
 function scrollToTop() {
-
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
 }
-
 </script>
 
-
-
     <button id="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="position:fixed; bottom:20px; right:20px; width:45px; height:45px; border-radius:50%; background:var(--btn-active); color:white; border:none; display:none; z-index:99; cursor:pointer; box-shadow:0 4px 10px rgba(0,0,0,0.3);">↑</button>
-
 </body>
-
 </html>
-
