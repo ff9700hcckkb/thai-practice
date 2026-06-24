@@ -495,15 +495,6 @@
     </style>
 </head>
 <body>
-<div id="login-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f4f4f4; z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;">
-    <h2 style="margin-bottom: 20px; font-family: sans-serif; color: #333;">🇹🇭 JustForFun</h2>
-    
-    <input type="password" id="passcode" placeholder="EnterPassword" style="padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; width: 200px; text-align: center; color: #000; background: #fff;">
-    
-    <button onclick="checkPasscode()" style="margin-top: 15px; padding: 10px 30px; background: #007AFF; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Enter</button>
-    
-    <p id="error-msg" style="color: red; margin-top: 10px; display: none;">PasswordFail</p>
-</div>
     <div class="header">
         <div class="app-title">泰難了เรียนภาษาไทย</div>
         <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
@@ -686,40 +677,8 @@
         let cardHeight = 144; // 預估卡片高度
         let visibleCards = 10; // 可見卡片數量
 
-async function checkPasscode() {
-    const input = document.getElementById('passcode').value;
-    const authorizedHashes = [
-        '9fffb8dea76cd575f50ce2540ea80488147b45b5351fb0e5451700032b67b889',
-        '67727a41b5b1d4dfca981e4045b1bb2f1e7fef0e3e8825c028949d186cad4c00'
-    ];
-
-    const encoded = new TextEncoder().encode(input);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
-    const hashHex = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
-
-    if (authorizedHashes.includes(hashHex)) {
-        document.getElementById('login-overlay').style.display = 'none';
-        localStorage.setItem('thai_auth', 'true');
-        localStorage.setItem('auth_time', new Date().getTime());
-    } else {
-        const errorMsg = document.getElementById('error-msg');
-        errorMsg.style.display = 'block';
-        document.getElementById('passcode').value = '';
-    }
-}
-
 // 頁面載入時的總初始化
 window.addEventListener('load', () => {
-    // 1. 執行密碼檢查
-    const isAuth = localStorage.getItem('thai_auth');
-    const authTime = localStorage.getItem('auth_time');
-    const now = new Date().getTime();
-    
-    if (isAuth === 'true' && (now - authTime < 86400000)) {
-        document.getElementById('login-overlay').style.display = 'none';
-    }
-
-    // 2. 啟動資料抓取
     initAllData();
 });
         
@@ -1730,19 +1689,8 @@ function speak(text, btnElement, e) {
 
 
 // 頁面載入時的總初始化
-window.addEventListener('load', () => {
-    // 1. 執行密碼檢查
-    const isAuth = localStorage.getItem('thai_auth');
-    const authTime = localStorage.getItem('auth_time');
-    const now = new Date().getTime();
-    
-    if (isAuth === 'true' && (now - authTime < 86400000)) {
-        document.getElementById('login-overlay').style.display = 'none';
-    }
 
-    // 2. 啟動資料抓取
-    initAllData();
-});
+
 
 // 惡補一下頁面的置頂按鈕
 function rulePageScroll(el) {
