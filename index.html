@@ -12,7 +12,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>เรียนภาษาไทย</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;700&family=Noto+Sans+Thai+Looped:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #1a1a1a;
@@ -44,12 +44,12 @@
         }
 
 
-/* 當啟動藝術字體模式時，套用 Noto Sans Thai */
-.card.art-font .thai,
-.phonetic-card.art-font .p-char {
-    font-family: 'Noto Sans Thai', sans-serif !important;
-    font-weight: 700;
-    letter-spacing: 0px;
+/* 泰文字體：預設「有圈」Noto Sans Thai Looped，切換後「無圈」Noto Sans Thai */
+:root {
+    --thai-font: 'Noto Sans Thai Looped', 'Leelawadee UI', 'Ayuthaya', 'Thonburi', sans-serif;
+}
+:root[data-thai-font="loopless"] {
+    --thai-font: 'Noto Sans Thai', 'Leelawadee UI', 'Ayuthaya', 'Thonburi', sans-serif;
 }
 /* 按鈕啟動時的顏色（跟測驗模式一樣用橘色） */
 .quiz-toggle.art-active {
@@ -147,7 +147,7 @@
         .card.revealed .chinese { opacity: 1; color: var(--accent-color); }
 
         .thai { 
-            font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
+            font-family: var(--thai-font);
             font-size: var(--thai-size); line-height: 1.6; margin-bottom: 10px; 
             font-weight: 700; letter-spacing: 0.5px; word-break: break-word; display: block;
         }
@@ -305,7 +305,7 @@
             box-shadow: 0 0 0 2px var(--accent-color);
         }
         .phonetic-card .p-char {
-            font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
+            font-family: var(--thai-font);
             font-size: 1.6rem;
             font-weight: 700;
             color: var(--text-color);
@@ -385,7 +385,7 @@
             overflow: hidden;
         }
         .shadow-thai {
-            font-family: "Leelawadee UI", "Ayuthaya", "Thonburi", sans-serif;
+            font-family: var(--thai-font);
             font-size: clamp(1.4rem, 5vw, 2.8rem);
             font-weight: 700;
             line-height: 1.6;
@@ -514,7 +514,7 @@
     <div class="left-actions">
         <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 遮蔽</button>
         <button id="autoplay-btn" class="quiz-toggle" onclick="toggleAutoplay()">📢 輪播</button>
-        <button id="art-font-btn" class="quiz-toggle" onclick="toggleArtFont()">🎨 藝術</button>
+        <button id="art-font-btn" class="quiz-toggle" onclick="toggleArtFont()">🎨 有圈</button>
     </div>
     <div id="refresh-btn-main" class="refresh-btn" style="flex: 0 0 auto; width: auto; padding: 8px 12px;" onclick="handleRefresh()">
         <span>🔄 更新</span>
@@ -682,25 +682,27 @@ window.addEventListener('load', () => {
     initAllData();
 });
         
-let isArtFont = false;
+// 字體切換：false = 有圈 (Noto Sans Thai Looped)，true = 無圈 (Noto Sans Thai)
+let isArtFont = localStorage.getItem('thai_font_style') === 'loopless';
+
+function applyThaiFont() {
+    document.documentElement.setAttribute('data-thai-font', isArtFont ? 'loopless' : 'looped');
+    const btn = document.getElementById('art-font-btn');
+    if (btn) {
+        btn.classList.toggle('art-active', isArtFont);
+        btn.innerText = isArtFont ? '🎨 無圈' : '🎨 有圈';
+    }
+}
 
 function toggleArtFont() {
     isArtFont = !isArtFont;
-    const btn = document.getElementById('art-font-btn');
-    
-    // 1. 切換按鈕顏色
-    btn.classList.toggle('art-active');
-    
-    // 2. 針對目前畫面上所有的卡片切換字體
-    const cards = document.querySelectorAll('.card, .phonetic-card');
-    cards.forEach(card => {
-        card.classList.toggle('art-font');
-    });
-    
-    // 3. 提示目前狀態
-    document.getElementById('search-info').innerText = isArtFont ? '已切換為藝術字體' : '已恢復標準字體';
+    localStorage.setItem('thai_font_style', isArtFont ? 'loopless' : 'looped');
+    applyThaiFont();
+    document.getElementById('search-info').innerText =
+        isArtFont ? '已切換：無圈 Noto Sans Thai' : '已切換：有圈 Noto Sans Thai Looped';
 }
-        
+applyThaiFont();
+
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
             const ov = document.getElementById('overlay');
@@ -1039,7 +1041,7 @@ function showEssayDetail(index) {
             <button onclick="openEssayShadow(${index})" style="padding:6px 14px; border-radius:5px; background:var(--btn-active); color:white; border:none; cursor:pointer; font-size:1rem;">🎙️ 影子跟讀</button>
         </div>
 
-        <div style="font-size:1.7rem; line-height:2.3; color:var(--text-color); white-space:pre-wrap; text-align:left; background:var(--card-bg); padding:25px; border-radius:12px; border:1px solid var(--search-border); letter-spacing:0.8px;">
+        <div style="font-size:1.7rem; line-height:2.3; color:var(--text-color); white-space:pre-wrap; text-align:left; font-family:var(--thai-font); background:var(--card-bg); padding:25px; border-radius:12px; border:1px solid var(--search-border); letter-spacing:0.8px;">
             ${formattedContent}
         </div>
 
@@ -1203,7 +1205,7 @@ function convertNumbersToThaiText(text) {
                     }
                     const card = document.createElement('div');
                     const catClass = item.category ? ` cat-${item.category}` : '';
-                    card.className = 'phonetic-card' + catClass + (isArtFont ? ' art-font' : '');
+                    card.className = 'phonetic-card' + catClass;
                     card.id = `card-${index}`;
                     card.innerHTML = `
                         <div class="p-char" lang="th">${item.char}</div>
@@ -1229,7 +1231,7 @@ function convertNumbersToThaiText(text) {
                 // ── 一般詞彙卡片（維持原本樣式）──
                 const div = document.createElement('div');
                 // --- 關鍵修改：生成時判斷是否要加 art-font ---
-        div.className = 'card' + (isArtFont ? ' art-font' : '');
+        div.className = 'card';
         // ------------------------------------------
               
                 div.id = `card-${index}`;
@@ -1861,7 +1863,7 @@ function lyricsRenderReader(songName) {
         <div id="lyric-line-${i}" onclick="lyricsGoTo(${i})"
              style="padding:12px 16px;border-radius:8px;margin-bottom:8px;cursor:pointer;transition:0.2s;
                     ${i === 0 ? 'background:rgba(52,152,219,0.15);border-left:4px solid var(--accent-color);font-weight:bold;color:var(--text-color);' : 'color:var(--sub-text);border-left:4px solid transparent;'}
-                    font-size:1.7rem;line-height:2.0;">
+                    font-size:1.7rem;line-height:2.0;font-family:var(--thai-font);">
             ${line.thai.replace(/\*\*(.*?)\*\*/g, '$1')}
         </div>`).join('');
 
@@ -2195,7 +2197,7 @@ function scrollToTop() {
         <div class="shadow-thai" id="shadow-thai">—</div>
         <div class="shadow-chinese hidden" id="shadow-chinese">—</div>
         <!-- 短文模式：顯示全文段落，當前句高亮 -->
-        <div id="shadow-essay-context" style="display:none; width:100%; max-width:480px; margin-top:12px; padding:14px 16px; background:var(--card-bg); border-radius:12px; border:1px solid var(--search-border); font-size:1.1rem; line-height:2; color:var(--sub-text); text-align:left; font-family:'Leelawadee UI','Ayuthaya','Thonburi',sans-serif; max-height:160px; overflow-y:auto;"></div>
+        <div id="shadow-essay-context" style="display:none; width:100%; max-width:480px; margin-top:12px; padding:14px 16px; background:var(--card-bg); border-radius:12px; border:1px solid var(--search-border); font-size:1.1rem; line-height:2; color:var(--sub-text); text-align:left; font-family:var(--thai-font); max-height:160px; overflow-y:auto;"></div>
     </div>
 
     <div class="shadow-controls">
