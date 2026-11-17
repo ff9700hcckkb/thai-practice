@@ -514,7 +514,7 @@
     <div class="left-actions">
         <button id="quiz-btn" class="quiz-toggle" onclick="toggleQuizMode()">👁️ 遮蔽</button>
         <button id="autoplay-btn" class="quiz-toggle" onclick="toggleAutoplay()">📢 輪播</button>
-        <button id="art-font-btn" class="quiz-toggle" onclick="toggleArtFont()">🎨 有圈</button>
+        <button id="art-font-btn" class="quiz-toggle" onclick="toggleArtFont()">🎨 藝術</button>
     </div>
     <div id="refresh-btn-main" class="refresh-btn" style="flex: 0 0 auto; width: auto; padding: 8px 12px;" onclick="handleRefresh()">
         <span>🔄 更新</span>
@@ -690,7 +690,6 @@ function applyThaiFont() {
     const btn = document.getElementById('art-font-btn');
     if (btn) {
         btn.classList.toggle('art-active', isArtFont);
-        btn.innerText = isArtFont ? '🎨 無圈' : '🎨 有圈';
     }
 }
 
@@ -699,7 +698,7 @@ function toggleArtFont() {
     localStorage.setItem('thai_font_style', isArtFont ? 'loopless' : 'looped');
     applyThaiFont();
     document.getElementById('search-info').innerText =
-        isArtFont ? '已切換：無圈 Noto Sans Thai' : '已切換：有圈 Noto Sans Thai Looped';
+        isArtFont ? '無圈' : '有圈';
 }
 applyThaiFont();
 
